@@ -6,8 +6,10 @@ export default function MainLayout({
     children: React.ReactNode
 }) {
     return (
-        <div>
-            {children}
+        <div style={{ maxWidth:'720px', minHeight:'100vh', width:'100%'}} className="flex flex-col">
+            <div className="flex-1">
+                {children}
+            </div>
             <TabBar />
         </div>
     )
