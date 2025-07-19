@@ -1,14 +1,12 @@
 import React from 'react';
 
 import type { Preview } from '@storybook/nextjs-vite';
-import { initialize as initializeMSW, mswLoader } from 'msw-storybook-addon';
+import { mswLoader } from 'msw-storybook-addon';
 
 import { ReactQueryClientProvider } from '@/app/react-query-provider';
-import { ignoreDevResources } from '@/mocks/api/initializeMSW';
+import { initializeMSWOnStorybook } from '@/configs/msw/initializeMSWOnStorybook';
 
-initializeMSW({
-  onUnhandledRequest: ignoreDevResources,
-});
+initializeMSWOnStorybook();
 
 const preview: Preview = {
   decorators: [
