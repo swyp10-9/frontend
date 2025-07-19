@@ -1,7 +1,11 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
+  eslint: {
+    // NOTE: 빌드 이전 직접 lint 실행
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;
