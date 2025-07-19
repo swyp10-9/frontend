@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 
-import './index.scoped.scss';
+import './Calendar.scoped.scss';
 
 // 이벤트 데이터 타입
-interface EventData {
+export interface EventData {
   id: string;
   title: string;
   type: 'capital' | 'local'; // 수도권/지방
@@ -23,104 +23,39 @@ interface DayData {
   isHoliday?: boolean;
 }
 
-const data: EventData[] = [
-  {
-    id: '1',
-    title: '축제명',
-    type: 'capital',
-    color: '#4CAF50',
-    date: '2025-07-08',
-  },
-  {
-    id: '2',
-    title: '축제명',
-    type: 'capital',
-    color: '#4CAF50',
-    date: '2025-07-08',
-  },
-  {
-    id: '3',
-    title: '축제명',
-    type: 'local',
-    color: '#FF9800',
-    date: '2025-07-11',
-  },
-  {
-    id: '4',
-    title: '축제명',
-    type: 'local',
-    color: '#FF9800',
-    date: '2025-07-11',
-  },
-  {
-    id: '5',
-    title: '축제명',
-    type: 'local',
-    color: '#FF9800',
-    date: '2025-07-18',
-  },
-  {
-    id: '6',
-    title: '축제명',
-    type: 'capital',
-    color: '#4CAF50',
-    date: '2025-07-18',
-  },
-  {
-    id: '7',
-    title: '축제명',
-    type: 'local',
-    color: '#FF9800',
-    date: '2025-07-18',
-  },
-  {
-    id: '8',
-    title: '축제명',
-    type: 'local',
-    color: '#FF9800',
-    date: '2025-07-21',
-  },
-  {
-    id: '9',
-    title: '축제명',
-    type: 'local',
-    color: '#FF9800',
-    date: '2025-07-21',
-  },
-  {
-    id: '10',
-    title: '축제명',
-    type: 'capital',
-    color: '#4CAF50',
-    date: '2025-07-25',
-  },
-  {
-    id: '11',
-    title: '축제명',
-    type: 'local',
-    color: '#FF9800',
-    date: '2025-07-17',
-  },
-];
-
-// 날짜별로 이벤트를 묶기
-const calendarList: Record<string, EventData[]> = data.reduce(
-  (acc, event) => {
-    if (!acc[event.date]) acc[event.date] = [];
-    acc[event.date].push(event);
-    return acc;
-  },
-  {} as Record<string, EventData[]>,
-);
+// Calendar 컴포넌트 props
+export interface CalendarProps {
+  events?: EventData[];
+  initialDate?: Date;
+  onDateSelect?: (date: string) => void;
+  showNavigation?: boolean;
+  showHolidays?: boolean;
+}
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
-const Calendar = () => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+const Calendar = ({
+  events = [],
+  initialDate = new Date(),
+  onDateSelect,
+  showNavigation = true,
+  showHolidays = true,
+}: CalendarProps) => {
+  const [currentDate, setCurrentDate] = useState(initialDate);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth(); // 0-based
+
+  // 날짜별로 이벤트를 묶기
+  const calendarList: Record<string, EventData[]> = events.reduce(
+    (acc, event) => {
+      if (!acc[event.date]) acc[event.date] = [];
+      acc[event.date].push(event);
+      return acc;
+    },
+    {} as Record<string, EventData[]>,
+  );
 
   // 날짜를 YYYY-MM-DD 형식으로 변환
   const formatDate = (year: number, month: number, day: number): string => {
@@ -163,7 +98,7 @@ const Calendar = () => {
         events: getEventsForDate(dateStr),
         isToday: isToday(i),
         isSelected: selectedDate === dateStr,
-        isHoliday: new Date(year, month, i).getDay() === 0, // 일요일
+        isHoliday: showHolidays && new Date(year, month, i).getDay() === 0, // 일요일
       };
       days.push(dayData);
     }
@@ -181,23 +116,26 @@ const Calendar = () => {
 
   const handleDateClick = (dayData: DayData) => {
     setSelectedDate(dayData.date);
+    onDateSelect?.(dayData.date);
   };
 
   const days = getCalendarDays();
 
   return (
     <div className='calendar-container'>
-      <div className='calendar-header'>
-        <button className='nav-button' onClick={() => moveMonth(-1)}>
-          ◀
-        </button>
-        <h2 className='month-title'>
-          {year}년 {month + 1}월
-        </h2>
-        <button className='nav-button' onClick={() => moveMonth(1)}>
-          ▶
-        </button>
-      </div>
+      {showNavigation && (
+        <div className='calendar-header'>
+          <button className='nav-button' onClick={() => moveMonth(-1)}>
+            ◀
+          </button>
+          <h2 className='month-title'>
+            {year}년 {month + 1}월
+          </h2>
+          <button className='nav-button' onClick={() => moveMonth(1)}>
+            ▶
+          </button>
+        </div>
+      )}
 
       <div className='calendar-grid header'>
         {DAYS.map(day => (
