@@ -37,6 +37,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-unused-imports": "^4.1.4",
     "globals": "^15.9.0",
+    "lefthook": "^1.12.2",
     "prettier": "^3.5.3",
     "sass": "^1.89.2",
     "tailwindcss": "^4",
