@@ -1,26 +1,83 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   /* --background: #ffffff;
   --foreground: #171717; */
+  font-family: 'Pretendard' !important;
 }
 
-@theme inline {
-  /* --color-background: var(--background);
+/* @theme inline {
+  --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono); */
-}
+  --font-mono: var(--font-geist-mono);
+} */
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
-    /* --background: #0a0a0a;
-    --foreground: #ededed; */
+    --background: #0a0a0a;
+    --foreground: #ededed;
   }
+} */
+
+/* body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+} */
+
+.text-head {
+  font-weight: bold;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  letter-spacing: -0.0625rem;
 }
 
-body {
-  /* background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif; */
+.text-head-2 {
+  font-weight: bold;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  letter-spacing: -0.0625rem;
+}
+
+.text-sub-head {
+  font-weight: bold;
+  font-size: 1rem;
+  line-height: 1.375rem;
+  letter-spacing: -0.0625rem;
+}
+
+.text-sub-head-2 {
+  font-weight: bold;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.0625rem;
+}
+
+.text-sub-head-3 {
+  font-weight: bold;
+  font-size: 0.75rem;
+  line-height: 1.125rem;
+  letter-spacing: -0.0625rem;
+}
+
+.text-body {
+  font-weight: normal;
+  font-size: 1rem;
+  line-height: 1.375rem;
+  letter-spacing: -0.0625rem;
+}
+
+.text-body-2 {
+  font-weight: normal;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.0625rem;
+}
+
+.text-caption {
+  font-weight: normal;
+  font-size: 0.75rem;
+  line-height: 1.125rem;
+  letter-spacing: -0.0625rem;
 }
