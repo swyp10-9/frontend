@@ -26,6 +26,46 @@
   font-family: Arial, Helvetica, sans-serif;
 } */
 
+body {
+  color: #090a0c;
+}
+
+.text-color-sub {
+  color: #26282e;
+}
+
+.text-color-info {
+  color: #5e6573;
+}
+
+.text-color-disabled {
+  color: #adb0b8;
+}
+
+.text-color-error {
+  color: #ee0000;
+}
+
+.border-divider {
+  border: 1px solid #f1f2f4;
+}
+
+.border-basic {
+  border: 1px solid #d5d7db;
+}
+
+.border-active {
+  border: 1px solid #26282e;
+}
+
+.border-error {
+  border: 1px solid #ee0000;
+}
+
+.bg-mark {
+  background-color: #fdbe00;
+}
+
 .text-head {
   font-weight: bold;
   font-size: 1.5rem;
