@@ -162,7 +162,7 @@ const Calendar = ({
                 <div className='day-number'>{dayData.day}</div>
                 {dayData.events && dayData.events.length > 0 && (
                   <div className='events-container'>
-                    {dayData.events.map((event, index) => (
+                    {dayData.events.map(event => (
                       <div
                         key={event.id}
                         className={`event-item-inline ${event.type}`}

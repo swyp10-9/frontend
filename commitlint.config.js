@@ -18,7 +18,7 @@ export default {
     'type-enum': [
       2,
       'always',
-      ['feat', 'fix', 'refactor', 'docs', 'test', 'chore'], // 이 타입들만 사용 가능
+      ['feat', 'fix', 'refactor', 'docs', 'test', 'chore', 'wip'], // 이 타입들만 사용 가능
     ],
   },
 };
