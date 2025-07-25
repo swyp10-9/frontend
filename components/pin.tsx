@@ -1,0 +1,84 @@
+import { Icon } from '@iconify/react';
+import Image from 'next/image';
+
+import themeList from '@/constants/themeList';
+
+import ThemeTag from './theme-tag';
+
+interface PinProps {
+  type: string;
+  variant: 'default' | 'detail';
+
+  // 디테일 핀
+  image?: string;
+  title?: string;
+  is_marked?: boolean;
+  id?: string;
+}
+export default function Pin(props: PinProps) {
+  const { type, variant } = props;
+
+  if (variant === 'default') {
+    const image = themeList.find(theme => theme.type === type)?.image || '';
+    switch (type) {
+      case 'culture_art':
+        return <Image src={image} alt={type} width={36} height={36} />;
+      case 'food_cuisine':
+        return <Image src={image} alt={type} width={36} height={36} />;
+      case 'music_performance':
+        return <Image src={image} alt={type} width={36} height={36} />;
+      case 'nature_experience':
+        return <Image src={image} alt={type} width={36} height={36} />;
+      case 'tradition_history':
+        return <Image src={image} alt={type} width={36} height={36} />;
+    }
+  } else {
+    const { image, title, is_marked, id } = props;
+    if (!image || !title || !id) return null;
+
+    return (
+      <div
+        className='flex gap-2 items-center w-[224px] h-[64px] rounded-lg bg-white py-2 pl-2 pr-3 box-border'
+        style={{
+          boxShadow: '0 0 5px 0 rgba(0,0,0,0.18)',
+        }}
+      >
+        <Image
+          src={image}
+          alt={title}
+          width={48}
+          height={48}
+          className='rounded-sm aspect-square object-cover'
+        />
+        <div className='flex flex-col gap-1 justify-center w-full'>
+          <div className='flex justify-between w-full items-center'>
+            <ThemeTag type={type} />
+            {is_marked ? (
+              <Icon
+                icon='mynaui:star-solid'
+                className='cursor-pointer'
+                color='#fdbe00'
+                fontSize={20}
+              />
+            ) : (
+              <Icon
+                icon='mynaui:star'
+                className='cursor-pointer'
+                color='#7e848f'
+                fontSize={20}
+              />
+            )}
+          </div>
+          <div className='flex items-center'>
+            <p className='text-sub-head-2 line-clamp-1'>{title}</p>
+            <Icon
+              icon='jam:chevron-right'
+              className='text-gray-300 cursor-pointer'
+              fontSize={16}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
