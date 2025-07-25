@@ -24,7 +24,7 @@ export default function TabBar() {
           <span
             className={`${pathname === '/' ? 'text-sub-head-3' : 'text-caption'}`}
           >
-            지도 보기
+            축제지도
           </span>
         </Link>
         <Link
@@ -42,7 +42,7 @@ export default function TabBar() {
           <span
             className={`${pathname === '/calendar' ? 'text-sub-head-3' : 'text-caption'}`}
           >
-            달력 보기
+            축제달력
           </span>
         </Link>
         <Link
@@ -82,7 +82,7 @@ export default function TabBar() {
           <span
             className={`${pathname === '/customized' ? 'text-sub-head-3' : 'text-caption'}`}
           >
-            맞춤 축제
+            맞춤축제
           </span>
         </Link>
       </div>
