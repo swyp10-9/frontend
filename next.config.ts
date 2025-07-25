@@ -6,6 +6,14 @@ const nextConfig: NextConfig = {
     // NOTE: 빌드 이전 직접 lint 실행
     ignoreDuringBuilds: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+      },
+    ],
+  },
 };
 
 export default nextConfig;
