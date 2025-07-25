@@ -26,7 +26,7 @@ export default function RootLayout({
         <html lang='ko'>
           <body
             cz-shortcut-listen='true'
-            className='flex items-center justify-center'
+            className='flex items-center justify-center overscroll-none'
           >
             {children}
           </body>
