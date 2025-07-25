@@ -21,7 +21,7 @@ export default function FestivalListView(props: FestivalListViewProps) {
       <Image
         src={image}
         alt='festival'
-        className='aspect-square object-cover'
+        className='aspect-square object-cover rounded-sm'
         width={108}
         height={108}
       />
@@ -31,21 +31,21 @@ export default function FestivalListView(props: FestivalListViewProps) {
           <div className='flex gap-2'>
             {is_marked ? (
               <Icon
-                icon='mdi:star'
+                icon='mynaui:star-solid'
                 className='cursor-pointer'
                 color='#fdbe00'
                 fontSize={20}
               />
             ) : (
               <Icon
-                icon='mdi:star-outline'
+                icon='mynaui:star'
                 className='cursor-pointer'
                 color='#7e848f'
                 fontSize={20}
               />
             )}
             <Icon
-              icon='mdi:ios-share'
+              icon='lucide:share'
               className='cursor-pointer'
               color='#7e848f'
               fontSize={20}
@@ -55,7 +55,7 @@ export default function FestivalListView(props: FestivalListViewProps) {
         <p className='text-sub-head mt-1 mb-3 line-clamp-3'>{title}</p>
         <div className='flex items-center mb-1'>
           <Icon
-            icon='mdi:location'
+            icon='carbon:location-filled'
             className='cursor-pointer'
             color='#7e848f'
             fontSize={20}
@@ -65,7 +65,7 @@ export default function FestivalListView(props: FestivalListViewProps) {
         </div>
         <div className='flex items-center gap-2'>
           <Icon
-            icon='mdi:calendar-blank'
+            icon='uis:calendar'
             className='cursor-pointer'
             color='#7e848f'
             fontSize={20}
