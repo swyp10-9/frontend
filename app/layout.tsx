@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import localFont from 'next/font/local';
 
 import { MSWClientSideProvider } from '@/configs/msw/MSWClientSideProvider';
 import { initializeMSWOnServer } from '@/configs/msw/initializeMSWOnServer';
@@ -9,6 +10,13 @@ import { ReactQueryClientProvider } from './react-query-provider';
 if (process.env.NODE_ENV === 'development') {
   initializeMSWOnServer();
 }
+
+const pretendard = localFont({
+  src: '../assets/fonts/PretendardVariable.woff2',
+  weight: '45 920',
+  display: 'swap',
+  variable: '--font-pretendard', // NOTE: CSS Variable로 노출
+});
 
 export const metadata: Metadata = {
   title: '축지법',
@@ -26,7 +34,7 @@ export default function RootLayout({
         <html lang='ko'>
           <body
             cz-shortcut-listen='true'
-            className='flex items-center justify-center overscroll-none'
+            className={`${pretendard.className} flex items-center justify-center overscroll-none`}
           >
             {children}
           </body>
