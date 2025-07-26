@@ -124,11 +124,11 @@ const Calendar = ({
   const days = getCalendarDays();
 
   return (
-    <div className='max-w-4xl w-full mx-auto font-sans bg-gray-50 rounded-lg p-5'>
+    <div className='mx-auto w-full max-w-4xl rounded-lg bg-gray-50 p-5 font-sans'>
       {showNavigation && (
-        <div className='flex justify-center items-center mb-4 gap-20'>
+        <div className='mb-4 flex items-center justify-center gap-20'>
           <button
-            className='bg-transparent border-none text-lg cursor-pointer text-gray-600 p-2 rounded transition-colors hover:bg-black/10'
+            className='cursor-pointer rounded border-none bg-transparent p-2 text-lg text-gray-600 transition-colors hover:bg-black/10'
             onClick={() => moveMonth(-1)}
           >
             ◀
@@ -137,7 +137,7 @@ const Calendar = ({
             {year}년 {month + 1}월
           </h2>
           <button
-            className='bg-transparent border-none text-lg cursor-pointer text-gray-600 p-2 rounded transition-colors hover:bg-black/10'
+            className='cursor-pointer rounded border-none bg-transparent p-2 text-lg text-gray-600 transition-colors hover:bg-black/10'
             onClick={() => moveMonth(1)}
           >
             ▶
@@ -149,7 +149,7 @@ const Calendar = ({
         {DAYS.map(day => (
           <div
             key={day}
-            className='bg-transparent text-gray-800 text-center font-bold py-3 text-sm border-b border-gray-200'
+            className='border-b border-gray-200 bg-transparent py-3 text-center text-sm font-bold text-gray-800'
           >
             {day}
           </div>
@@ -160,26 +160,17 @@ const Calendar = ({
         {days.map((dayData, idx) => (
           <div
             key={idx}
-            className={`min-h-[60px] h-auto border-none text-center p-2 font-medium rounded-none bg-transparent cursor-pointer transition-all duration-200 relative align-top box-border text-sm flex flex-col justify-center items-center
-                            ${dayData === null ? 'bg-transparent cursor-default text-gray-300' : ''} 
-                            ${dayData?.isToday ? 'today' : ''} 
-                            ${dayData?.isSelected ? 'border-2 border-gray-600 bg-white/80 rounded-lg p-1.5' : ''} 
-                            ${dayData?.isHoliday ? 'text-red-500' : ''} 
-                            ${(dayData?.events || []).length > 0 ? 'has-events' : ''}
-                            ${(idx + 1) % 7 === 4 ? 'bg-white/30' : ''}
-                            hover:bg-white/50`}
+            className={`relative box-border flex h-auto min-h-[60px] cursor-pointer flex-col items-center justify-center rounded-none border-none bg-transparent p-2 text-center align-top text-sm font-medium transition-all duration-200 ${dayData === null ? 'cursor-default bg-transparent text-gray-300' : ''} ${dayData?.isToday ? 'today' : ''} ${dayData?.isSelected ? 'rounded-lg border-2 border-gray-600 bg-white/80 p-1.5' : ''} ${dayData?.isHoliday ? 'text-red-500' : ''} ${(dayData?.events || []).length > 0 ? 'has-events' : ''} ${(idx + 1) % 7 === 4 ? 'bg-white/30' : ''} hover:bg-white/50`}
             onClick={() => dayData && handleDateClick(dayData)}
           >
             {dayData ? (
-              <div className='flex flex-col h-full justify-center items-center gap-1'>
+              <div className='flex h-full flex-col items-center justify-center gap-1'>
                 <div
-                  className={`text-sm font-semibold mb-0.5
-                  ${dayData.isToday ? 'bg-black text-white rounded-full w-6 h-6 flex items-center justify-center font-bold' : 'text-gray-800'}
-                  `}
+                  className={`mb-0.5 text-sm font-semibold ${dayData.isToday ? 'flex h-6 w-6 items-center justify-center rounded-full bg-black font-bold text-white' : 'text-gray-800'} `}
                 >
                   {dayData.day}
                 </div>
-                <div className='text-xs text-gray-600 font-medium'>
+                <div className='text-xs font-medium text-gray-600'>
                   {dayData.totalCount}개
                 </div>
                 {dayData.events && dayData.events.length > 0 && (
@@ -187,8 +178,7 @@ const Calendar = ({
                     {dayData.events.map(event => (
                       <div
                         key={event.id}
-                        className={`rounded px-1.5 py-0.5 mb-0.5 text-xs font-semibold whitespace-nowrap overflow-hidden text-ellipsis inline-block leading-tight
-                                    ${event.type === 'capital' ? 'bg-green-600 text-white' : 'bg-orange-600 text-white'}`}
+                        className={`mb-0.5 inline-block overflow-hidden rounded px-1.5 py-0.5 text-xs leading-tight font-semibold text-ellipsis whitespace-nowrap ${event.type === 'capital' ? 'bg-green-600 text-white' : 'bg-orange-600 text-white'}`}
                         style={{
                           backgroundColor: event.color,
                           color: '#fff',

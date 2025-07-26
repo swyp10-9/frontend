@@ -9,11 +9,11 @@
 }
 
 .calendar-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 1rem;
-    gap: 5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 5rem;
 }
 
 .month-title {
@@ -115,7 +115,7 @@
 }
 
 .calendar-grid.body .day-cell.holiday {
-    color: #f44336 !important;
+  color: #f44336 !important;
 }
 
 .calendar-grid.body .day-cell.has-events {
