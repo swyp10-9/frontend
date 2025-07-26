@@ -149,12 +149,7 @@ const Calendar = ({
         {days.map((dayData, idx) => (
           <div
             key={idx}
-            className={`day-cell 
-                            ${dayData === null ? 'empty' : ''} 
-                            ${dayData?.isToday ? 'today' : ''} 
-                            ${dayData?.isSelected ? 'selected' : ''} 
-                            ${dayData?.isHoliday ? 'holiday' : ''} 
-                            ${(dayData?.events || []).length > 0 ? 'has-events' : ''}`}
+            className={`day-cell ${dayData === null ? 'empty' : ''} ${dayData?.isToday ? 'today' : ''} ${dayData?.isSelected ? 'selected' : ''} ${dayData?.isHoliday ? 'holiday' : ''} ${(dayData?.events || []).length > 0 ? 'has-events' : ''}`}
             onClick={() => dayData && handleDateClick(dayData)}
           >
             {dayData ? (

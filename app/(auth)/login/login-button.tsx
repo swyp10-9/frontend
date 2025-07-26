@@ -17,19 +17,19 @@ export default function LoginButton({
     <div>
       {type === 'not-login' && (
         <a className=''>
-          <div className='flex justify-center items-center gap-2.5 rounded-lg w-[320px] h-[58px] border-gray-50 border'>
-            <p className='text-head'>로그인 없이 볼게요</p>
+          <div className='flex h-[58px] w-[320px] items-center justify-center gap-2.5 rounded-lg border border-gray-50'>
+            <p className='ui-text-head'>로그인 없이 볼게요</p>
           </div>
         </a>
       )}
       {type === 'kakao' && (
         <a href={kakaoUrl}>
           <div
-            className='flex justify-center items-center gap-2.5 rounded-lg px-5 py-4.5'
+            className='flex items-center justify-center gap-2.5 rounded-lg px-5 py-4.5'
             style={{ backgroundColor: '#FEE500' }}
           >
             <Image src='/sns/kakao.png' alt='kakao' width={24} height={24} />
-            <p className='text-head'>10초만에 카카오로 시작하기</p>
+            <p className='ui-text-head'>10초만에 카카오로 시작하기</p>
           </div>
         </a>
       )}
