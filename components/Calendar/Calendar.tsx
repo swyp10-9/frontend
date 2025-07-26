@@ -2,8 +2,6 @@
 
 import React, { useState } from 'react';
 
-import './Calendar.scoped.scss';
-
 // 이벤트 데이터 타입
 export interface EventData {
   id: string;
@@ -11,6 +9,7 @@ export interface EventData {
   type: 'capital' | 'local'; // 수도권/지방
   color: string; // ex) '#4CAF50', '#FF9800'
   date: string; // '2025-07-08'
+  count?: number; // 이벤트 개수 (API에서 받아올 데이터)
 }
 
 // 날짜별 데이터 타입
@@ -18,6 +17,7 @@ interface DayData {
   date: string;
   day: number;
   events: EventData[];
+  totalCount?: number; // 해당 날짜의 총 이벤트 개수
   isToday?: boolean;
   isSelected?: boolean;
   isHoliday?: boolean;
@@ -92,10 +92,12 @@ const Calendar = ({
     }
     for (let i = 1; i <= lastDate; i += 1) {
       const dateStr = formatDate(year, month, i);
+      const eventsForDate = getEventsForDate(dateStr);
       const dayData: DayData = {
         date: dateStr,
         day: i,
-        events: getEventsForDate(dateStr),
+        events: eventsForDate,
+        totalCount: eventsForDate.length > 0 ? eventsForDate.length : 99, // 임시로 99, API 연동 시 실제 개수로 교체
         isToday: isToday(i),
         isSelected: selectedDate === dateStr,
         isHoliday: showHolidays && new Date(year, month, i).getDay() === 0, // 일요일
@@ -122,57 +124,78 @@ const Calendar = ({
   const days = getCalendarDays();
 
   return (
-    <div className='calendar-container'>
+    <div className='max-w-4xl w-full mx-auto font-sans bg-gray-50 rounded-lg p-5'>
       {showNavigation && (
-        <div className='calendar-header'>
-          <button className='nav-button' onClick={() => moveMonth(-1)}>
+        <div className='flex justify-center items-center mb-4 gap-20'>
+          <button
+            className='bg-transparent border-none text-lg cursor-pointer text-gray-600 p-2 rounded transition-colors hover:bg-black/10'
+            onClick={() => moveMonth(-1)}
+          >
             ◀
           </button>
-          <h2 className='month-title'>
+          <h2 className='text-xl font-bold text-gray-800'>
             {year}년 {month + 1}월
           </h2>
-          <button className='nav-button' onClick={() => moveMonth(1)}>
+          <button
+            className='bg-transparent border-none text-lg cursor-pointer text-gray-600 p-2 rounded transition-colors hover:bg-black/10'
+            onClick={() => moveMonth(1)}
+          >
             ▶
           </button>
         </div>
       )}
 
-      <div className='calendar-grid header'>
+      <div className='grid grid-cols-7 gap-0 bg-gray-50'>
         {DAYS.map(day => (
-          <div key={day} className='day-header'>
+          <div
+            key={day}
+            className='bg-transparent text-gray-800 text-center font-bold py-3 text-sm border-b border-gray-200'
+          >
             {day}
           </div>
         ))}
       </div>
 
-      <div className='calendar-grid body'>
+      <div className='grid grid-cols-7 gap-0 bg-gray-50'>
         {days.map((dayData, idx) => (
           <div
             key={idx}
-            className={`day-cell 
-                            ${dayData === null ? 'empty' : ''} 
+            className={`min-h-[60px] h-auto border-none text-center p-2 font-medium rounded-none bg-transparent cursor-pointer transition-all duration-200 relative align-top box-border text-sm flex flex-col justify-center items-center
+                            ${dayData === null ? 'bg-transparent cursor-default text-gray-300' : ''} 
                             ${dayData?.isToday ? 'today' : ''} 
-                            ${dayData?.isSelected ? 'selected' : ''} 
-                            ${dayData?.isHoliday ? 'holiday' : ''} 
-                            ${(dayData?.events || []).length > 0 ? 'has-events' : ''}`}
+                            ${dayData?.isSelected ? 'border-2 border-gray-600 bg-white/80 rounded-lg p-1.5' : ''} 
+                            ${dayData?.isHoliday ? 'text-red-500' : ''} 
+                            ${(dayData?.events || []).length > 0 ? 'has-events' : ''}
+                            ${(idx + 1) % 7 === 4 ? 'bg-white/30' : ''}
+                            hover:bg-white/50`}
             onClick={() => dayData && handleDateClick(dayData)}
           >
             {dayData ? (
-              <div className='day-content'>
-                <div className='day-number'>{dayData.day}</div>
+              <div className='flex flex-col h-full justify-center items-center gap-1'>
+                <div
+                  className={`text-sm font-semibold mb-0.5
+                  ${dayData.isToday ? 'bg-black text-white rounded-full w-6 h-6 flex items-center justify-center font-bold' : 'text-gray-800'}
+                  `}
+                >
+                  {dayData.day}
+                </div>
+                <div className='text-xs text-gray-600 font-medium'>
+                  {dayData.totalCount}개
+                </div>
                 {dayData.events && dayData.events.length > 0 && (
-                  <div className='events-container'>
+                  <div className='hidden'>
                     {dayData.events.map(event => (
                       <div
                         key={event.id}
-                        className={`event-item-inline ${event.type}`}
+                        className={`rounded px-1.5 py-0.5 mb-0.5 text-xs font-semibold whitespace-nowrap overflow-hidden text-ellipsis inline-block leading-tight
+                                    ${event.type === 'capital' ? 'bg-green-600 text-white' : 'bg-orange-600 text-white'}`}
                         style={{
                           backgroundColor: event.color,
                           color: '#fff',
                           fontWeight: 600,
                         }}
                       >
-                        <span className='event-title-inline'>
+                        <span className='text-xs font-semibold text-inherit'>
                           {event.title}
                         </span>
                       </div>
