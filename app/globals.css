@@ -1,5 +1,44 @@
 @import 'tailwindcss';
 
+@theme {
+  /* NOTE: Tailwind와 기본값이 모두 다름 */
+  --color-gray-50: #f1f2f4;
+  --color-gray-100: #d5d7db;
+  --color-gray-200: #9ea3ab;
+  --color-gray-300: #7e848f;
+  --color-gray-400: #5e6573;
+  --color-gray-500: #4b515c;
+  --color-gray-600: #383d45;
+  --color-gray-700: #26282e;
+  --color-black: #090a0c;
+
+  --color-yellow: #fdbe00;
+
+  --color-violet-50: #f8e8ff;
+  --color-violet-400: #cc4bff;
+  --color-violet-500: #a900ec;
+
+  --color-red-50: #ffebef;
+  --color-red-400: #ff3d67;
+  --color-red-500: #ec0033;
+
+  --color-green-50: #eafee9;
+  --color-green-400: #09b200;
+  --color-green-500: #078d00;
+
+  --color-orange-50: #ffede4;
+  --color-orange-400: #ff6713;
+  --color-orange-500: #e45100;
+
+  --color-purple-50: #ece3ff;
+  --color-purple-400: #905bff;
+  --color-purple-500: #7534ff;
+
+  --line-height-base: 1.375rem; /* 22px. default: 1.5rem */
+  --line-height-xs: 1.125rem; /* 18px. default: 1rem */
+  --letter-spacing-tight: -0.0625rem; /* -1px. default: -0.025em */
+}
+
 :root {
   font-family: 'Pretendard', sans-serif;
 }
