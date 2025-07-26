@@ -75,39 +75,39 @@
 }
 
 @utility text-head {
-  @apply font-bold text-2xl leading-8 tracking-[-1px];
+  @apply text-2xl leading-8 font-bold tracking-[-1px];
 }
 
 @utility text-head-2 {
-  @apply font-bold text-xl leading-6 tracking-[-1px];
+  @apply text-xl leading-6 font-bold tracking-[-1px];
 }
 
 @utility text-sub-head {
-  @apply font-bold text-base leading-[22px] tracking-[-1px];
+  @apply text-base leading-[22px] font-bold tracking-[-1px];
 }
 
 @utility text-sub-head-2 {
-  @apply font-semibold text-sm leading-5 tracking-[-1px];
+  @apply text-sm leading-5 font-semibold tracking-[-1px];
 }
 
 @utility text-sub-head-3 {
-  @apply font-semibold text-xs leading-[18px] tracking-[-1px];
+  @apply text-xs leading-[18px] font-semibold tracking-[-1px];
 }
 
 @utility text-body {
-  @apply font-medium text-base leading-[22px] tracking-[-1px];
+  @apply text-base leading-[22px] font-medium tracking-[-1px];
 }
 
 @utility text-body-2 {
-  @apply font-medium text-sm leading-5 tracking-[-1px];
+  @apply text-sm leading-5 font-medium tracking-[-1px];
 }
 
 @utility text-body-2-long {
-  @apply font-normal text-sm leading-6 tracking-[-1px];
+  @apply text-sm leading-6 font-normal tracking-[-1px];
 }
 
 @utility text-caption {
-  @apply font-normal text-xs leading-[18px] tracking-[-1px];
+  @apply text-xs leading-[18px] font-normal tracking-[-1px];
 }
 
 @utility text-color-sub {

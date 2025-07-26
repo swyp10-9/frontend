@@ -38,7 +38,7 @@ export default function Pin(props: PinProps) {
 
     return (
       <div
-        className='flex gap-2 items-center w-[224px] h-[64px] rounded-lg bg-white py-2 pl-2 pr-3 box-border'
+        className='box-border flex h-[64px] w-[224px] items-center gap-2 rounded-lg bg-white py-2 pr-3 pl-2'
         style={{
           boxShadow: '0 0 5px 0 rgba(0,0,0,0.18)',
         }}
@@ -48,10 +48,10 @@ export default function Pin(props: PinProps) {
           alt={title}
           width={48}
           height={48}
-          className='rounded-sm aspect-square object-cover'
+          className='aspect-square rounded-sm object-cover'
         />
-        <div className='flex flex-col gap-1 justify-center w-full'>
-          <div className='flex justify-between w-full items-center'>
+        <div className='flex w-full flex-col justify-center gap-1'>
+          <div className='flex w-full items-center justify-between'>
             <ThemeTag type={type} />
             {is_marked ? (
               <Icon
@@ -70,10 +70,10 @@ export default function Pin(props: PinProps) {
             )}
           </div>
           <div className='flex items-center'>
-            <p className='text-sub-head-2 line-clamp-1'>{title}</p>
+            <p className='line-clamp-1 text-sub-head-2'>{title}</p>
             <Icon
               icon='jam:chevron-right'
-              className='text-gray-300 cursor-pointer'
+              className='cursor-pointer text-gray-300'
               fontSize={16}
             />
           </div>

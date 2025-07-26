@@ -7,7 +7,7 @@ export default function ThemeTag({ type }: { type: string }) {
 
   return (
     <div
-      className={`flex items-center justify-center rounded-sm w-[54px] h-[22px]`}
+      className={`flex h-[22px] w-[54px] items-center justify-center rounded-sm`}
       style={{
         backgroundColor: theme.bgColor,
         color: theme.color,

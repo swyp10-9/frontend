@@ -14,7 +14,7 @@ export function FilterChip(props: FilterChipProps) {
 
   return (
     <div
-      className={`cursor-pointer flex items-center justify-center px-2 py-1 rounded-full ${is_selected ? selectedClassName : unselectedClassName} w-[60px] h-[25px]`}
+      className={`flex cursor-pointer items-center justify-center rounded-full px-2 py-1 ${is_selected ? selectedClassName : unselectedClassName} h-[25px] w-[60px]`}
       onClick={onClick}
     >
       {downChevron && (
@@ -39,7 +39,7 @@ export function SelectedChip(props: SelectedChipProps) {
 
   return (
     <div
-      className={`cursor-pointer flex items-center justify-center px-2 py-1 rounded-full bg-gray-50 w-[60px] h-[25px]`}
+      className={`flex h-[25px] w-[60px] cursor-pointer items-center justify-center rounded-full bg-gray-50 px-2 py-1`}
       onClick={onClick}
     >
       <p className='text-sub-head-3 whitespace-nowrap'>{label}</p>

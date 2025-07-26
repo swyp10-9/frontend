@@ -17,16 +17,16 @@ export default function FestivalListView(props: FestivalListViewProps) {
   const { image, theme, title, loc, start_date, end_date, is_marked } = props;
 
   return (
-    <div className='flex gap-4 w-[320px] min-h-[108px]'>
+    <div className='flex min-h-[108px] w-[320px] gap-4'>
       <Image
         src={image}
         alt='festival'
-        className='aspect-square object-cover rounded-sm'
+        className='aspect-square rounded-sm object-cover'
         width={108}
         height={108}
       />
-      <div className='flex flex-col w-full'>
-        <div className='flex w-full justify-between items-center'>
+      <div className='flex w-full flex-col'>
+        <div className='flex w-full items-center justify-between'>
           <ThemeTag type={theme} />
           <div className='flex gap-2'>
             {is_marked ? (
@@ -52,16 +52,16 @@ export default function FestivalListView(props: FestivalListViewProps) {
             />
           </div>
         </div>
-        <p className='text-sub-head mt-1 mb-3 line-clamp-3'>{title}</p>
-        <div className='flex items-center mb-1'>
+        <p className='mt-1 mb-3 line-clamp-3 text-sub-head'>{title}</p>
+        <div className='mb-1 flex items-center'>
           <Icon
             icon='carbon:location-filled'
             className='cursor-pointer'
             color='#7e848f'
             fontSize={20}
           />
-          <p className='ml-0.5 mr-1 text-body-2'>{loc}</p>
-          <p className='underline text-sub-head-3'>지도보기</p>
+          <p className='mr-1 ml-0.5 text-body-2'>{loc}</p>
+          <p className='text-sub-head-3 underline'>지도보기</p>
         </div>
         <div className='flex items-center gap-2'>
           <Icon
@@ -70,7 +70,7 @@ export default function FestivalListView(props: FestivalListViewProps) {
             color='#7e848f'
             fontSize={20}
           />
-          <p className='ml-0.5 mr-1 text-body-2'>
+          <p className='mr-1 ml-0.5 text-body-2'>
             {displayDate(start_date)} ~ {displayDate(end_date)}
           </p>
         </div>
