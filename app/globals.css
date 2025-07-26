@@ -75,75 +75,76 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-@utility text-head {
+/* NOTE: Tailwind 기본 class와의 구분을 위해 `ui-` prefix 사용 */
+@utility ui-text-head {
   @apply text-2xl leading-8 font-bold tracking-[-1px];
 }
 
-@utility text-head-2 {
+@utility ui-text-head-2 {
   @apply text-xl leading-6 font-bold tracking-[-1px];
 }
 
-@utility text-sub-head {
+@utility ui-text-sub-head {
   @apply text-base leading-[22px] font-bold tracking-[-1px];
 }
 
-@utility text-sub-head-2 {
+@utility ui-text-sub-head-2 {
   @apply text-sm leading-5 font-semibold tracking-[-1px];
 }
 
-@utility text-sub-head-3 {
+@utility ui-text-sub-head-3 {
   @apply text-xs leading-[18px] font-semibold tracking-[-1px];
 }
 
-@utility text-body {
+@utility ui-text-body {
   @apply text-base leading-[22px] font-medium tracking-[-1px];
 }
 
-@utility text-body-2 {
+@utility ui-text-body-2 {
   @apply text-sm leading-5 font-medium tracking-[-1px];
 }
 
-@utility text-body-2-long {
+@utility ui-text-body-2-long {
   @apply text-sm leading-6 font-normal tracking-[-1px];
 }
 
-@utility text-caption {
+@utility ui-text-caption {
   @apply text-xs leading-[18px] font-normal tracking-[-1px];
 }
 
-@utility text-color-sub {
+@utility ui-text-color-sub {
   @apply text-gray-700;
 }
 
-@utility text-color-info {
+@utility ui-text-color-info {
   @apply text-gray-400;
 }
 
-@utility text-color-disabled {
+@utility ui-text-color-disabled {
   @apply text-gray-200;
 }
 
-@utility text-color-error {
+@utility ui-text-color-error {
   @apply text-red-500;
 }
 
-@utility border-divider {
+@utility ui-border-divider {
   @apply border border-gray-50;
 }
 
-@utility border-basic {
+@utility ui-border-basic {
   @apply border border-gray-100;
 }
 
-@utility border-active {
+@utility ui-border-active {
   @apply border border-gray-700;
 }
 
-@utility border-error {
+@utility ui-border-error {
   @apply border border-red-500;
 }
 
-@utility bg-mark {
+@utility ui-bg-mark {
   @apply bg-yellow;
 }
 

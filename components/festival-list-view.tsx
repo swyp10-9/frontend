@@ -52,7 +52,7 @@ export default function FestivalListView(props: FestivalListViewProps) {
             />
           </div>
         </div>
-        <p className='mt-1 mb-3 line-clamp-3 text-sub-head'>{title}</p>
+        <p className='mt-1 mb-3 line-clamp-3 ui-text-head'>{title}</p>
         <div className='mb-1 flex items-center'>
           <Icon
             icon='carbon:location-filled'
@@ -60,8 +60,8 @@ export default function FestivalListView(props: FestivalListViewProps) {
             color='#7e848f'
             fontSize={20}
           />
-          <p className='mr-1 ml-0.5 text-body-2'>{loc}</p>
-          <p className='text-sub-head-3 underline'>지도보기</p>
+          <p className='mr-1 ml-0.5 ui-text-body-2'>{loc}</p>
+          <p className='ui-text-head-3 underline'>지도보기</p>
         </div>
         <div className='flex items-center gap-2'>
           <Icon
@@ -70,7 +70,7 @@ export default function FestivalListView(props: FestivalListViewProps) {
             color='#7e848f'
             fontSize={20}
           />
-          <p className='mr-1 ml-0.5 text-body-2'>
+          <p className='mr-1 ml-0.5 ui-text-body-2'>
             {displayDate(start_date)} ~ {displayDate(end_date)}
           </p>
         </div>

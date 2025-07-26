@@ -70,7 +70,7 @@ export default function Pin(props: PinProps) {
             )}
           </div>
           <div className='flex items-center'>
-            <p className='line-clamp-1 text-sub-head-2'>{title}</p>
+            <p className='line-clamp-1 ui-text-head-2'>{title}</p>
             <Icon
               icon='jam:chevron-right'
               className='cursor-pointer text-gray-300'

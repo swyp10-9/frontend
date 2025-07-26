@@ -13,7 +13,7 @@ export default function ThemeTag({ type }: { type: string }) {
         color: theme.color,
       }}
     >
-      <p className={`text-sub-head-3`}>{theme.label}</p>
+      <p className={`ui-text-head-3`}>{theme.label}</p>
     </div>
   );
 }

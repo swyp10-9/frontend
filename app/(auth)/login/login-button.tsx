@@ -18,7 +18,7 @@ export default function LoginButton({
       {type === 'not-login' && (
         <a className=''>
           <div className='flex h-[58px] w-[320px] items-center justify-center gap-2.5 rounded-lg border border-gray-50'>
-            <p className='text-head'>로그인 없이 볼게요</p>
+            <p className='ui-text-head'>로그인 없이 볼게요</p>
           </div>
         </a>
       )}
@@ -29,7 +29,7 @@ export default function LoginButton({
             style={{ backgroundColor: '#FEE500' }}
           >
             <Image src='/sns/kakao.png' alt='kakao' width={24} height={24} />
-            <p className='text-head'>10초만에 카카오로 시작하기</p>
+            <p className='ui-text-head'>10초만에 카카오로 시작하기</p>
           </div>
         </a>
       )}

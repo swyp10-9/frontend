@@ -22,7 +22,7 @@ export default function TabBar() {
             color={pathname === '/' ? undefined : 'gray'}
           />
           <span
-            className={`${pathname === '/' ? 'text-sub-head-3' : 'text-caption'}`}
+            className={`${pathname === '/' ? 'ui-text-head-3' : 'ui-text-caption'}`}
           >
             축제지도
           </span>
@@ -40,7 +40,7 @@ export default function TabBar() {
             color={pathname === '/calendar' ? undefined : 'gray'}
           />
           <span
-            className={`${pathname === '/calendar' ? 'text-sub-head-3' : 'text-caption'}`}
+            className={`${pathname === '/calendar' ? 'ui-text-head-3' : 'ui-text-caption'}`}
           >
             축제달력
           </span>
@@ -60,7 +60,7 @@ export default function TabBar() {
             color={pathname === '/month-festival' ? undefined : 'gray'}
           />
           <span
-            className={`${pathname === '/month-festival' ? 'text-sub-head-3' : 'text-caption'}`}
+            className={`${pathname === '/month-festival' ? 'ui-text-head-3' : 'ui-text-caption'}`}
           >
             이달의 축제
           </span>
@@ -80,7 +80,7 @@ export default function TabBar() {
             color={pathname === '/customized' ? undefined : 'gray'}
           />
           <span
-            className={`${pathname === '/customized' ? 'text-sub-head-3' : 'text-caption'}`}
+            className={`${pathname === '/customized' ? 'ui-text-head-3' : 'ui-text-caption'}`}
           >
             맞춤축제
           </span>
