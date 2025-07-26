@@ -74,78 +74,76 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-@layer utilities {
-  .text-head {
-    @apply font-bold text-2xl leading-8 tracking-[-1px];
-  }
+@utility text-head {
+  @apply font-bold text-2xl leading-8 tracking-[-1px];
+}
 
-  .text-head-2 {
-    @apply font-bold text-xl leading-6 tracking-[-1px];
-  }
+@utility text-head-2 {
+  @apply font-bold text-xl leading-6 tracking-[-1px];
+}
 
-  .text-sub-head {
-    @apply font-bold text-base leading-[22px] tracking-[-1px];
-  }
+@utility text-sub-head {
+  @apply font-bold text-base leading-[22px] tracking-[-1px];
+}
 
-  .text-sub-head-2 {
-    @apply font-semibold text-sm leading-5 tracking-[-1px];
-  }
+@utility text-sub-head-2 {
+  @apply font-semibold text-sm leading-5 tracking-[-1px];
+}
 
-  .text-sub-head-3 {
-    @apply font-semibold text-xs leading-[18px] tracking-[-1px];
-  }
+@utility text-sub-head-3 {
+  @apply font-semibold text-xs leading-[18px] tracking-[-1px];
+}
 
-  .text-body {
-    @apply font-medium text-base leading-[22px] tracking-[-1px];
-  }
+@utility text-body {
+  @apply font-medium text-base leading-[22px] tracking-[-1px];
+}
 
-  .text-body-2 {
-    @apply font-medium text-sm leading-5 tracking-[-1px];
-  }
+@utility text-body-2 {
+  @apply font-medium text-sm leading-5 tracking-[-1px];
+}
 
-  .text-body-2-long {
-    @apply font-normal text-sm leading-6 tracking-[-1px];
-  }
+@utility text-body-2-long {
+  @apply font-normal text-sm leading-6 tracking-[-1px];
+}
 
-  .text-caption {
-    @apply font-normal text-xs leading-[18px] tracking-[-1px];
-  }
+@utility text-caption {
+  @apply font-normal text-xs leading-[18px] tracking-[-1px];
+}
 
-  .text-color-sub {
-    @apply text-gray-700;
-  }
+@utility text-color-sub {
+  @apply text-gray-700;
+}
 
-  .text-color-info {
-    @apply text-gray-400;
-  }
+@utility text-color-info {
+  @apply text-gray-400;
+}
 
-  .text-color-disabled {
-    @apply text-gray-200;
-  }
+@utility text-color-disabled {
+  @apply text-gray-200;
+}
 
-  .text-color-error {
-    @apply text-red-500;
-  }
+@utility text-color-error {
+  @apply text-red-500;
+}
 
-  .border-divider {
-    @apply border border-gray-50;
-  }
+@utility border-divider {
+  @apply border border-gray-50;
+}
 
-  .border-basic {
-    @apply border border-gray-100;
-  }
+@utility border-basic {
+  @apply border border-gray-100;
+}
 
-  .border-active {
-    @apply border border-gray-700;
-  }
+@utility border-active {
+  @apply border border-gray-700;
+}
 
-  .border-error {
-    @apply border border-red-500;
-  }
+@utility border-error {
+  @apply border border-red-500;
+}
 
-  .bg-mark {
-    @apply bg-yellow;
-  }
+@utility bg-mark {
+  @apply bg-yellow;
 }
 
 /* 이하 shadcn 설정 */

@@ -20,6 +20,7 @@
     "**/node_modules/**",
     "**/.next/**"
   ],
+  "tailwindCSS.experimental.configFile": "./app/globals.css", // NOTE: 루트 폴더 기준 상대 경로
   "[javascript]": {
     "editor.defaultFormatter": null
   },
