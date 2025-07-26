@@ -40,7 +40,8 @@
 }
 
 :root {
-  font-family: 'Pretendard', sans-serif;
+  font-family:
+    var(--font-pretendard), sans-serif; /* NOTE: NextJS Local Font로 로딩 */
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);

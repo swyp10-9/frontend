@@ -11,7 +11,8 @@ if (process.env.NODE_ENV === 'development') {
   initializeMSWOnServer();
 }
 
-const pretendard = localFont({
+// NOTE: Next lint 규칙이라 끌 수도 없음
+const _ONLY_FOR_LOAD_Pretendard = localFont({
   src: '../assets/fonts/PretendardVariable.woff2',
   weight: '45 920',
   display: 'swap',
@@ -34,7 +35,7 @@ export default function RootLayout({
         <html lang='ko'>
           <body
             cz-shortcut-listen='true'
-            className={`${pretendard.className} flex items-center justify-center overscroll-none`}
+            className='flex items-center justify-center overscroll-none'
           >
             {children}
           </body>
