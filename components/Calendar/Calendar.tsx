@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Icon } from '@iconify/react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -64,7 +64,22 @@ const Calendar = ({
 
     return `${year}-${month}-${day}`;
   }
-  const [currentDate, setCurrentDate] = useState(initialDate || new Date());
+  // URL 쿼리에서 selected를 우선시하여 초기 날짜 결정
+  const getInitialDate = () => {
+    const urlSelected = searchParams.get('selected');
+    if (urlSelected) {
+      return new Date(urlSelected);
+    }
+
+    const urlStartDate = searchParams.get('startDate');
+    if (urlStartDate) {
+      return new Date(urlStartDate);
+    }
+
+    return initialDate || new Date();
+  };
+
+  const [currentDate, setCurrentDate] = useState(getInitialDate());
   const [selectedDate, setSelectedDate] = useState<string | null>(
     initDateFnc(),
   );
@@ -171,10 +186,59 @@ const Calendar = ({
     return days;
   };
 
+  // URL 쿼리 업데이트 함수
+  const updateURLQuery = (newDate?: Date, selectedDate?: string) => {
+    const params = new URLSearchParams(searchParams);
+    const targetDate = newDate || currentDate;
+    const targetYear = targetDate.getFullYear();
+    const targetMonth = targetDate.getMonth();
+
+    // 달력 범위 계산
+    const firstDay = new Date(targetYear, targetMonth, 1).getDay();
+    const lastDate = new Date(targetYear, targetMonth + 1, 0).getDate();
+
+    // 달력에 표시되는 첫 번째 날짜
+    const prevMonthLastDate = new Date(targetYear, targetMonth, 0).getDate();
+    const startDay = prevMonthLastDate - firstDay + 1;
+    const startMonth = targetMonth === 0 ? 11 : targetMonth - 1;
+    const startYear = targetMonth === 0 ? targetYear - 1 : targetYear;
+
+    // 달력에 표시되는 마지막 날짜
+    const lastDayOfMonth = new Date(targetYear, targetMonth, lastDate).getDay();
+    const remainingDays = 6 - lastDayOfMonth;
+    const endDay = remainingDays;
+    const endMonth = targetMonth === 11 ? 0 : targetMonth + 1;
+    const endYear = targetMonth === 11 ? targetYear + 1 : targetYear;
+
+    const startDate = formatDate(startYear, startMonth, startDay);
+    const endDate = formatDate(endYear, endMonth, endDay);
+
+    params.set('startDate', startDate);
+    params.set('endDate', endDate);
+
+    // selected 쿼리 처리
+    if (selectedDate) {
+      params.set('selected', selectedDate);
+    } else if (newDate) {
+      // 월 이동 시에만 selected 쿼리 제거
+      params.delete('selected');
+    }
+
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  // 컴포넌트 마운트 시 URL 쿼리 초기화
+  useEffect(() => {
+    if (!searchParams.get('startDate') || !searchParams.get('endDate')) {
+      updateURLQuery();
+    }
+  }, []);
+
   const moveMonth = (delta: number) => {
     const newDate = new Date(year, month + delta, 1);
     setCurrentDate(newDate);
     setSelectedDate(null);
+    updateURLQuery(newDate);
   };
 
   const handleDateClick = (dayData: DayData) => {
@@ -193,12 +257,19 @@ const Calendar = ({
       } else {
         moveMonth(+1);
       }
+
+      // 월이 변경된 경우, 새로운 월의 달력 범위와 선택된 날짜를 함께 업데이트
+      const targetDate = new Date(dayData.date);
+      updateURLQuery(targetDate, dayData.date);
+      setSelectedDate(dayData.date);
+      onDateSelect?.(dayData.date);
+      return;
     }
 
     setSelectedDate(dayData.date);
     onDateSelect?.(dayData.date);
 
-    // URL 업데이트
+    // URL 업데이트 - 같은 월 내에서 날짜 선택 시에만
     const params = new URLSearchParams(searchParams);
     params.set('selected', dayData.date);
     router.push(`${pathname}?${params.toString()}`);
@@ -214,25 +285,27 @@ const Calendar = ({
 
   return (
     <div className='mx-auto w-full max-w-4xl bg-gray-50 p-5 font-sans'>
-      {showNavigation && (
-        <div className='mb-4 flex items-center justify-center gap-5'>
+      <div className='mb-4 flex items-center justify-center gap-5'>
+        {showNavigation && (
           <Icon
             icon='jam:chevron-left'
             fontSize={24}
             className='cursor-pointer text-gray-300'
             onClick={() => moveMonth(-1)}
           />
-          <h2 className='ui-text-head-2 text-xl font-bold text-gray-800'>
-            {year}년 {month + 1}월
-          </h2>
+        )}
+        <h2 className='ui-text-head-2 text-xl font-bold text-gray-800'>
+          {year}년 {month + 1}월
+        </h2>
+        {showNavigation && (
           <Icon
             icon='jam:chevron-right'
             fontSize={24}
             className='cursor-pointer text-gray-300'
             onClick={() => moveMonth(1)}
           />
-        </div>
-      )}
+        )}
+      </div>
 
       <div className='grid grid-cols-7 gap-0 bg-gray-50'>
         {DAYS.map(day => (
