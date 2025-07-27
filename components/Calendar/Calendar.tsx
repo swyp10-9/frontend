@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 
+import { Icon } from '@iconify/react';
+
 // 이벤트 데이터 타입
 export interface EventData {
   id: string;
@@ -87,9 +89,27 @@ const Calendar = ({
     const lastDate = new Date(year, month + 1, 0).getDate();
     const days: (DayData | null)[] = [];
 
-    for (let i = 0; i < firstDay; i += 1) {
-      days.push(null);
+    // 이전달의 마지막 날짜들 추가 (첫 주에만)
+    const prevMonthLastDate = new Date(year, month, 0).getDate();
+    for (let i = firstDay - 1; i >= 0; i -= 1) {
+      const prevDay = prevMonthLastDate - i;
+      const prevMonth = month === 0 ? 11 : month - 1;
+      const prevYear = month === 0 ? year - 1 : year;
+      const dateStr = formatDate(prevYear, prevMonth, prevDay);
+      const dayData: DayData = {
+        date: dateStr,
+        day: prevDay,
+        events: [],
+        totalCount: 0,
+        isToday: false,
+        isSelected: false,
+        isHoliday:
+          showHolidays && new Date(prevYear, prevMonth, prevDay).getDay() === 0,
+      };
+      days.push(dayData);
     }
+
+    // 현재달의 날짜들 추가
     for (let i = 1; i <= lastDate; i += 1) {
       const dateStr = formatDate(year, month, i);
       const eventsForDate = getEventsForDate(dateStr);
@@ -104,9 +124,27 @@ const Calendar = ({
       };
       days.push(dayData);
     }
-    while (days.length % 7 !== 0) {
-      days.push(null);
+
+    // 다음달의 첫 날짜들 추가 (마지막 주에만)
+    const lastDayOfMonth = new Date(year, month, lastDate).getDay();
+    const remainingDays = 6 - lastDayOfMonth; // 마지막 주를 완성하기 위해 필요한 날짜 수
+    for (let i = 1; i <= remainingDays; i += 1) {
+      const nextMonth = month === 11 ? 0 : month + 1;
+      const nextYear = month === 11 ? year + 1 : year;
+      const dateStr = formatDate(nextYear, nextMonth, i);
+      const dayData: DayData = {
+        date: dateStr,
+        day: i,
+        events: [],
+        totalCount: 0,
+        isToday: false,
+        isSelected: false,
+        isHoliday:
+          showHolidays && new Date(nextYear, nextMonth, i).getDay() === 0,
+      };
+      days.push(dayData);
     }
+
     return days;
   };
 
@@ -117,31 +155,54 @@ const Calendar = ({
   };
 
   const handleDateClick = (dayData: DayData) => {
+    console.log('dayData:::', dayData);
+
+    const checkIsCurrentMonth = new Date(dayData.date).getMonth() === month;
+    if (!checkIsCurrentMonth) {
+      const newDate = new Date(
+        new Date(dayData?.date).getFullYear(),
+        new Date(dayData?.date).getMonth(),
+        new Date(dayData?.date).getDate(),
+      );
+      const currentDay = new Date(year, month, currentDate.getDate());
+      if (newDate < currentDay) {
+        moveMonth(-1);
+      } else {
+        moveMonth(+1);
+      }
+    }
+
     setSelectedDate(dayData.date);
     onDateSelect?.(dayData.date);
   };
 
   const days = getCalendarDays();
 
+  const selectedStyle = {
+    border: '2px solid black',
+    padding: '1px',
+    borderRadius: '10px',
+  };
+
   return (
-    <div className='mx-auto w-full max-w-4xl rounded-lg bg-gray-50 p-5 font-sans'>
+    <div className='mx-auto w-full max-w-4xl bg-gray-50 p-5 font-sans'>
       {showNavigation && (
-        <div className='mb-4 flex items-center justify-center gap-20'>
-          <button
-            className='cursor-pointer rounded border-none bg-transparent p-2 text-lg text-gray-600 transition-colors hover:bg-black/10'
+        <div className='mb-4 flex items-center justify-center gap-5'>
+          <Icon
+            icon='jam:chevron-left'
+            fontSize={24}
+            className='cursor-pointer text-gray-300'
             onClick={() => moveMonth(-1)}
-          >
-            ◀
-          </button>
-          <h2 className='text-xl font-bold text-gray-800'>
+          />
+          <h2 className='ui-text-head-2 text-xl font-bold text-gray-800'>
             {year}년 {month + 1}월
           </h2>
-          <button
-            className='cursor-pointer rounded border-none bg-transparent p-2 text-lg text-gray-600 transition-colors hover:bg-black/10'
+          <Icon
+            icon='jam:chevron-right'
+            fontSize={24}
+            className='cursor-pointer text-gray-300'
             onClick={() => moveMonth(1)}
-          >
-            ▶
-          </button>
+          />
         </div>
       )}
 
@@ -157,47 +218,58 @@ const Calendar = ({
       </div>
 
       <div className='grid grid-cols-7 gap-0 bg-gray-50'>
-        {days.map((dayData, idx) => (
-          <div
-            key={idx}
-            className={`relative box-border flex h-auto min-h-[60px] cursor-pointer flex-col items-center justify-center rounded-none border-none bg-transparent p-2 text-center align-top text-sm font-medium transition-all duration-200 ${dayData === null ? 'cursor-default bg-transparent text-gray-300' : ''} ${dayData?.isToday ? 'today' : ''} ${dayData?.isSelected ? 'rounded-lg border-2 border-gray-600 bg-white/80 p-1.5' : ''} ${dayData?.isHoliday ? 'text-red-500' : ''} ${(dayData?.events || []).length > 0 ? 'has-events' : ''} ${(idx + 1) % 7 === 4 ? 'bg-white/30' : ''} hover:bg-white/50`}
-            onClick={() => dayData && handleDateClick(dayData)}
-          >
-            {dayData ? (
-              <div className='flex h-full flex-col items-center justify-center gap-1'>
-                <div
-                  className={`mb-0.5 text-sm font-semibold ${dayData.isToday ? 'flex h-6 w-6 items-center justify-center rounded-full bg-black font-bold text-white' : 'text-gray-800'} `}
-                >
-                  {dayData.day}
-                </div>
-                <div className='text-xs font-medium text-gray-600'>
-                  {dayData.totalCount}개
-                </div>
-                {dayData.events && dayData.events.length > 0 && (
-                  <div className='hidden'>
-                    {dayData.events.map(event => (
-                      <div
-                        key={event.id}
-                        className={`mb-0.5 inline-block overflow-hidden rounded px-1.5 py-0.5 text-xs leading-tight font-semibold text-ellipsis whitespace-nowrap ${event.type === 'capital' ? 'bg-green-600 text-white' : 'bg-orange-600 text-white'}`}
-                        style={{
-                          backgroundColor: event.color,
-                          color: '#fff',
-                          fontWeight: 600,
-                        }}
-                      >
-                        <span className='text-xs font-semibold text-inherit'>
-                          {event.title}
-                        </span>
-                      </div>
-                    ))}
+        {days.map((dayData, idx) => {
+          // 이전달 또는 다음달의 날짜인지 확인
+          const isPrevMonth =
+            dayData && new Date(dayData.date).getMonth() !== month;
+          const isNextMonth =
+            dayData && new Date(dayData.date).getMonth() !== month;
+
+          return (
+            <div
+              key={idx}
+              className={`relative box-border flex h-auto min-h-[60px] cursor-pointer flex-col items-center justify-center rounded-none border-none bg-transparent p-2 text-center align-top text-sm font-medium transition-all duration-200 ${dayData === null ? 'cursor-default bg-transparent text-gray-300' : ''} ${dayData?.isToday ? 'today' : ''} ${dayData?.isSelected ? 'rounded-lg border-2 border-gray-600 bg-white/80 p-1.5' : ''} ${dayData?.isHoliday ? 'text-red-500' : ''} ${(dayData?.events || []).length > 0 ? 'has-events' : ''} rounded-full hover:bg-white/50`}
+              style={dayData?.isSelected ? selectedStyle : {}}
+              onClick={() => dayData && handleDateClick(dayData)}
+            >
+              {dayData ? (
+                <div className='flex h-full flex-col items-center justify-center gap-1'>
+                  <div
+                    className={`mb-0.5 text-sm font-semibold ${dayData.isToday ? 'flex h-6 w-6 items-center justify-center rounded-full bg-black font-bold text-white' : isPrevMonth || isNextMonth ? 'text-gray-400' : 'text-gray-800'} `}
+                  >
+                    {dayData.day}
                   </div>
-                )}
-              </div>
-            ) : (
-              ''
-            )}
-          </div>
-        ))}
+                  <div
+                    className={`text-xs font-medium ${isPrevMonth || isNextMonth ? 'text-gray-400' : 'text-gray-600'}`}
+                  >
+                    {dayData.totalCount}개
+                  </div>
+                  {dayData.events && dayData.events.length > 0 && (
+                    <div className='hidden'>
+                      {dayData.events.map(event => (
+                        <div
+                          key={event.id}
+                          className={`mb-0.5 inline-block overflow-hidden rounded px-1.5 py-0.5 text-xs leading-tight font-semibold text-ellipsis whitespace-nowrap ${event.type === 'capital' ? 'bg-green-600 text-white' : 'bg-orange-600 text-white'}`}
+                          style={{
+                            backgroundColor: event.color,
+                            color: '#fff',
+                            fontWeight: 600,
+                          }}
+                        >
+                          <span className='text-xs font-semibold text-inherit'>
+                            {event.title}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                ''
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
