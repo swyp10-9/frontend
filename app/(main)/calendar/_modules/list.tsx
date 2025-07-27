@@ -1,5 +1,6 @@
 import FestivalListView from '@/components/festival-list-view';
 import { FilterChip } from '@/components/filter-chip';
+import { DrawerTrigger } from '@/components/shadcn/drawer';
 
 interface ListProps {
   selected?: string;
@@ -20,7 +21,9 @@ export default function List({ selected }: ListProps) {
     <div className='flex flex-col gap-5'>
       <div className='flex items-center gap-1'>
         <FilterChip label='내 주변' is_selected={false} />
-        <FilterChip label='필터' is_selected={false} downChevron />
+        <DrawerTrigger>
+          <FilterChip label='필터' is_selected={false} downChevron />
+        </DrawerTrigger>
       </div>
       <div className='flex items-center gap-2'>
         <p className='ui-text-head-2'>23개의 축제</p>
