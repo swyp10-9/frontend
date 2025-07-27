@@ -64,9 +64,9 @@ const Calendar = ({
 
     return `${year}-${month}-${day}`;
   }
-  const [currentDate, setCurrentDate] = useState(initialDate);
+  const [currentDate, setCurrentDate] = useState(initialDate || new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(
-    initialDate ? initDateFnc() : initDateFnc(),
+    initDateFnc(),
   );
 
   const year = currentDate.getFullYear();
