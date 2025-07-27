@@ -5,7 +5,7 @@ import List from './_modules/list';
 export default async function CalendarPage({
   searchParams,
 }: {
-  searchParams: { selected: string };
+  searchParams: Promise<{ selected: string }>;
 }) {
   const { selected } = await searchParams;
 
