@@ -28,7 +28,12 @@ export default function LoginButton({
             className='flex w-full min-w-[320px] items-center justify-center gap-2.5 rounded-lg px-5 py-4.5'
             style={{ backgroundColor: '#FEE500' }}
           >
-            <Image src='/sns/kakao.png' alt='kakao' width={24} height={24} />
+            <Image
+              src='/image/sns/kakao.png'
+              alt='kakao'
+              width={24}
+              height={24}
+            />
             <p className='ui-text-sub-head-2'>10초만에 카카오로 시작하기</p>
           </div>
         </a>
