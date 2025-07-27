@@ -24,7 +24,7 @@ export function FilterChip(props: FilterChipProps) {
           fontSize={16}
         />
       )}
-      <p className='ui-text-head-3 whitespace-nowrap'>{label}</p>
+      <p className='ui-text-sub-head-3 whitespace-nowrap'>{label}</p>
     </div>
   );
 }
@@ -42,7 +42,7 @@ export function SelectedChip(props: SelectedChipProps) {
       className={`flex h-[25px] w-[60px] cursor-pointer items-center justify-center rounded-full bg-gray-50 px-2 py-1`}
       onClick={onClick}
     >
-      <p className='ui-text-head-3 whitespace-nowrap'>{label}</p>
+      <p className='ui-text-sub-head-3 whitespace-nowrap'>{label}</p>
       <Icon icon='ic:baseline-clear' className='text-gray-700' fontSize={16} />
     </div>
   );

@@ -1,10 +1,12 @@
 import Calendar from '@/components/Calendar/Calendar';
 
+import List from './_modules/list';
+
 export default function CalendarPage() {
   return (
-    <div>
-      <h1>달력 보기</h1>
+    <div className='flex flex-col gap-5'>
       <Calendar />
+      <List />
     </div>
   );
 }

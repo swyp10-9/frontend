@@ -17,7 +17,7 @@ export default function FestivalListView(props: FestivalListViewProps) {
   const { image, theme, title, loc, start_date, end_date, is_marked } = props;
 
   return (
-    <div className='flex min-h-[108px] w-[320px] gap-4'>
+    <div className='flex min-h-[108px] w-full gap-4'>
       <Image
         src={image}
         alt='festival'
@@ -52,7 +52,7 @@ export default function FestivalListView(props: FestivalListViewProps) {
             />
           </div>
         </div>
-        <p className='mt-1 mb-3 line-clamp-3 ui-text-head'>{title}</p>
+        <p className='mt-1 mb-3 line-clamp-3 ui-text-sub-head'>{title}</p>
         <div className='mb-1 flex items-center'>
           <Icon
             icon='carbon:location-filled'
@@ -61,7 +61,7 @@ export default function FestivalListView(props: FestivalListViewProps) {
             fontSize={20}
           />
           <p className='mr-1 ml-0.5 ui-text-body-2'>{loc}</p>
-          <p className='ui-text-head-3 underline'>지도보기</p>
+          <p className='ui-text-body-2 underline'>지도보기</p>
         </div>
         <div className='flex items-center gap-2'>
           <Icon
