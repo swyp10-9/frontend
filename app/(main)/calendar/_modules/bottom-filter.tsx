@@ -15,9 +15,11 @@ export default function BottomFilter() {
       title={'필터'}
       onReset={() => {
         console.log('초기화');
+        return true;
       }}
       onApply={() => {
         console.log('적용하기');
+        return false;
       }}
       resetText='초기화'
       applyText='적용하기'
