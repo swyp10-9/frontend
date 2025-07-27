@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 
 import { Icon } from '@iconify/react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 // 이벤트 데이터 타입
 export interface EventData {
@@ -43,8 +44,30 @@ const Calendar = ({
   showNavigation = true,
   showHolidays = true,
 }: CalendarProps) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  function initDateFnc() {
+    const date = initialDate ? initialDate : new Date();
+    const year = date
+      .toLocaleDateString('ko-KR', { year: 'numeric' })
+      .replace('년', '');
+    const month = date
+      .toLocaleDateString('ko-KR', {
+        month: '2-digit',
+      })
+      .replace('월', '');
+    const day = date
+      .toLocaleDateString('ko-KR', { day: '2-digit' })
+      .replace('일', '');
+
+    return `${year}-${month}-${day}`;
+  }
   const [currentDate, setCurrentDate] = useState(initialDate);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(
+    initialDate ? initDateFnc() : initDateFnc(),
+  );
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth(); // 0-based
@@ -174,6 +197,11 @@ const Calendar = ({
 
     setSelectedDate(dayData.date);
     onDateSelect?.(dayData.date);
+
+    // URL 업데이트
+    const params = new URLSearchParams(searchParams);
+    params.set('selected', dayData.date);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const days = getCalendarDays();

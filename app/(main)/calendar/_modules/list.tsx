@@ -1,7 +1,21 @@
 import FestivalListView from '@/components/festival-list-view';
 import { FilterChip } from '@/components/filter-chip';
 
-export default function List() {
+interface ListProps {
+  selected?: string;
+}
+
+export default function List({ selected }: ListProps) {
+  // 선택된 날짜가 없으면 오늘 날짜 사용
+  const displayDate = selected || new Date().toISOString().split('T')[0];
+
+  // 날짜 포맷팅 함수
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+
+    return `${date.getMonth() + 1}월 ${date.getDate()}일`;
+  };
+
   return (
     <div className='flex flex-col gap-5'>
       <div className='flex items-center gap-1'>
@@ -10,7 +24,7 @@ export default function List() {
       </div>
       <div className='flex items-center gap-2'>
         <p className='ui-text-head-2'>23개의 축제</p>
-        <p className='ui-text-body'>7월 10일</p>
+        <p className='ui-text-body'>{formatDate(displayDate)}</p>
       </div>
       <div className='flex w-full flex-col gap-10'>
         <FestivalListView
