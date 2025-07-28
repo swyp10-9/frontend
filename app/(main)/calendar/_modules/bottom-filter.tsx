@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -29,6 +29,17 @@ export default function BottomFilter({ initialParams }: BottomFilterProps) {
   const [theme, setTheme] = useState<string | null>(
     initialParams?.theme || null,
   );
+
+  // 쿼리 파라미터가 변경될 때마다 내부 상태 동기화
+  useEffect(() => {
+    const currentRegion = searchParams.get('region');
+    const currentWithWhom = searchParams.get('withWhom');
+    const currentTheme = searchParams.get('theme');
+
+    setRegion(currentRegion);
+    setWithWhom(currentWithWhom);
+    setTheme(currentTheme);
+  }, [searchParams]);
 
   return (
     <BottomSheet
