@@ -1,4 +1,4 @@
-import Nav from '@/layouts/nav';
+import { Nav } from '@/components/nav';
 import TabBar from '@/layouts/tab-bar';
 
 export default function MainLayout({

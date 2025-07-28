@@ -1,4 +1,5 @@
-import BackArrowNav from './_modules/back-arrow-nav';
+import BackArrowNav from '@/components/nav/nav';
+
 import BookmarkList from './_modules/bookmark-list';
 import MyPageClient from './_modules/my-page-client';
 import MyPageFooter from './_modules/mypage-footer';
@@ -22,7 +23,7 @@ export default async function MyPage({
 
   return (
     <div className='relative flex h-screen w-full flex-col'>
-      <div className='fixedArea sticky top-0 flex w-full flex-col gap-4'>
+      <div className='fixedArea sticky top-0 flex w-full flex-col gap-2'>
         <BackArrowNav />
         <Profile />
         <MyPageClient initialTab={initialTab} />

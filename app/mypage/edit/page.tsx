@@ -1,6 +1,5 @@
-'use client';
-
-import BackArrowNav from '../_modules/back-arrow-nav';
+// 'use client';
+import BackArrowNav from '@/components/nav/nav';
 
 export default function MyPageEdit() {
   return (
