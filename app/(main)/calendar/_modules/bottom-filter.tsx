@@ -2,24 +2,78 @@
 
 import { useState } from 'react';
 
-import BottomSheet from '@/components/bottom-sheet';
-import themeList from '@/constants/themeList';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function BottomFilter() {
-  const [region, setRegion] = useState<string | null>(null);
-  const [withWhom, setWithWhom] = useState<string | null>(null);
-  const [theme, setTheme] = useState<string | null>(null);
+import BottomSheet from '@/components/bottom-sheet';
+import { regionList } from '@/constants/regionList';
+import themeList from '@/constants/themeList';
+import { withWhomList } from '@/constants/withWhomList';
+
+interface BottomFilterProps {
+  initialParams: {
+    region: string;
+    withWhom: string;
+    theme: string;
+  };
+}
+export default function BottomFilter({ initialParams }: BottomFilterProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [region, setRegion] = useState<string | null>(
+    initialParams?.region || null,
+  );
+  const [withWhom, setWithWhom] = useState<string | null>(
+    initialParams?.withWhom || null,
+  );
+  const [theme, setTheme] = useState<string | null>(
+    initialParams?.theme || null,
+  );
 
   return (
     <BottomSheet
       title={'필터'}
       onReset={() => {
-        console.log('초기화');
+        // 상태 초기화
+        setRegion(null);
+        setWithWhom(null);
+        setTheme(null);
+
+        // 쿼리 파라미터에서 필터 관련 파라미터 제거
+        const params = new URLSearchParams(searchParams);
+        params.delete('region');
+        params.delete('withWhom');
+        params.delete('theme');
+
+        // 페이지를 새로고침하여 쿼리 파라미터 적용
+        router.push(`?${params.toString()}`);
         return true;
       }}
       onApply={() => {
-        console.log('적용하기');
-        return false;
+        const params = new URLSearchParams(searchParams);
+
+        // 필터 값들을 쿼리 파라미터로 업데이트
+        if (region) {
+          params.set('region', region);
+        } else {
+          params.delete('region');
+        }
+
+        if (withWhom) {
+          params.set('withWhom', withWhom);
+        } else {
+          params.delete('withWhom');
+        }
+
+        if (theme) {
+          params.set('theme', theme);
+        } else {
+          params.delete('theme');
+        }
+
+        // 페이지를 새로고침하여 쿼리 파라미터 적용
+        router.push(`?${params.toString()}`);
+        return true;
       }}
       resetText='초기화'
       applyText='적용하기'
@@ -28,13 +82,13 @@ export default function BottomFilter() {
         <div className='my-4 flex w-full max-w-[600px] flex-col justify-center gap-5'>
           <FilterSection
             label={'지역'}
-            list={locationList}
+            list={regionList}
             value={region}
             setValue={setRegion}
           />
           <FilterSection
             label={'누구랑'}
-            list={whoList}
+            list={withWhomList}
             value={withWhom}
             setValue={setWithWhom}
           />
@@ -106,20 +160,3 @@ function FilterSection({
     </div>
   );
 }
-
-const locationList = [
-  { type: 'seoul', label: '서울' },
-  { type: 'gyeonggi', label: '경기' },
-  { type: 'gangwon', label: '강원' },
-  { type: 'chungcheong', label: '충청' },
-  { type: 'jeolla', label: '전라' },
-  { type: 'gyeongsang', label: '경상' },
-  { type: 'jeju', label: '제주' },
-];
-const whoList = [
-  { type: 'family', label: '가족' },
-  { type: 'couple', label: '커플' },
-  { type: 'parents', label: '부모님' },
-  { type: 'pet', label: '반려견' },
-  { type: 'friend', label: '친구' },
-];

@@ -3,14 +3,20 @@
 import { useState } from 'react';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import FestivalListView from '@/components/festival-list-view';
-import { FilterChip } from '@/components/filter-chip';
+import { FilterChip, SelectedChip } from '@/components/filter-chip';
 import { DrawerTrigger } from '@/components/shadcn/drawer';
 import { useInView } from '@/hooks/useInView';
 
 interface ListProps {
   selected?: string;
+  paramsList: {
+    name: string;
+    type?: string | undefined;
+    label?: string | undefined;
+  }[];
 }
 
 // 가상 API 응답 타입
@@ -69,7 +75,10 @@ const fetchFestivals = async ({ pageParam = 0 }): Promise<FestivalResponse> => {
   };
 };
 
-export default function List({ selected }: ListProps) {
+export default function List({ selected, paramsList }: ListProps) {
+  console.log('paramsList::::', paramsList);
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [isBottomView, setIsBottomView] = useState(false);
   const [observeBottom] = useInView((isShow: boolean) => {
     console.log('%c bottom-view', 'color:blue;font-weight:bold;', isShow);
@@ -162,6 +171,19 @@ export default function List({ selected }: ListProps) {
         <DrawerTrigger>
           <FilterChip label='필터' is_selected={false} downChevron />
         </DrawerTrigger>
+        {[...(paramsList || [])].map(param => {
+          return (
+            <SelectedChip
+              key={param?.type}
+              label={param?.label || ''}
+              onClick={() => {
+                const params = new URLSearchParams(searchParams);
+                params.delete(param?.name || '');
+                router.push(`?${params.toString()}`);
+              }}
+            />
+          );
+        })}
       </div>
       <div className='flex items-center gap-2'>
         <p className='ui-text-head-2'>{totalCount}개의 축제</p>

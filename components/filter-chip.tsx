@@ -39,7 +39,7 @@ export function SelectedChip(props: SelectedChipProps) {
 
   return (
     <div
-      className={`flex h-[25px] w-[60px] cursor-pointer items-center justify-center rounded-full bg-gray-50 px-2 py-1`}
+      className={`flex h-[25px] min-w-[60px] cursor-pointer items-center justify-center rounded-full bg-gray-50 px-2 py-1`}
       onClick={onClick}
     >
       <p className='ui-text-sub-head-3 whitespace-nowrap'>{label}</p>
