@@ -4,7 +4,9 @@ import { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { UiTab, UiTabs } from './tabs';
+import { Tab, Tabs } from '@/components/Tabs';
+
+// import { UiTab, UiTabs } from './tabs';
 
 interface MyPageClientProps {
   initialTab: string;
@@ -24,11 +26,9 @@ export default function MyPageClient({ initialTab }: MyPageClientProps) {
   };
 
   return (
-    <>
-      <UiTabs value={selectedTab} onValueChange={handleTabChange}>
-        <UiTab label='북마크' value='bookmark' />
-        <UiTab label='다녀온 축제' value='visited' />
-      </UiTabs>
-    </>
+    <Tabs value={selectedTab} onValueChange={handleTabChange}>
+      <Tab label='북마크' value='bookmark' />
+      <Tab label='다녀온 축제' value='visited' />
+    </Tabs>
   );
 }
