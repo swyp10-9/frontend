@@ -12,6 +12,7 @@ import { useInView } from '@/hooks/useInView';
 
 interface ListProps {
   selected?: string;
+  isNearBy: boolean;
   paramsList: {
     name: string;
     type?: string | undefined;
@@ -75,7 +76,7 @@ const fetchFestivals = async ({ pageParam = 0 }): Promise<FestivalResponse> => {
   };
 };
 
-export default function List({ selected, paramsList }: ListProps) {
+export default function List({ selected, paramsList, isNearBy }: ListProps) {
   console.log('paramsList::::', paramsList);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -167,7 +168,20 @@ export default function List({ selected, paramsList }: ListProps) {
   return (
     <div className='flex flex-col gap-5'>
       <div className='flex items-center gap-1'>
-        <FilterChip label='내 주변' is_selected={false} />
+        <FilterChip
+          label='내 주변'
+          is_selected={isNearBy}
+          onClick={() => {
+            const params = new URLSearchParams(searchParams);
+            if (isNearBy) {
+              params.delete(`isNearBy`);
+              router.replace(`?${params.toString()}`);
+            } else {
+              params.set('isNearBy', 'true');
+              router.replace(`?${params.toString()}`);
+            }
+          }}
+        />
         <DrawerTrigger>
           <FilterChip label='필터' is_selected={false} downChevron />
         </DrawerTrigger>
