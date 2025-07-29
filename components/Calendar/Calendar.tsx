@@ -224,7 +224,7 @@ const Calendar = ({
       params.delete('selected');
     }
 
-    router.push(`${pathname}?${params.toString()}`);
+    router.replace(`${pathname}?${params.toString()}`);
   };
 
   // 컴포넌트 마운트 시 URL 쿼리 초기화
@@ -272,7 +272,7 @@ const Calendar = ({
     // URL 업데이트 - 같은 월 내에서 날짜 선택 시에만
     const params = new URLSearchParams(searchParams);
     params.set('selected', dayData.date);
-    router.push(`${pathname}?${params.toString()}`);
+    router.replace(`${pathname}?${params.toString()}`);
   };
 
   const days = getCalendarDays();

@@ -179,7 +179,7 @@ export default function List({ selected, paramsList }: ListProps) {
               onClick={() => {
                 const params = new URLSearchParams(searchParams);
                 params.delete(param?.name || '');
-                router.push(`?${params.toString()}`);
+                router.replace(`?${params.toString()}`);
               }}
             />
           );

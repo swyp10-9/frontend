@@ -57,7 +57,7 @@ export default function BottomFilter({ initialParams }: BottomFilterProps) {
         params.delete('theme');
 
         // 페이지를 새로고침하여 쿼리 파라미터 적용
-        router.push(`?${params.toString()}`);
+        router.replace(`?${params.toString()}`);
         return true;
       }}
       onApply={() => {
@@ -83,7 +83,7 @@ export default function BottomFilter({ initialParams }: BottomFilterProps) {
         }
 
         // 페이지를 새로고침하여 쿼리 파라미터 적용
-        router.push(`?${params.toString()}`);
+        router.replace(`?${params.toString()}`);
         return true;
       }}
       resetText='초기화'
