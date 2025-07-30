@@ -11,10 +11,6 @@ export default function ReviewMenu() {
   const bottomSheetRef = useRef<BottomSheetRef>(null);
 
   const handleDelete = () => {
-    // 삭제 로직
-    console.log('리뷰 삭제');
-
-    // drawer 닫기
     bottomSheetRef.current?.close();
   };
 
