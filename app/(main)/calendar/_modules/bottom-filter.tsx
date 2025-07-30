@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { Button } from '@/components/Button';
 import BottomSheet from '@/components/bottom-sheet';
 import { regionList } from '@/constants/regionList';
 import themeList from '@/constants/themeList';
@@ -19,6 +20,7 @@ interface BottomFilterProps {
 export default function BottomFilter({ initialParams }: BottomFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const closeRef = useRef<HTMLButtonElement>(null);
 
   const [region, setRegion] = useState<string | null>(
     initialParams?.region || null,
@@ -41,53 +43,68 @@ export default function BottomFilter({ initialParams }: BottomFilterProps) {
     setTheme(currentTheme);
   }, [searchParams]);
 
+  const handleReset = () => {
+    // 상태 초기화
+    setRegion(null);
+    setWithWhom(null);
+    setTheme(null);
+
+    // 쿼리 파라미터에서 필터 관련 파라미터 제거
+    const params = new URLSearchParams(searchParams);
+    params.delete('region');
+    params.delete('withWhom');
+    params.delete('theme');
+
+    // 페이지를 새로고침하여 쿼리 파라미터 적용
+    router.replace(`?${params.toString()}`);
+
+    // drawer 닫기
+    closeRef.current?.click();
+  };
+
+  const handleApply = () => {
+    const params = new URLSearchParams(searchParams);
+
+    // 필터 값들을 쿼리 파라미터로 업데이트
+    if (region) {
+      params.set('region', region);
+    } else {
+      params.delete('region');
+    }
+
+    if (withWhom) {
+      params.set('withWhom', withWhom);
+    } else {
+      params.delete('withWhom');
+    }
+
+    if (theme) {
+      params.set('theme', theme);
+    } else {
+      params.delete('theme');
+    }
+
+    // 페이지를 새로고침하여 쿼리 파라미터 적용
+    router.replace(`?${params.toString()}`);
+
+    // drawer 닫기
+    closeRef.current?.click();
+  };
+
   return (
     <BottomSheet
+      ref={closeRef}
       title={'필터'}
-      onReset={() => {
-        // 상태 초기화
-        setRegion(null);
-        setWithWhom(null);
-        setTheme(null);
-
-        // 쿼리 파라미터에서 필터 관련 파라미터 제거
-        const params = new URLSearchParams(searchParams);
-        params.delete('region');
-        params.delete('withWhom');
-        params.delete('theme');
-
-        // 페이지를 새로고침하여 쿼리 파라미터 적용
-        router.replace(`?${params.toString()}`);
-        return true;
-      }}
-      onApply={() => {
-        const params = new URLSearchParams(searchParams);
-
-        // 필터 값들을 쿼리 파라미터로 업데이트
-        if (region) {
-          params.set('region', region);
-        } else {
-          params.delete('region');
-        }
-
-        if (withWhom) {
-          params.set('withWhom', withWhom);
-        } else {
-          params.delete('withWhom');
-        }
-
-        if (theme) {
-          params.set('theme', theme);
-        } else {
-          params.delete('theme');
-        }
-
-        // 페이지를 새로고침하여 쿼리 파라미터 적용
-        router.replace(`?${params.toString()}`);
-        return true;
-      }}
-      resetText='초기화'
-      applyText='적용하기'
+      footerChildren={
+        <div className='flex items-center gap-2'>
+          <Button onClick={handleReset} size='lg' variant='secondary'>
+            초기화
+          </Button>
+          <Button onClick={handleApply} size='lg' variant='primary'>
+            적용하기
+          </Button>
+        </div>
+      }
     >
       <div className='flex flex-col items-center justify-center px-4'>
         <div className='my-4 flex w-full max-w-[600px] flex-col justify-center gap-5'>
