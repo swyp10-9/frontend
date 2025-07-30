@@ -36,7 +36,7 @@ export default function ReviewItem({
           <Icon
             icon='ic:round-more-horiz'
             fontSize={20}
-            className='text-gray-300'
+            className='cursor-pointer text-gray-300'
             onClick={() => {
               console.log('click');
             }}

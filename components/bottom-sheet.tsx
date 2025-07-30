@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, useRef } from 'react';
+import { forwardRef, useImperativeHandle, useRef } from 'react';
 
 import { Icon } from '@iconify/react';
 
@@ -15,27 +15,39 @@ import {
 } from '@/components/shadcn/drawer';
 
 interface BottomSheetProps {
-  title: string;
+  title?: string;
   children: React.ReactNode;
-  footerChildren: React.ReactNode;
+  footerChildren?: React.ReactNode;
   titleChildren?: React.ReactNode;
+  removeIndicator?: boolean;
 }
 
-const BottomSheet = forwardRef<HTMLButtonElement, BottomSheetProps>(
-  ({ title, children, footerChildren, titleChildren }, ref) => {
+export interface BottomSheetRef {
+  close: () => void;
+}
+
+const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
+  (
+    { title, children, footerChildren, titleChildren, removeIndicator = false },
+    ref,
+  ) => {
     const closeRef = useRef<HTMLButtonElement>(null);
 
-    // 외부 ref와 내부 ref를 연결
-    if (ref && typeof ref === 'object') {
-      ref.current = closeRef.current;
-    }
+    // 외부에서 사용할 수 있는 메서드 제공
+    useImperativeHandle(ref, () => ({
+      close: () => {
+        closeRef.current?.click();
+      },
+    }));
 
     return (
       // BottomSheet 컴포넌트 사용 시 외부에서 Drawer 영역 설정, trigger 세팅 필수
       // <Drawer>
       //   <DrawerTrigger>Open</DrawerTrigger>
       // </Drawer>
-      <DrawerContent className='flex w-full flex-col items-center justify-center'>
+      <DrawerContent
+        className={`flex w-full flex-col items-center justify-center ${removeIndicator ? '[&>div:first-child]:hidden' : ''}`}
+      >
         <div className='w-full max-w-[600px]'>
           <DrawerHeader>
             <DrawerTitle>

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@/components/Button';
-import BottomSheet from '@/components/bottom-sheet';
+import BottomSheet, { BottomSheetRef } from '@/components/bottom-sheet';
 import { regionList } from '@/constants/regionList';
 import themeList from '@/constants/themeList';
 import { withWhomList } from '@/constants/withWhomList';
@@ -20,7 +20,7 @@ interface BottomFilterProps {
 export default function BottomFilter({ initialParams }: BottomFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const closeRef = useRef<HTMLButtonElement>(null);
+  const bottomSheetRef = useRef<BottomSheetRef>(null);
 
   const [region, setRegion] = useState<string | null>(
     initialParams?.region || null,
@@ -59,7 +59,7 @@ export default function BottomFilter({ initialParams }: BottomFilterProps) {
     router.replace(`?${params.toString()}`);
 
     // drawer 닫기
-    closeRef.current?.click();
+    bottomSheetRef.current?.close();
   };
 
   const handleApply = () => {
@@ -88,12 +88,12 @@ export default function BottomFilter({ initialParams }: BottomFilterProps) {
     router.replace(`?${params.toString()}`);
 
     // drawer 닫기
-    closeRef.current?.click();
+    bottomSheetRef.current?.close();
   };
 
   return (
     <BottomSheet
-      ref={closeRef}
+      ref={bottomSheetRef}
       title={'필터'}
       footerChildren={
         <div className='flex items-center gap-2'>
