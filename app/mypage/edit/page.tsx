@@ -1,11 +1,6 @@
 // 'use client';
-import BackArrowNav from '@/components/nav/nav';
+import EditClient from './_modules/edit-client';
 
 export default function MyPageEdit() {
-  return (
-    <div>
-      <BackArrowNav />
-      <div className='px-4'></div>
-    </div>
-  );
+  return <EditClient />;
 }

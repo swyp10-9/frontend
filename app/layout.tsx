@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 
+import { DialogProvider } from '@/components/Dialog';
 import { MSWClientSideProvider } from '@/configs/msw/MSWClientSideProvider';
 import { initializeMSWOnServer } from '@/configs/msw/initializeMSWOnServer';
 
@@ -32,14 +33,16 @@ export default function RootLayout({
   return (
     <MSWClientSideProvider>
       <ReactQueryClientProvider>
-        <html lang='ko'>
-          <body
-            cz-shortcut-listen='true'
-            className='flex items-center justify-center overscroll-none'
-          >
-            {children}
-          </body>
-        </html>
+        <DialogProvider>
+          <html lang='ko'>
+            <body
+              cz-shortcut-listen='true'
+              className='flex items-center justify-center overscroll-none'
+            >
+              {children}
+            </body>
+          </html>
+        </DialogProvider>
       </ReactQueryClientProvider>
     </MSWClientSideProvider>
   );

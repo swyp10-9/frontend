@@ -34,10 +34,12 @@ export function Nav() {
 interface BackArrowNavProps {
   onClick?: () => void;
   opacityBg?: boolean;
+  rightExpand?: React.ReactElement;
 }
 export default function BackArrowNav({
   onClick,
   opacityBg = false,
+  rightExpand = <></>,
 }: BackArrowNavProps) {
   const router = useRouter();
 
@@ -46,7 +48,7 @@ export default function BackArrowNav({
   };
 
   return (
-    <div className={`flex items-center justify-start py-2`}>
+    <div className={`flex items-center justify-between py-2`}>
       <div
         className={`flex items-center justify-center ${opacityBg ? 'rounded-full' : ''} h-10 w-10`}
         style={{
@@ -62,6 +64,7 @@ export default function BackArrowNav({
           style={{ marginLeft: opacityBg ? undefined : '-10px' }}
         />
       </div>
+      {rightExpand}
     </div>
   );
 }

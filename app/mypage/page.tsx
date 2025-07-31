@@ -1,9 +1,11 @@
 import BackArrowNav from '@/components/nav/nav';
+import { Drawer } from '@/components/shadcn/drawer';
 
 import BookmarkList from './_modules/bookmark-list';
 import MyPageClient from './_modules/my-page-client';
 import MyPageFooter from './_modules/mypage-footer';
 import Profile from './_modules/profile';
+import ReviewDrawerMenu from './_modules/review-drawer-menu';
 import ReviewList from './_modules/review-list';
 
 interface SearchParamsType {
@@ -29,12 +31,16 @@ export default async function MyPage({
         <MyPageClient initialTab={initialTab} />
       </div>
 
-      <div className='flex-1 overflow-y-auto'>
-        {initialTab === 'bookmark' && <BookmarkList />}
-        {initialTab === 'visited' && <ReviewList />}
-      </div>
+      <Drawer>
+        <div className='flex-1 overflow-y-auto'>
+          {initialTab === 'bookmark' && <BookmarkList />}
+          {initialTab === 'visited' && <ReviewList />}
+        </div>
 
-      <MyPageFooter />
+        <MyPageFooter />
+
+        <ReviewDrawerMenu />
+      </Drawer>
     </div>
   );
 }

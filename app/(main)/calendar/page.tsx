@@ -12,6 +12,7 @@ interface SearchParamsType {
   region: string;
   withWhom: string;
   theme: string;
+  isNearBy: string;
 }
 
 export default async function CalendarPage({
@@ -19,7 +20,7 @@ export default async function CalendarPage({
 }: {
   searchParams: Promise<SearchParamsType>;
 }) {
-  const { selected, region, withWhom, theme } = await searchParams;
+  const { selected, region, withWhom, theme, isNearBy } = await searchParams;
 
   const list = [];
   if (region) {
@@ -43,7 +44,11 @@ export default async function CalendarPage({
     <div className='flex flex-col gap-5'>
       <Calendar initialDate={new Date(selected)} />
       <Drawer>
-        <List selected={selected} paramsList={list} />
+        <List
+          selected={selected}
+          paramsList={list}
+          isNearBy={isNearBy === 'true'}
+        />
         <BottomFilter initialParams={{ region, withWhom, theme }} />
       </Drawer>
     </div>
