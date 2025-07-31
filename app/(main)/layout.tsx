@@ -8,13 +8,15 @@ export default function MainLayout({
 }) {
   return (
     <div className='relative box-border flex h-screen w-full max-w-[600px] flex-col px-5'>
-      <div className='sticky top-0 flex w-full flex-col'>
+      <div className='sticky top-0 z-10 flex w-full flex-col bg-white'>
         <Nav />
       </div>
 
-      <div className='flex-1 overflow-y-auto'>{children}</div>
+      <div className='flex-1'>{children}</div>
 
-      <TabBar />
+      <div className='sticky bottom-0 z-10 bg-white'>
+        <TabBar />
+      </div>
     </div>
   );
 }
