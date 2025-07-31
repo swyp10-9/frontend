@@ -6,10 +6,10 @@ import { usePathname } from 'next/navigation';
 
 export default function TabBar() {
   const pathname = usePathname();
-  const LinkClassName = 'flex flex-col items-center gap-px w-full';
+  const LinkClassName = 'flex flex-col items-center gap-px flex-1';
 
   return (
-    <div className='box-border border-t-1 border-t-gray-400 py-3 fixed bottom-0 w-full max-w-[600px] bg-white'>
+    <div className='w-full border-t border-gray-400 bg-white px-5 py-3'>
       <div className='flex w-full items-center justify-between'>
         <Link
           href='/'
