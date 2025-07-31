@@ -23,6 +23,9 @@ const _ONLY_FOR_LOAD_Pretendard = localFont({
 export const metadata: Metadata = {
   title: '축지법',
   description: '여행 축제를 소개합니다',
+  icons: {
+    icon: '/image/favicon.ico',
+  },
 };
 
 export default function RootLayout({

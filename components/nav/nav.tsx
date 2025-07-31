@@ -2,31 +2,37 @@
 
 import { Icon } from '@iconify/react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export function Nav() {
   const router = useRouter();
 
   return (
-    <div className='flex w-full items-center justify-end gap-3 border-b-1 border-gray-100 py-2'>
-      <Icon
-        icon='lets-icons:search'
-        fontSize={28}
-        onClick={() => {
-          router.push('/search');
-        }}
-        className='cursor-pointer text-gray-600'
-      />
-      <Image
-        src='/image/basic-profile.png'
-        alt='profile'
-        width={28}
-        height={28}
-        className='aspect-square cursor-pointer rounded-full object-cover'
-        onClick={() => {
-          router.push('/mypage');
-        }}
-      />
+    <div className='flex w-full items-center justify-between border-b-1 border-gray-100 py-2'>
+      <Link href='/'>
+        <Image src='/image/logo.png' alt='logo' width={50} height={50} />
+      </Link>
+      <div className='flex w-full items-center justify-end gap-3'>
+        <Icon
+          icon='lets-icons:search'
+          fontSize={28}
+          onClick={() => {
+            router.push('/search');
+          }}
+          className='cursor-pointer text-gray-600'
+        />
+        <Image
+          src='/image/basic-profile.png'
+          alt='profile'
+          width={28}
+          height={28}
+          className='aspect-square cursor-pointer rounded-full object-cover'
+          onClick={() => {
+            router.push('/mypage');
+          }}
+        />
+      </div>
     </div>
   );
 }
