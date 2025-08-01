@@ -1,7 +1,5 @@
 'use client';
 
-import Pin from '@/components/pin';
-
 import NaverMap from './naver-map';
 
 // 축제 데이터 타입 (naver-map.tsx와 동일)
@@ -38,7 +36,6 @@ export default function MapPageClient() {
 
   return (
     <div className='h-full w-full'>
-      <Pin type='culture_art' variant='detail' />
       <NaverMap
         onMapReady={map => {
           console.log('map:::', map);
