@@ -1,6 +1,6 @@
 import { Icon } from '@iconify/react';
 
-import ImageSlider from '../image-slider';
+import ImageSlider from '../ImageSlider';
 
 interface FestivalInfoProps {
   festivalImages: string[];

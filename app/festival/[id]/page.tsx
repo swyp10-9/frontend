@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 
-import FestivalHeader from './_modules/festival-header';
-import FestivalTabs from './_modules/festival-tabs';
-import MainImage from './_modules/main-image';
-import FestivalInfo from './_modules/tabs/festival-info';
-import Restaurants from './_modules/tabs/restaurants';
-import Reviews from './_modules/tabs/reviews';
-import TravelCourse from './_modules/tabs/travel-course';
+import FestivalHeader from './_modules/FestivalHeader';
+import FestivalTabs from './_modules/FestivalTabs';
+import MainImage from './_modules/MainImage';
+import FestivalInfo from './_modules/tabs/FestivalInfo';
+import Restaurants from './_modules/tabs/Restaurants';
+import Reviews from './_modules/tabs/Reviews';
+import TravelCourse from './_modules/tabs/TravelCourse';
 
 interface FestivalDetailProps {
   params: {
