@@ -44,6 +44,7 @@
     "@storybook/addon-docs": "^9.0.17",
     "@storybook/addon-vitest": "^9.0.17",
     "@storybook/nextjs-vite": "^9.0.17",
+    "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4",
     "@tanstack/eslint-plugin-query": "^5.73.3",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
