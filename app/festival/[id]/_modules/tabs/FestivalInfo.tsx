@@ -59,19 +59,31 @@ export default function FestivalInfo({ festivalImages }: FestivalInfoProps) {
         <h3 className='ui-text-sub-head text-black'>상세 정보</h3>
         <div className='flex w-80 flex-col gap-3'>
           <div className='flex items-start gap-2'>
-            <Icon icon='fluent:call-20-filled' color='#7e848f' fontSize={20} />
+            <Icon
+              icon='fluent:call-20-filled'
+              className='text-gray-300'
+              fontSize={20}
+            />
             <span className='ui-text-body-2 ui-text-color-sub'>
               123-234-5678
             </span>
           </div>
           <div className='flex w-full items-start gap-2'>
-            <Icon icon='tabler:coin-filled' color='#7e848f' fontSize={20} />
+            <Icon
+              icon='tabler:coin-filled'
+              className='text-gray-300'
+              fontSize={20}
+            />
             <span className='ui-text-body-2 ui-text-color-sub'>
               무료, 일부 구간 유료(사전예약존 85,000원)
             </span>
           </div>
           <div className='flex h-10 w-full items-start gap-2'>
-            <Icon icon='gravity-ui:link' color='#7e848f' fontSize={20} />
+            <Icon
+              icon='gravity-ui:link'
+              className='text-gray-300'
+              fontSize={20}
+            />
             <div className='w-[296px]'>
               <p className='ui-text-body-2 leading-[20px] ui-text-color-sub'>
                 https://www.instagram.com/daegu_chimac_festival/

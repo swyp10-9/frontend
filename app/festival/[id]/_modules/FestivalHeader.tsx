@@ -1,5 +1,7 @@
 import { Icon } from '@iconify/react';
 
+import { cn } from '@/lib/utils';
+
 interface FestivalHeaderProps {
   theme: string;
   title: string;
@@ -34,14 +36,15 @@ export default function FestivalHeader({
         <div className='flex items-center gap-2'>
           <Icon
             icon={isBookmarked ? 'mynaui:star-solid' : 'mynaui:star'}
-            className='cursor-pointer'
-            color={isBookmarked ? '#fdbe00' : '#7e848f'}
+            className={cn(
+              'cursor-pointer',
+              isBookmarked ? 'text-yellow' : 'text-gray-300',
+            )}
             fontSize={24}
           />
           <Icon
             icon='lucide:share'
-            className='cursor-pointer'
-            color='#7e848f'
+            className='cursor-pointer text-gray-300'
             fontSize={24}
           />
         </div>
@@ -49,13 +52,17 @@ export default function FestivalHeader({
 
       <div className='mt-6 flex flex-col gap-2'>
         <div className='flex items-center gap-1'>
-          <Icon icon='uis:calendar' color='#7e848f' fontSize={16} />
+          <Icon icon='uis:calendar' className='text-gray-300' fontSize={16} />
           <span className='ui-text-body-2 ui-text-color-info'>
             {startDate} ~ {endDate}
           </span>
         </div>
         <div className='flex w-full items-start gap-1'>
-          <Icon icon='carbon:location-filled' color='#7e848f' fontSize={16} />
+          <Icon
+            icon='carbon:location-filled'
+            className='text-gray-300'
+            fontSize={16}
+          />
           <div className='flex w-[283px] flex-col gap-0.5'>
             <p className='ui-text-body-2 ui-text-color-info'>{location}</p>
             <p className='ui-text-sub-head-3 ui-text-color-sub underline'>
