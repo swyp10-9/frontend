@@ -32,22 +32,19 @@ export default function FestivalListView(props: FestivalListViewProps) {
             {is_marked ? (
               <Icon
                 icon='mynaui:star-solid'
-                className='cursor-pointer'
-                color='#fdbe00'
+                className='cursor-pointer text-yellow'
                 fontSize={20}
               />
             ) : (
               <Icon
                 icon='mynaui:star'
-                className='cursor-pointer'
-                color='#7e848f'
+                className='cursor-pointer text-gray-300'
                 fontSize={20}
               />
             )}
             <Icon
               icon='lucide:share'
-              className='cursor-pointer'
-              color='#7e848f'
+              className='cursor-pointer text-gray-300'
               fontSize={20}
             />
           </div>
@@ -56,8 +53,7 @@ export default function FestivalListView(props: FestivalListViewProps) {
         <div className='mb-1 flex items-center'>
           <Icon
             icon='carbon:location-filled'
-            className='cursor-pointer'
-            color='#7e848f'
+            className='cursor-pointer text-gray-300'
             fontSize={20}
           />
           <p className='mr-1 ml-0.5 ui-text-body-2'>{loc}</p>
@@ -66,8 +62,7 @@ export default function FestivalListView(props: FestivalListViewProps) {
         <div className='flex items-center gap-2'>
           <Icon
             icon='uis:calendar'
-            className='cursor-pointer'
-            color='#7e848f'
+            className='cursor-pointer text-gray-300'
             fontSize={20}
           />
           <p className='mr-1 ml-0.5 ui-text-body-2'>

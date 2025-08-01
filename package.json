@@ -14,7 +14,8 @@
     "lint": "tsc -b && next lint",
     "lint:fix": "tsc -b && next lint --fix",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "generate-api": "orval"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",
@@ -27,6 +28,7 @@
     "next": "15.3.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "swiper": "^11.2.10",
     "tailwind-merge": "^3.3.1",
     "vaul": "^1.1.2"
   },
@@ -36,12 +38,14 @@
     "@commitlint/config-conventional": "^19.8.0",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.21.0",
+    "@faker-js/faker": "^9.9.0",
     "@iconify/react": "^6.0.0",
     "@next/eslint-plugin-next": "^15.3.4",
     "@storybook/addon-a11y": "^9.0.17",
     "@storybook/addon-docs": "^9.0.17",
     "@storybook/addon-vitest": "^9.0.17",
     "@storybook/nextjs-vite": "^9.0.17",
+    "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4",
     "@tanstack/eslint-plugin-query": "^5.73.3",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
@@ -63,6 +67,7 @@
     "lefthook": "^1.12.2",
     "msw": "^2.7.5",
     "msw-storybook-addon": "^2.0.4",
+    "orval": "^7.11.1",
     "playwright": "^1.54.1",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.14",

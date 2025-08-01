@@ -51,7 +51,7 @@ interface TabsContextType {
 
 const TabsContext = createContext<TabsContextType | null>(null);
 
-export function Tabs({
+export function Tabs<Values extends string>({
   children,
   defaultValue,
   value,
@@ -63,14 +63,14 @@ export function Tabs({
 }: React.ComponentProps<'div'> &
   VariantProps<typeof tabsVariants> & {
     children: React.ReactNode;
-    defaultValue?: string;
-    value?: string;
-    onValueChange?: (value: string) => void;
+    defaultValue?: Values;
+    value?: Values;
+    onValueChange?: (value: Values) => void;
   }) {
   const [internalValue, setInternalValue] = useState(defaultValue || '');
 
   const selectedValue = value !== undefined ? value : internalValue;
-  const handleValueChange = (newValue: string) => {
+  const handleValueChange = (newValue: Values) => {
     if (value === undefined) {
       setInternalValue(newValue);
     }
@@ -79,6 +79,7 @@ export function Tabs({
 
   return (
     <TabsContext.Provider
+      // @ts-expect-error FIXME: 제네릭 지원이 없어서 추후 개선 예정
       value={{ selectedValue, onValueChange: handleValueChange }}
     >
       <div
@@ -92,7 +93,7 @@ export function Tabs({
   );
 }
 
-export function Tab({
+export function Tab<Values extends string>({
   label,
   value,
   onClick,
@@ -103,7 +104,7 @@ export function Tab({
 }: React.ComponentProps<'div'> &
   VariantProps<typeof tabVariants> & {
     label: string;
-    value: string;
+    value: Values;
     onClick?: () => void;
   }) {
   const context = useContext(TabsContext);

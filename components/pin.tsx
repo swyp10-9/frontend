@@ -56,15 +56,13 @@ export default function Pin(props: PinProps) {
             {is_marked ? (
               <Icon
                 icon='mynaui:star-solid'
-                className='cursor-pointer'
-                color='#fdbe00'
+                className='cursor-pointer text-yellow'
                 fontSize={20}
               />
             ) : (
               <Icon
                 icon='mynaui:star'
-                className='cursor-pointer'
-                color='#7e848f'
+                className='cursor-pointer text-gray-300'
                 fontSize={20}
               />
             )}
