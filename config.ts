@@ -7,6 +7,9 @@ const config = {
   naver: {
     map_client_id: process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID,
   },
+  api: {
+    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  },
 };
 
 export default config;
