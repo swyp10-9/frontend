@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { use, useEffect, useState } from 'react';
+
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import FestivalHeader from './_modules/FestivalHeader';
 import FestivalTabs from './_modules/FestivalTabs';
@@ -11,15 +13,53 @@ import Reviews from './_modules/tabs/Reviews';
 import TravelCourse from './_modules/tabs/TravelCourse';
 
 interface FestivalDetailProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function FestivalDetail({
-  params: _params,
-}: FestivalDetailProps) {
-  const [selectedTab, setSelectedTab] = useState('festival-info');
+const VALID_TABS = [
+  'festival-info',
+  'travel-course',
+  'restaurants',
+  'reviews',
+] as const;
+
+export type TabType = (typeof VALID_TABS)[number];
+
+const DEFAULT_TAB: TabType = 'festival-info';
+
+const isValidTab = (tab: string | null): tab is TabType => {
+  return tab !== null && VALID_TABS.includes(tab as TabType);
+};
+
+export default function FestivalDetail({ params }: FestivalDetailProps) {
+  const resolvedParams = use(params);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const getInitialTab = (): TabType => {
+    const tabFromUrl = searchParams.get('tab');
+
+    return isValidTab(tabFromUrl) ? tabFromUrl : DEFAULT_TAB;
+  };
+
+  const [selectedTab, setSelectedTab] = useState(getInitialTab);
+
+  // URL의 searchParams 변경 감지
+  useEffect(() => {
+    const tabFromUrl = searchParams.get('tab');
+    const validTab = isValidTab(tabFromUrl) ? tabFromUrl : DEFAULT_TAB;
+    setSelectedTab(validTab);
+  }, [searchParams]);
+
+  // 탭 변경 시 URL 업데이트
+  const handleTabChange = (tab: TabType) => {
+    setSelectedTab(tab);
+    const urlParams = new URLSearchParams(searchParams);
+    urlParams.set('tab', tab);
+    router.replace(`/festival/${resolvedParams.id}?${urlParams.toString()}`);
+  };
 
   const festivalImages = [
     'https://picsum.photos/300/300?random=1',
@@ -47,7 +87,7 @@ export default function FestivalDetail({
           location='대구광역시 달서구 공원순환로 36 (두류동) 두류공원'
         />
 
-        <FestivalTabs selectedTab={selectedTab} onTabChange={setSelectedTab} />
+        <FestivalTabs selectedTab={selectedTab} onTabChange={handleTabChange} />
 
         {/* Tab Content */}
         <div className='px-4 py-6'>

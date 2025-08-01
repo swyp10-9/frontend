@@ -3,6 +3,7 @@ import { createContext, useContext, useState } from 'react';
 
 import { type VariantProps, cva } from 'class-variance-authority';
 
+import { TabType } from '@/app/festival/[id]/page';
 import { cn } from '@/lib/utils';
 
 const tabsVariants = cva('relative flex w-full items-center', {
@@ -63,14 +64,14 @@ export function Tabs({
 }: React.ComponentProps<'div'> &
   VariantProps<typeof tabsVariants> & {
     children: React.ReactNode;
-    defaultValue?: string;
-    value?: string;
-    onValueChange?: (value: string) => void;
+    defaultValue?: TabType;
+    value?: TabType;
+    onValueChange?: (value: TabType) => void;
   }) {
   const [internalValue, setInternalValue] = useState(defaultValue || '');
 
   const selectedValue = value !== undefined ? value : internalValue;
-  const handleValueChange = (newValue: string) => {
+  const handleValueChange = (newValue: TabType) => {
     if (value === undefined) {
       setInternalValue(newValue);
     }
@@ -79,6 +80,7 @@ export function Tabs({
 
   return (
     <TabsContext.Provider
+      // @ts-expect-error FIXME: 제네릭 지원이 없어서 추후 개선 예정
       value={{ selectedValue, onValueChange: handleValueChange }}
     >
       <div
@@ -103,7 +105,7 @@ export function Tab({
 }: React.ComponentProps<'div'> &
   VariantProps<typeof tabVariants> & {
     label: string;
-    value: string;
+    value: TabType;
     onClick?: () => void;
   }) {
   const context = useContext(TabsContext);
