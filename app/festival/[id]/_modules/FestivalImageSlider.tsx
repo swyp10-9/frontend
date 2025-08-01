@@ -2,11 +2,13 @@ import Image from 'next/image';
 import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-interface ImageSliderProps {
+interface FestivalImageSliderProps {
   images: string[];
 }
 
-export default function ImageSlider({ images }: ImageSliderProps) {
+export default function FestivalImageSlider({
+  images,
+}: FestivalImageSliderProps) {
   return (
     <div className='relative w-full'>
       <Swiper

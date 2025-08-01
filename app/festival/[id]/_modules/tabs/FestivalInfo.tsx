@@ -1,6 +1,6 @@
 import { Icon } from '@iconify/react';
 
-import ImageSlider from '../ImageSlider';
+import FestivalImageSlider from '../FestivalImageSlider';
 
 interface FestivalInfoProps {
   festivalImages: string[];
@@ -11,7 +11,7 @@ export default function FestivalInfo({ festivalImages }: FestivalInfoProps) {
     <div className='space-y-6'>
       <div className='flex flex-col gap-3'>
         <h3 className='ui-text-sub-head text-black'>축제 소개</h3>
-        <ImageSlider images={festivalImages} />
+        <FestivalImageSlider images={festivalImages} />
         <div className='h-[336px] overflow-hidden'>
           <p className='ui-text-body-2-long ui-text-color-sub'>
             대구치맥페스티벌은 대구를 대표하는 여름 문화관광축제로, '치킨'과
