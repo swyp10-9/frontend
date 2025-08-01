@@ -106,7 +106,7 @@ function RestaurantItem({ restaurant }: { restaurant: Restaurant }) {
   );
 }
 
-export default function Restaurants() {
+export default function RestaurantList() {
   return (
     <div className='flex flex-col items-start justify-start gap-5'>
       {mockRestaurants.map((restaurant, index) => (

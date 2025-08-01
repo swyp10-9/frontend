@@ -8,7 +8,7 @@ import FestivalHeader from './_modules/FestivalHeader';
 import FestivalTabs from './_modules/FestivalTabs';
 import MainImage from './_modules/MainImage';
 import FestivalInfo from './_modules/tabs/FestivalInfo';
-import Restaurants from './_modules/tabs/Restaurants';
+import RestaurantList from './_modules/tabs/RestaurantList';
 import Reviews from './_modules/tabs/Reviews';
 import TravelCourse from './_modules/tabs/TravelCourse';
 
@@ -95,7 +95,7 @@ export default function FestivalDetail({ params }: FestivalDetailProps) {
             <FestivalInfo festivalImages={festivalImages} />
           )}
           {selectedTab === 'travel-course' && <TravelCourse />}
-          {selectedTab === 'restaurants' && <Restaurants />}
+          {selectedTab === 'restaurants' && <RestaurantList />}
           {selectedTab === 'reviews' && <Reviews />}
         </div>
       </div>
