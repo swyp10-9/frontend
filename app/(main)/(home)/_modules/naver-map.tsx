@@ -11,7 +11,6 @@ declare global {
   }
 }
 
-// 축제 데이터 타입
 interface Festival {
   id: number;
   title: string;
@@ -25,26 +24,22 @@ interface Festival {
     lat: number;
     lng: number;
   };
-  isDetailed?: boolean; // 상세 마커 여부
+  isDetailed?: boolean;
 }
 
-// 축제 API 응답 타입
 interface FestivalResponse {
   festivals: Festival[];
   total: number;
 }
 
-// 축제 API 호출 함수
 const fetchFestivalsInBounds = async (bounds: {
   sw: { lat: number; lng: number };
   ne: { lat: number; lng: number };
   nw: { lat: number; lng: number };
   se: { lat: number; lng: number };
 }): Promise<FestivalResponse> => {
-  // 실제 API 호출을 시뮬레이션
   await new Promise(resolve => setTimeout(resolve, 300));
 
-  // 가상 축제 데이터 생성 (지도 경계 내에서 랜덤 위치)
   const festivals: Festival[] = Array.from({ length: 15 }, (_, index) => {
     const lat = bounds.sw.lat + Math.random() * (bounds.ne.lat - bounds.sw.lat);
     const lng = bounds.sw.lng + Math.random() * (bounds.ne.lng - bounds.sw.lng);
@@ -81,12 +76,12 @@ interface NaverMapProps {
   onVisibilityChange?: (isVisible: boolean) => void;
   onMapReady?: (map: naver.maps.Map) => void;
   onBoundsChange?: (bounds: {
-    sw: { lat: number; lng: number }; // 좌하단 (Southwest)
-    ne: { lat: number; lng: number }; // 우상단 (Northeast)
-    nw: { lat: number; lng: number }; // 좌상단 (Northwest)
-    se: { lat: number; lng: number }; // 우하단 (Southeast)
+    sw: { lat: number; lng: number };
+    ne: { lat: number; lng: number };
+    nw: { lat: number; lng: number };
+    se: { lat: number; lng: number };
   }) => void;
-  onMarkerClick?: (festival: Festival, isDetailed: boolean) => void; // 마커 클릭 콜백 추가
+  onMarkerClick?: (festival: Festival, isDetailed: boolean) => void;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -107,24 +102,17 @@ export default function NaverMap({
   const markersRef = useRef<naver.maps.Marker[]>([]);
   const clientId = config.naver.map_client_id;
 
-  // 지도 상태 관리
-  // const [isMapVisible, setIsMapVisible] = useState(false);
-  // const [mapSize, setMapSize] = useState({ width: 0, height: 0 });
   const [currentZoom, setCurrentZoom] = useState(10);
   const [festivals, setFestivals] = useState<Festival[]>([]);
   const [isLoadingFestivals, setIsLoadingFestivals] = useState(false);
 
-  // 지도 크기 변화 감지
   const handleResize = useCallback(
     (entries: ResizeObserverEntry[]) => {
       entries.forEach(entry => {
         const { width, height } = entry.contentRect;
-        // setMapSize({ width, height });
 
-        // 부모 컴포넌트에 크기 변화 알림
         onSizeChange?.(entry.contentRect);
 
-        // 지도 인스턴스가 있고 크기가 변경되었을 때 지도 리사이즈
         if (mapInstanceRef.current) {
           console.log('지도 크기 변화 감지:', { width, height });
           mapInstanceRef.current.refresh();
@@ -134,21 +122,18 @@ export default function NaverMap({
     [onSizeChange],
   );
 
-  // 지도 가시성 변화 감지
   const handleIntersection = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       entries.forEach(entry => {
         console.log('entry:::', entry);
         const isVisible = entry.isIntersecting;
-        // setIsMapVisible(isVisible);
 
-        // 부모 컴포넌트에 가시성 변화 알림
         onVisibilityChange?.(isVisible);
 
         if (mapInstanceRef.current) {
           if (isVisible) {
             console.log('지도가 화면에 나타남');
-            // 지도가 다시 보일 때 리프레시
+
             setTimeout(() => {
               mapInstanceRef.current?.refresh();
             }, 100);
@@ -161,18 +146,16 @@ export default function NaverMap({
     [onVisibilityChange],
   );
 
-  // 지도 경계 변화 감지
   const handleBoundsChange = useCallback(() => {
     if (!mapInstanceRef.current) return;
 
     const bounds = mapInstanceRef.current.getBounds();
     if (!bounds) return;
 
-    // 각 모서리 좌표 계산
-    const sw = bounds.getMin(); // 좌하단
-    const ne = bounds.getMax(); // 우상단
-    const nw = new window.naver.maps.LatLng(ne.y, sw.x); // 좌상단
-    const se = new window.naver.maps.LatLng(sw.y, ne.x); // 우하단
+    const sw = bounds.getMin();
+    const ne = bounds.getMax();
+    const nw = new window.naver.maps.LatLng(ne.y, sw.x);
+    const se = new window.naver.maps.LatLng(sw.y, ne.x);
 
     const boundsData = {
       sw: { lat: sw.y, lng: sw.x },
@@ -184,11 +167,9 @@ export default function NaverMap({
     console.log('지도 경계 변화:', boundsData);
     onBoundsChange?.(boundsData);
 
-    // 경계가 변경되면 해당 영역의 축제 데이터를 가져옴
     loadFestivalsInBounds(boundsData);
   }, [onBoundsChange]);
 
-  // 줌 레벨 변화 감지
   const handleZoomChange = useCallback(() => {
     if (!mapInstanceRef.current) return;
 
@@ -196,36 +177,28 @@ export default function NaverMap({
     setCurrentZoom(zoom);
     console.log('줌 레벨 변화:', zoom);
 
-    // 줌 레벨에 따라 마커 업데이트
     updateMarkers();
   }, []);
 
-  // 마커 클릭 핸들러
   const handleMarkerClick = useCallback(
     (festival: Festival, isDetailed: boolean) => {
       if (isDetailed) {
-        // 상세 마커 클릭 시 축제 상세페이지로 이동
         console.log('상세 마커 클릭 - 축제 상세페이지로 이동:', festival);
-        // 여기에 라우터를 사용한 페이지 이동 로직 추가
-        // router.push(`/festival/${festival.id}`);
       } else {
-        // 작은 마커 클릭 시 상세 마커로 전환 (기존 상세 마커는 작은 마커로 되돌림)
         console.log('작은 마커 클릭 - 상세 마커로 전환:', festival);
         setFestivals(prevFestivals =>
           prevFestivals.map(f => ({
             ...f,
-            isDetailed: f.id === festival.id, // 클릭한 마커만 상세로, 나머지는 작은 마커로
+            isDetailed: f.id === festival.id,
           })),
         );
       }
 
-      // 부모 컴포넌트에 마커 클릭 알림
       onMarkerClick?.(festival, isDetailed);
     },
     [onMarkerClick],
   );
 
-  // 마커 생성 함수
   const createMarker = useCallback(
     (festival: Festival) => {
       if (!mapInstanceRef.current) return null;
@@ -238,7 +211,6 @@ export default function NaverMap({
         festival.coordinates.lng,
       );
 
-      // 줌 레벨에 따른 마커 디자인 결정
       const isDetailed = currentZoom >= 12 || festival.isDetailed;
 
       const markerElement = document.createElement('div');
@@ -268,7 +240,6 @@ export default function NaverMap({
       `;
 
       if (isDetailed) {
-        // 상세 마커 (줌 12 이상 또는 isDetailed가 true)
         markerElement.innerHTML = `
           <a href="/festival/${festival.id}">
             <div class="box-border flex h-[64px] w-[224px] items-center gap-2 rounded-lg bg-white py-2 pr-3 pl-2" style="box-shadow: 0 0 5px 0 rgba(0,0,0,0.18);">
@@ -289,7 +260,6 @@ export default function NaverMap({
           </a>
           `;
       } else {
-        // 간단한 마커 (줌 12 미만)
         markerElement.innerHTML = `
         <div style="
           width: 36px;
@@ -319,7 +289,6 @@ export default function NaverMap({
         },
       });
 
-      // 마커 클릭 이벤트
       window.naver.maps.Event.addListener(marker, 'click', () => {
         handleMarkerClick(festival, isDetailed || false);
       });
@@ -329,15 +298,12 @@ export default function NaverMap({
     [currentZoom, handleMarkerClick],
   );
 
-  // 마커 업데이트 함수
   const updateMarkers = useCallback(() => {
-    // 기존 마커들 제거
     markersRef.current.forEach(marker => {
       marker.setMap(null);
     });
     markersRef.current = [];
 
-    // 새로운 마커들 생성
     festivals.forEach(festival => {
       const marker = createMarker(festival);
       if (marker) {
@@ -346,7 +312,6 @@ export default function NaverMap({
     });
   }, [festivals, createMarker]);
 
-  // 축제 데이터 가져오기
   const loadFestivalsInBounds = useCallback(
     async (bounds: {
       sw: { lat: number; lng: number };
@@ -393,22 +358,17 @@ export default function NaverMap({
       );
     }
 
-    console.log('loc:::', loc);
-
-    // ResizeObserver 설정
     resizeObserverRef.current = new ResizeObserver(handleResize);
     resizeObserverRef.current.observe(mapRef.current);
 
-    // IntersectionObserver 설정
     intersectionObserverRef.current = new IntersectionObserver(
       handleIntersection,
       {
-        threshold: 0.1, // 10% 이상 보일 때 감지
+        threshold: 0.1,
       },
     );
     intersectionObserverRef.current.observe(mapRef.current);
 
-    // 이미 스크립트가 로드되어 있는지 확인
     if (window.naver && window.naver.maps) {
       initializeMap();
       return;
@@ -443,30 +403,21 @@ export default function NaverMap({
       const map = new window.naver.maps.Map(mapRef.current, mapOptions);
       mapInstanceRef.current = map;
 
-      // 지도 경계 변화 이벤트 리스너 추가
       window.naver.maps.Event.addListener(map, 'bounds_changed', () => {
         handleBoundsChange();
       });
 
-      // 줌 변화 이벤트 리스너 추가
       window.naver.maps.Event.addListener(map, 'zoom_changed', () => {
         handleZoomChange();
       });
 
-      // 초기 경계 정보 전달
       setTimeout(() => {
         handleBoundsChange();
       }, 100);
 
-      // 초기 크기 설정
-      // const rect = mapRef.current.getBoundingClientRect();
-      // setMapSize({ width: rect.width, height: rect.height });
-
-      // 부모 컴포넌트에 지도 준비 완료 알림
       onMapReady?.(map);
     }
 
-    // 클린업 함수
     return () => {
       if (resizeObserverRef.current) {
         resizeObserverRef.current.disconnect();
@@ -484,7 +435,7 @@ export default function NaverMap({
           'zoom_changed',
         );
       }
-      // 마커들 제거
+
       markersRef.current.forEach(marker => {
         marker.setMap(null);
       });
@@ -499,7 +450,6 @@ export default function NaverMap({
     onMarkerClick,
   ]);
 
-  // 축제 데이터가 변경되면 마커 업데이트
   useEffect(() => {
     updateMarkers();
   }, [festivals, updateMarkers]);
