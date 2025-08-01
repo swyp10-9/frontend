@@ -74,12 +74,12 @@ export interface SignupRequest {
 }
 
 export interface TokenResponse {
-  accessToken?: string;
-  tokenType?: string;
-  expiresIn?: number;
-  userId?: number;
-  nickname?: string;
-  needsAdditionalSignup?: boolean;
+  accessToken: string;
+  tokenType: string;
+  expiresIn: number;
+  userId: number;
+  nickname: string;
+  needsAdditionalSignup: boolean;
 }
 
 export interface LoginRequest {
@@ -98,11 +98,11 @@ export interface MyInfoUpdateRequest {
 
 export interface MyInfoResponse {
   /** 회원 ID */
-  userId?: number;
+  userId: number;
   /** 닉네임 */
-  nickname?: string;
+  nickname: string;
   /** 프로필 이미지 URL */
-  profileImage?: string;
+  profileImage: string;
 }
 
 /**
@@ -110,21 +110,21 @@ export interface MyInfoResponse {
  */
 export interface SearchKeywordListResponse {
   /** 응답 데이터 목록 */
-  content?: SearchKeywordResponse[];
+  content: SearchKeywordResponse[];
   /** 현재 페이지 번호 (0부터 시작) */
-  page?: number;
+  page: number;
   /** 페이지 크기 */
-  size?: number;
+  size: number;
   /** 전체 요소 개수 */
-  totalElements?: number;
+  totalElements: number;
   /** 전체 페이지 개수 */
-  totalPages?: number;
+  totalPages: number;
   /** 첫 번째 페이지 여부 */
-  first?: boolean;
+  first: boolean;
   /** 마지막 페이지 여부 */
-  last?: boolean;
+  last: boolean;
   /** 빈 페이지 여부 */
-  empty?: boolean;
+  empty: boolean;
 }
 
 /**
@@ -132,11 +132,11 @@ export interface SearchKeywordListResponse {
  */
 export interface SearchKeywordResponse {
   /** 검색어 */
-  keyword?: string;
+  keyword: string;
   /** 검색 횟수 */
-  count?: number;
+  count: number;
   /** 최근 검색일시 */
-  lastSearchedAt?: string;
+  lastSearchedAt: string;
 }
 
 /**
@@ -147,14 +147,14 @@ export interface PageRequest {
    * 페이지 번호 (0부터 시작)
    * @minimum 0
    */
-  page?: number;
+  page: number;
   /**
    * 페이지 크기
    * @minimum 1
    * @maximum 100
    */
-  size?: number;
-  offset?: number;
+  size: number;
+  offset: number;
 }
 
 /**
@@ -162,21 +162,21 @@ export interface PageRequest {
  */
 export interface MyReviewListResponse {
   /** 응답 데이터 목록 */
-  content?: MyReviewResponse[];
+  content: MyReviewResponse[];
   /** 현재 페이지 번호 (0부터 시작) */
-  page?: number;
+  page: number;
   /** 페이지 크기 */
-  size?: number;
+  size: number;
   /** 전체 요소 개수 */
-  totalElements?: number;
+  totalElements: number;
   /** 전체 페이지 개수 */
-  totalPages?: number;
+  totalPages: number;
   /** 첫 번째 페이지 여부 */
-  first?: boolean;
+  first: boolean;
   /** 마지막 페이지 여부 */
-  last?: boolean;
+  last: boolean;
   /** 빈 페이지 여부 */
-  empty?: boolean;
+  empty: boolean;
 }
 
 /**
@@ -184,17 +184,17 @@ export interface MyReviewListResponse {
  */
 export interface MyReviewResponse {
   /** 리뷰 ID */
-  id?: number;
+  id: number;
   /** 축제 ID */
-  festivalId?: number;
+  festivalId: number;
   /** 축제명 */
-  festivalTitle?: string;
+  festivalTitle: string;
   /** 썸네일 이미지 URL */
-  festivalThumbnail?: string;
+  festivalThumbnail: string;
   /** 리뷰 내용 */
-  content?: string;
+  content: string;
   /** 리뷰 작성 날짜 */
-  createdAt?: string;
+  createdAt: string;
 }
 
 /**
@@ -202,40 +202,40 @@ export interface MyReviewResponse {
  */
 export interface ContentResponse {
   /** 축제 타이틀 */
-  title?: string;
+  title: string;
   /** 홈페이지 HTML */
-  homepage?: string;
+  homepage: string;
   /** 주소1 */
-  addr1?: string;
+  addr1: string;
   /** 주소2 */
-  addr2?: string;
+  addr2: string;
   /** 개요/소개 */
-  overview?: string;
+  overview: string;
 }
 
 export interface FestivalDetailResponse {
   /** 축제 ID */
-  id?: number;
+  id: number;
   /** 축제명 */
-  title?: string;
+  title: string;
   /** 주소 */
-  address?: string;
+  address: string;
   /** 테마 */
-  theme?: string;
+  theme: string;
   /** 축제 시작일 */
-  startDate?: string;
+  startDate: string;
   /** 축제 종료일 */
-  endDate?: string;
+  endDate: string;
   /** 썸네일 이미지 URL */
-  thumbnail?: string;
+  thumbnail: string;
   /** 경도 */
-  mapx?: string;
+  mapx: string;
   /** 위도 */
-  mapy?: string;
+  mapy: string;
   /** 이미지 목록 */
-  images?: ImageResponse[];
-  content?: ContentResponse;
-  info?: InfoResponse;
+  images: ImageResponse[];
+  content: ContentResponse;
+  info: InfoResponse;
 }
 
 /**
@@ -243,13 +243,13 @@ export interface FestivalDetailResponse {
  */
 export interface ImageResponse {
   /** 콘텐츠ID */
-  contentid?: string;
+  contentid: string;
   /** 원본 이미지 URL */
-  originimgurl?: string;
+  originimgurl: string;
   /** 이미지명 */
-  imgname?: string;
+  imgname: string;
   /** 작은 이미지 URL */
-  smallimageurl?: string;
+  smallimageurl: string;
 }
 
 /**
@@ -257,25 +257,25 @@ export interface ImageResponse {
  */
 export interface InfoResponse {
   /** 주최 */
-  sponsor1?: string;
+  sponsor1: string;
   /** 주최 연락처 */
-  sponsor1tel?: string;
+  sponsor1tel: string;
   /** 행사 시작일(YYYYMMDD) */
-  eventstartdate?: string;
+  eventstartdate: string;
   /** 행사 종료일(YYYYMMDD) */
-  eventenddate?: string;
+  eventenddate: string;
   /** 운영 시간 */
-  playtime?: string;
+  playtime: string;
   /** 장소 */
-  eventplace?: string;
+  eventplace: string;
   /** 행사 홈페이지 */
-  eventhomepage?: string;
+  eventhomepage: string;
   /** 이용 요금 */
-  usetimefestival?: string;
+  usetimefestival: string;
   /** 할인 정보 */
-  discountinfofestival?: string;
+  discountinfofestival: string;
   /** 소요 시간 */
-  spendtimefestival?: string;
+  spendtimefestival: string;
 }
 
 /**
@@ -286,29 +286,29 @@ export interface FestivalTravelCoursePageRequest {
    * 페이지 번호 (0부터 시작)
    * @minimum 0
    */
-  page?: number;
+  page: number;
   /**
    * 페이지 크기
    * @minimum 1
    * @maximum 100
    */
-  size?: number;
+  size: number;
   /** 축제 ID */
   festivalId: number;
   /** 코스 타입 */
-  courseType?: string;
+  courseType: string;
   /** 테마 */
-  theme?: string;
+  theme: string;
   /** 정렬 기준 (popularity,desc | duration,asc) */
-  sort?: string;
-  offset?: number;
+  sort: string;
+  offset: number;
 }
 
 export interface FestivalTravelCourseListResponse {
   /** 여행 코스 목록 */
-  courses?: FestivalTravelCourseResponse[];
+  courses: FestivalTravelCourseResponse[];
   /** 근처 볼거리 목록 */
-  nearbyAttractions?: NearbyAttractionResponse[];
+  nearbyAttractions: NearbyAttractionResponse[];
 }
 
 /**
@@ -316,11 +316,11 @@ export interface FestivalTravelCourseListResponse {
  */
 export interface FestivalTravelCourseResponse {
   /** 코스 ID */
-  id?: number;
+  id: number;
   /** 코스명 */
-  title?: string;
+  title: string;
   /** 시각 */
-  time?: string;
+  time: string;
 }
 
 /**
@@ -328,15 +328,15 @@ export interface FestivalTravelCourseResponse {
  */
 export interface NearbyAttractionResponse {
   /** 장소명 */
-  name?: string;
+  name: string;
   /** 썸네일 이미지 URL */
-  thumbnail?: string;
+  thumbnail: string;
   /** 경도 */
-  mapx?: string;
+  mapx: string;
   /** 위도 */
-  mapy?: string;
+  mapy: string;
   /** 장소 설명/상세 페이지 URL */
-  descriptionUrl?: string;
+  descriptionUrl: string;
 }
 
 /**
@@ -344,21 +344,21 @@ export interface NearbyAttractionResponse {
  */
 export interface FestivalReviewListResponse {
   /** 응답 데이터 목록 */
-  content?: FestivalReviewResponse[];
+  content: FestivalReviewResponse[];
   /** 현재 페이지 번호 (0부터 시작) */
-  page?: number;
+  page: number;
   /** 페이지 크기 */
-  size?: number;
+  size: number;
   /** 전체 요소 개수 */
-  totalElements?: number;
+  totalElements: number;
   /** 전체 페이지 개수 */
-  totalPages?: number;
+  totalPages: number;
   /** 첫 번째 페이지 여부 */
-  first?: boolean;
+  first: boolean;
   /** 마지막 페이지 여부 */
-  last?: boolean;
+  last: boolean;
   /** 빈 페이지 여부 */
-  empty?: boolean;
+  empty: boolean;
 }
 
 /**
@@ -366,15 +366,15 @@ export interface FestivalReviewListResponse {
  */
 export interface FestivalReviewResponse {
   /** 리뷰 ID */
-  id?: number;
+  id: number;
   /** 작성자 닉네임 */
-  nickname?: string;
+  nickname: string;
   /** 작성자 프로필 이미지 URL */
-  profileImage?: string;
+  profileImage: string;
   /** 리뷰 내용 */
-  content?: string;
+  content: string;
   /** 작성일 */
-  createdAt?: string;
+  createdAt: string;
 }
 
 /**
@@ -385,22 +385,22 @@ export interface FestivalRestaurantPageRequest {
    * 페이지 번호 (0부터 시작)
    * @minimum 0
    */
-  page?: number;
+  page: number;
   /**
    * 페이지 크기
    * @minimum 1
    * @maximum 100
    */
-  size?: number;
+  size: number;
   /** 축제 ID */
   festivalId: number;
   /** 검색 반경 (미터) */
-  radius?: number;
+  radius: number;
   /** 음식 카테고리 */
-  category?: string;
+  category: string;
   /** 정렬 기준 (distance,asc | rating,desc) */
-  sort?: string;
-  offset?: number;
+  sort: string;
+  offset: number;
 }
 
 /**
@@ -408,21 +408,21 @@ export interface FestivalRestaurantPageRequest {
  */
 export interface FestivalRestaurantListResponse {
   /** 응답 데이터 목록 */
-  content?: FestivalRestaurantResponse[];
+  content: FestivalRestaurantResponse[];
   /** 현재 페이지 번호 (0부터 시작) */
-  page?: number;
+  page: number;
   /** 페이지 크기 */
-  size?: number;
+  size: number;
   /** 전체 요소 개수 */
-  totalElements?: number;
+  totalElements: number;
   /** 전체 페이지 개수 */
-  totalPages?: number;
+  totalPages: number;
   /** 첫 번째 페이지 여부 */
-  first?: boolean;
+  first: boolean;
   /** 마지막 페이지 여부 */
-  last?: boolean;
+  last: boolean;
   /** 빈 페이지 여부 */
-  empty?: boolean;
+  empty: boolean;
 }
 
 /**
@@ -430,11 +430,11 @@ export interface FestivalRestaurantListResponse {
  */
 export interface FestivalRestaurantResponse {
   /** 식당명 */
-  name?: string;
+  name: string;
   /** 주소 */
-  address?: string;
+  address: string;
   /** 대표 이미지 */
-  imageUrl?: string;
+  imageUrl: string;
 }
 
 /**
@@ -457,32 +457,32 @@ export interface FestivalSearchRequest {
    * 페이지 번호 (0부터 시작)
    * @minimum 0
    */
-  page?: number;
+  page: number;
   /**
    * 페이지 크기
    * @minimum 1
    * @maximum 100
    */
-  size?: number;
+  size: number;
   /** 정렬 기준 (예: createdAt,desc) */
-  sort?: string;
+  sort: string;
   /** 검색 시작 날짜 */
-  startDate?: string;
+  startDate: string;
   /** 검색 종료 날짜 */
-  endDate?: string;
+  endDate: string;
   /** 경도 (한국 범위: 124~132) */
-  mapX?: number;
+  mapX: number;
   /** 위도 (한국 범위: 33~39) */
-  mapY?: number;
+  mapY: number;
   /** 검색 반경(미터) */
-  radius?: number;
+  radius: number;
   /** 지역 코드 */
-  regionCode?: number;
+  regionCode: number;
   /** 축제 테마 */
-  theme?: FestivalSearchRequestTheme;
+  theme: FestivalSearchRequestTheme;
   /** 검색 키워드 (축제명, 설명, 지역명 등 자유 검색) */
-  searchParam?: string;
-  offset?: number;
+  searchParam: string;
+  offset: number;
 }
 
 /**
@@ -490,21 +490,21 @@ export interface FestivalSearchRequest {
  */
 export interface FestivalListResponse {
   /** 응답 데이터 목록 */
-  content?: FestivalSummaryResponse[];
+  content: FestivalSummaryResponse[];
   /** 현재 페이지 번호 (0부터 시작) */
-  page?: number;
+  page: number;
   /** 페이지 크기 */
-  size?: number;
+  size: number;
   /** 전체 요소 개수 */
-  totalElements?: number;
+  totalElements: number;
   /** 전체 페이지 개수 */
-  totalPages?: number;
+  totalPages: number;
   /** 첫 번째 페이지 여부 */
-  first?: boolean;
+  first: boolean;
   /** 마지막 페이지 여부 */
-  last?: boolean;
+  last: boolean;
   /** 빈 페이지 여부 */
-  empty?: boolean;
+  empty: boolean;
 }
 
 /**
@@ -512,21 +512,21 @@ export interface FestivalListResponse {
  */
 export interface FestivalSummaryResponse {
   /** 축제 ID */
-  id?: number;
+  id: number;
   /** 썸네일 이미지 URL */
-  thumbnail?: string;
+  thumbnail: string;
   /** 테마 */
-  theme?: string;
+  theme: string;
   /** 축제명 */
-  title?: string;
+  title: string;
   /** 북마크 여부 */
-  bookmarked?: boolean;
+  bookmarked: boolean;
   /** 주소 */
-  address?: string;
+  address: string;
   /** 축제 시작일 */
-  startDate?: string;
+  startDate: string;
   /** 축제 종료일 */
-  endDate?: string;
+  endDate: string;
 }
 
 /**
@@ -548,18 +548,18 @@ export interface FestivalPersonalTestRequest {
    * 페이지 번호 (0부터 시작)
    * @minimum 0
    */
-  page?: number;
+  page: number;
   /**
    * 페이지 크기
    * @minimum 1
    * @maximum 100
    */
-  size?: number;
+  size: number;
   /** 정렬 기준 (예: createdAt,desc) */
-  sort?: string;
+  sort: string;
   /** 테스트 성향 결과 */
-  personalityType?: FestivalPersonalTestRequestPersonalityType;
-  offset?: number;
+  personalityType: FestivalPersonalTestRequestPersonalityType;
+  offset: number;
 }
 
 export interface FestivalMyPageRequest {
@@ -567,18 +567,18 @@ export interface FestivalMyPageRequest {
    * 페이지 번호 (0부터 시작)
    * @minimum 0
    */
-  page?: number;
+  page: number;
   /**
    * 페이지 크기
    * @minimum 1
    * @maximum 100
    */
-  size?: number;
+  size: number;
   /** 정렬 기준 (예: createdAt,desc) */
-  sort?: string;
+  sort: string;
   /** 북마크 여부 */
-  bookmarked?: boolean;
-  offset?: number;
+  bookmarked: boolean;
+  offset: number;
 }
 
 /**
@@ -642,32 +642,32 @@ export interface FestivalMapRequest {
    * 페이지 번호 (0부터 시작)
    * @minimum 0
    */
-  page?: number;
+  page: number;
   /**
    * 페이지 크기
    * @minimum 1
    * @maximum 100
    */
-  size?: number;
+  size: number;
   /** 정렬 기준 (예: createdAt,desc) */
-  sort?: string;
+  sort: string;
   /** 축제 상태 */
-  status?: FestivalMapRequestStatus;
+  status: FestivalMapRequestStatus;
   /** 기간 */
-  period?: FestivalMapRequestPeriod;
+  period: FestivalMapRequestPeriod;
   /** 누구랑 */
-  withWhom?: FestivalMapRequestWithWhom;
+  withWhom: FestivalMapRequestWithWhom;
   /** 테마 */
-  theme?: FestivalMapRequestTheme;
+  theme: FestivalMapRequestTheme;
   /** 좌상단 위도 */
-  latTopLeft?: number;
+  latTopLeft: number;
   /** 좌상단 경도 */
-  lngTopLeft?: number;
+  lngTopLeft: number;
   /** 우하단 위도 */
-  latBottomRight?: number;
+  latBottomRight: number;
   /** 우하단 경도 */
-  lngBottomRight?: number;
-  offset?: number;
+  lngBottomRight: number;
+  offset: number;
 }
 
 /**
@@ -722,30 +722,30 @@ export interface FestivalCalendarRequest {
    * 페이지 번호 (0부터 시작)
    * @minimum 0
    */
-  page?: number;
+  page: number;
   /**
    * 페이지 크기
    * @minimum 1
    * @maximum 100
    */
-  size?: number;
+  size: number;
   /** 정렬 기준 (예: createdAt,desc) */
-  sort?: string;
+  sort: string;
   /** 지역 필터 */
-  region?: FestivalCalendarRequestRegion;
+  region: FestivalCalendarRequestRegion;
   /** 누구랑 */
-  withWhom?: FestivalCalendarRequestWithWhom;
+  withWhom: FestivalCalendarRequestWithWhom;
   /** 테마 */
-  theme?: FestivalCalendarRequestTheme;
+  theme: FestivalCalendarRequestTheme;
   /** 조회 기준 날짜 */
-  date?: string;
-  offset?: number;
+  date: string;
+  offset: number;
 }
 
 export interface UserInfo {
-  userId?: number;
-  email?: string;
-  nickname?: string;
+  userId: number;
+  email: string;
+  nickname: string;
 }
 
 export type GetFestivalReviewsParams = {
@@ -771,7 +771,7 @@ export type UpdateMyInfoParams = {
 };
 
 export type GetTopKeywordsParams = {
-  limit?: number;
+  limit: number;
 };
 
 export type GetMyReviewsParams = {
