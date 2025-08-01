@@ -1,9 +1,5 @@
-import NaverMap from './_modules/naver-map';
+import MapPageClient from './_modules/map-page-client';
 
 export default function Home() {
-  return (
-    <div className='h-full w-full'>
-      <NaverMap />
-    </div>
-  );
+  return <MapPageClient />;
 }
