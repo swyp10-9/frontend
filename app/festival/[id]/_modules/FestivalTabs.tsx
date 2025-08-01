@@ -10,7 +10,7 @@ export default function FestivalTabs({
   onTabChange,
 }: FestivalTabsProps) {
   return (
-    <div className='sticky top-0 z-20 bg-white px-4 py-2'>
+    <div className='sticky top-0 z-20 bg-white py-2'>
       <Tabs value={selectedTab} onValueChange={onTabChange} variant='underline'>
         <Tab label='축제 정보' value='festival-info' />
         <Tab label='여행 코스' value='travel-course' />
