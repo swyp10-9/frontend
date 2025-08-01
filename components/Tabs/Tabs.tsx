@@ -3,7 +3,6 @@ import { createContext, useContext, useState } from 'react';
 
 import { type VariantProps, cva } from 'class-variance-authority';
 
-import { TabType } from '@/app/festival/[id]/page';
 import { cn } from '@/lib/utils';
 
 const tabsVariants = cva('relative flex w-full items-center', {
@@ -52,7 +51,7 @@ interface TabsContextType {
 
 const TabsContext = createContext<TabsContextType | null>(null);
 
-export function Tabs({
+export function Tabs<Values extends string>({
   children,
   defaultValue,
   value,
@@ -64,14 +63,14 @@ export function Tabs({
 }: React.ComponentProps<'div'> &
   VariantProps<typeof tabsVariants> & {
     children: React.ReactNode;
-    defaultValue?: TabType;
-    value?: TabType;
-    onValueChange?: (value: TabType) => void;
+    defaultValue?: Values;
+    value?: Values;
+    onValueChange?: (value: Values) => void;
   }) {
   const [internalValue, setInternalValue] = useState(defaultValue || '');
 
   const selectedValue = value !== undefined ? value : internalValue;
-  const handleValueChange = (newValue: TabType) => {
+  const handleValueChange = (newValue: Values) => {
     if (value === undefined) {
       setInternalValue(newValue);
     }
@@ -94,7 +93,7 @@ export function Tabs({
   );
 }
 
-export function Tab({
+export function Tab<Values extends string>({
   label,
   value,
   onClick,
@@ -105,7 +104,7 @@ export function Tab({
 }: React.ComponentProps<'div'> &
   VariantProps<typeof tabVariants> & {
     label: string;
-    value: TabType;
+    value: Values;
     onClick?: () => void;
   }) {
   const context = useContext(TabsContext);
