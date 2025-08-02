@@ -14,7 +14,7 @@ export function FilterChip(props: FilterChipProps) {
 
   return (
     <div
-      className={`flex cursor-pointer items-center justify-center rounded-full px-2 py-1 ${is_selected ? selectedClassName : unselectedClassName} h-[25px] w-[60px]`}
+      className={`flex cursor-pointer items-center justify-center rounded-full bg-white px-2 py-1 ${is_selected ? selectedClassName : unselectedClassName} h-[25px] w-[60px]`}
       onClick={onClick}
     >
       {downChevron && (
