@@ -342,24 +342,6 @@ export default function NaverMap({
     if (!mapRef.current) return;
 
     const basic_loc = [37.3595704, 127.105399];
-    const loc: number[] = [];
-
-    if (navigator?.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          console.log('position:::', position);
-          loc.push(position.coords.latitude, position.coords.longitude);
-        },
-        () => {
-          loc.push(basic_loc[0], basic_loc[1]);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0,
-        },
-      );
-    }
 
     resizeObserverRef.current = new ResizeObserver(handleResize);
     resizeObserverRef.current.observe(mapRef.current);
@@ -372,26 +354,41 @@ export default function NaverMap({
     );
     intersectionObserverRef.current.observe(mapRef.current);
 
-    if (window.naver && window.naver.maps) {
-      initializeMap();
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${clientId}`;
-    script.async = true;
-
-    script.onload = () => {
-      initializeMap();
+    // 위치 정보를 가져오는 함수
+    const getCurrentLocation = (): Promise<[number, number]> => {
+      return new Promise(resolve => {
+        if (navigator?.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            position => {
+              console.log('position:::', position);
+              resolve([position.coords.latitude, position.coords.longitude]);
+            },
+            () => {
+              console.log('위치 정보 가져오기 실패, 기본 위치 사용');
+              resolve([basic_loc[0], basic_loc[1]]);
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 5000,
+              maximumAge: 0,
+            },
+          );
+        } else {
+          console.log('Geolocation 지원하지 않음, 기본 위치 사용');
+          resolve([basic_loc[0], basic_loc[1]]);
+        }
+      });
     };
 
-    document.head.appendChild(script);
-
-    function initializeMap() {
+    // 지도 초기화 함수
+    const initializeMap = async () => {
       if (!mapRef.current) return;
 
+      // 위치 정보 가져오기
+      const [lat, lng] = await getCurrentLocation();
+
       const mapOptions: naver.maps.MapOptions = {
-        center: new window.naver.maps.LatLng(loc[0], loc[1]),
+        center: new window.naver.maps.LatLng(lat, lng),
         zoom: 10,
         minZoom: 9,
         maxZoom: 13,
@@ -419,7 +416,22 @@ export default function NaverMap({
       }, 100);
 
       onMapReady?.(map);
+    };
+
+    if (window.naver && window.naver.maps) {
+      initializeMap();
+      return;
     }
+
+    const script = document.createElement('script');
+    script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${clientId}`;
+    script.async = true;
+
+    script.onload = () => {
+      initializeMap();
+    };
+
+    document.head.appendChild(script);
 
     return () => {
       if (resizeObserverRef.current) {
