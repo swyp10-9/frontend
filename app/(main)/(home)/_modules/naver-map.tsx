@@ -148,9 +148,12 @@ export default function NaverMap({
 
   const handleBoundsChange = useCallback(() => {
     if (!mapInstanceRef.current) return;
+    console.log('mapInstanceRef.current:::', mapInstanceRef);
 
     const bounds = mapInstanceRef.current.getBounds();
     if (!bounds) return;
+
+    // console.log('bounds:::', bounds);
 
     const sw = bounds.getMin();
     const ne = bounds.getMax();
@@ -164,7 +167,7 @@ export default function NaverMap({
       se: { lat: se.lat(), lng: se.lng() },
     };
 
-    console.log('지도 경계 변화:', boundsData);
+    // console.log('지도 경계 변화:', boundsData);
     onBoundsChange?.(boundsData);
 
     loadFestivalsInBounds(boundsData);

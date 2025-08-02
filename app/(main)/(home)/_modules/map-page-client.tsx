@@ -1,5 +1,11 @@
 'use client';
 
+import { useRouter, useSearchParams } from 'next/navigation';
+
+import { FilterChip } from '@/components/filter-chip';
+import { Drawer, DrawerTrigger } from '@/components/shadcn/drawer';
+
+import MapBottomFilter from './map-bottom-filter';
 import NaverMap from './naver-map';
 
 // 축제 데이터 타입 (naver-map.tsx와 동일)
@@ -19,7 +25,19 @@ interface Festival {
   isDetailed?: boolean;
 }
 
-export default function MapPageClient() {
+export default function MapPageClient({
+  initialParams,
+}: {
+  initialParams: {
+    status: string;
+    period: string;
+    withWhom: string;
+    theme: string;
+    isNearBy: string;
+  };
+}) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const handleMarkerClick = (festival: Festival, isDetailed: boolean) => {
     console.log('부모 컴포넌트에서 마커 클릭 감지:', { festival, isDetailed });
 
@@ -35,22 +53,47 @@ export default function MapPageClient() {
   };
 
   return (
-    <div className='h-full w-full'>
-      <NaverMap
-        onMapReady={map => {
-          console.log('map:::', map);
-        }}
-        onSizeChange={size => {
-          console.log('size:::', size);
-        }}
-        onVisibilityChange={isVisible => {
-          console.log('isVisible:::', isVisible);
-        }}
-        onBoundsChange={bounds => {
-          console.log('bounds:::', bounds);
-        }}
-        onMarkerClick={handleMarkerClick}
-      />
+    <div className='relative h-full w-full'>
+      <Drawer>
+        <div
+          className='absolute top-[15px] left-[15px] flex items-center gap-2'
+          style={{ zIndex: 99999999 }}
+        >
+          <FilterChip
+            label='내 주변'
+            is_selected={initialParams?.isNearBy === 'true'}
+            onClick={() => {
+              const params = new URLSearchParams(searchParams);
+              if (initialParams?.isNearBy === 'true') {
+                params.delete(`isNearBy`);
+                router.replace(`?${params.toString()}`);
+              } else {
+                params.set('isNearBy', 'true');
+                router.replace(`?${params.toString()}`);
+              }
+            }}
+          />
+          <DrawerTrigger>
+            <FilterChip label='필터' is_selected={false} downChevron />
+          </DrawerTrigger>
+        </div>
+        <NaverMap
+          onMapReady={map => {
+            // console.log('map:::', map);
+          }}
+          onSizeChange={size => {
+            // console.log('size:::', size);
+          }}
+          onVisibilityChange={isVisible => {
+            // console.log('isVisible:::', isVisible);
+          }}
+          onBoundsChange={bounds => {
+            // console.log('bounds:::', bounds);
+          }}
+          onMarkerClick={handleMarkerClick}
+        />
+        <MapBottomFilter initialParams={initialParams} />
+      </Drawer>
     </div>
   );
 }
