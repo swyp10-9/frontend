@@ -105,6 +105,7 @@ export default function NaverMap({
   const [currentZoom, setCurrentZoom] = useState(10);
   const [festivals, setFestivals] = useState<Festival[]>([]);
   const [isLoadingFestivals, setIsLoadingFestivals] = useState(false);
+  const boundsChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleResize = useCallback(
     (entries: ResizeObserverEntry[]) => {
@@ -148,7 +149,6 @@ export default function NaverMap({
 
   const handleBoundsChange = useCallback(() => {
     if (!mapInstanceRef.current) return;
-    console.log('mapInstanceRef.current:::', mapInstanceRef);
 
     const bounds = mapInstanceRef.current.getBounds();
     if (!bounds) return;
@@ -170,8 +170,39 @@ export default function NaverMap({
     // console.log('지도 경계 변화:', boundsData);
     onBoundsChange?.(boundsData);
 
-    loadFestivalsInBounds(boundsData);
+    // 이전 타이머가 있다면 취소
+    if (boundsChangeTimeoutRef.current) {
+      clearTimeout(boundsChangeTimeoutRef.current);
+    }
+
+    // 500ms 후에 축제 데이터 로드
+    boundsChangeTimeoutRef.current = setTimeout(() => {
+      loadFestivalsInBounds(boundsData);
+    }, 500);
   }, [onBoundsChange]);
+
+  const loadFestivalsInBounds = useCallback(
+    async (bounds: {
+      sw: { lat: number; lng: number };
+      ne: { lat: number; lng: number };
+      nw: { lat: number; lng: number };
+      se: { lat: number; lng: number };
+    }) => {
+      if (isLoadingFestivals) return;
+
+      setIsLoadingFestivals(true);
+      try {
+        const response = await fetchFestivalsInBounds(bounds);
+        setFestivals(response.festivals);
+        console.log('축제 데이터 로드:', response.festivals.length);
+      } catch (error) {
+        console.error('축제 데이터 로드 실패:', error);
+      } finally {
+        setIsLoadingFestivals(false);
+      }
+    },
+    [isLoadingFestivals],
+  );
 
   const handleZoomChange = useCallback(() => {
     if (!mapInstanceRef.current) return;
@@ -315,29 +346,6 @@ export default function NaverMap({
     });
   }, [festivals, createMarker]);
 
-  const loadFestivalsInBounds = useCallback(
-    async (bounds: {
-      sw: { lat: number; lng: number };
-      ne: { lat: number; lng: number };
-      nw: { lat: number; lng: number };
-      se: { lat: number; lng: number };
-    }) => {
-      if (isLoadingFestivals) return;
-
-      setIsLoadingFestivals(true);
-      try {
-        const response = await fetchFestivalsInBounds(bounds);
-        setFestivals(response.festivals);
-        console.log('축제 데이터 로드:', response.festivals.length);
-      } catch (error) {
-        console.error('축제 데이터 로드 실패:', error);
-      } finally {
-        setIsLoadingFestivals(false);
-      }
-    },
-    [isLoadingFestivals],
-  );
-
   useEffect(() => {
     if (!mapRef.current) return;
 
@@ -449,6 +457,11 @@ export default function NaverMap({
           mapInstanceRef.current,
           'zoom_changed',
         );
+      }
+
+      // 타이머 정리
+      if (boundsChangeTimeoutRef.current) {
+        clearTimeout(boundsChangeTimeoutRef.current);
       }
 
       markersRef.current.forEach(marker => {
