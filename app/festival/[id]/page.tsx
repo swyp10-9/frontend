@@ -96,7 +96,7 @@ export default function FestivalDetail({ params }: FestivalDetailProps) {
           )}
           {selectedTab === 'travel-course' && <TravelCourse />}
           {selectedTab === 'restaurants' && <RestaurantList />}
-          {selectedTab === 'reviews' && <Reviews />}
+          {selectedTab === 'reviews' && <Reviews id={resolvedParams.id} />}
         </div>
       </div>
     </div>
