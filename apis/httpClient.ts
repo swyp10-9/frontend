@@ -1,17 +1,19 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
-import { cookies } from 'next/headers';
+
+// import { cookies } from 'next/headers';
 
 import config from '@/config';
 
 const getAccessToken = async () => {
-  if (typeof window === 'undefined') {
-    return (await cookies()).get('accessToken')?.value;
+  try {
+    const response = await fetch('/api/auth/access-token');
+    const data = await response.json();
+    console.log('token data:::', data);
+    return data.accessToken;
+  } catch (error) {
+    console.error('Error fetching access token:', error);
+    return '';
   }
-
-  return document.cookie
-    .split('; ')
-    .find(row => row.startsWith('accessToken='))
-    ?.split('=')[1];
 };
 
 export const attachAccessToken = async (config: InternalAxiosRequestConfig) => {
