@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'picsum.photos',
       },
+      {
+        protocol: 'http',
+        hostname: '175.45.195.169:8080/',
+      },
     ],
   },
   // NOTE: SVGR 설정 - @see https://react-svgr.com/docs/next/
