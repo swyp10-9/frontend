@@ -47,13 +47,9 @@ const fetchFestivalsInBounds = async (bounds: {
     return {
       id: index + 1,
       title: `축제 제목 ${index + 1}`,
-      theme: [
-        'culture_art',
-        'food_cuisine',
-        'music_performance',
-        'nature_experience',
-        'tradition_history',
-      ][Math.floor(Math.random() * 5)],
+      theme: ['CULTURE_ART', 'FOOD', 'MUSIC', 'NATURE', 'TRADITION'][
+        Math.floor(Math.random() * 5)
+      ],
       image: `https://picsum.photos/200/300?random=${index + 1}`,
       loc: ['서울', '경기', '강원', '충청', '전라', '경상', '제주'][
         Math.floor(Math.random() * 7)

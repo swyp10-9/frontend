@@ -1,9 +1,9 @@
 export const regionList = [
-  { type: 'seoul', label: '서울' },
-  { type: 'gyeonggi', label: '경기' },
-  { type: 'gangwon', label: '강원' },
-  { type: 'chungcheong', label: '충청' },
-  { type: 'jeolla', label: '전라' },
-  { type: 'gyeongsang', label: '경상' },
-  { type: 'jeju', label: '제주' },
+  { type: 'SEOUL', label: '서울' },
+  { type: 'GYEONGGI', label: '경기' },
+  { type: 'GANGWON', label: '강원' },
+  { type: 'CHUNGCHEONG', label: '충청' },
+  { type: 'JEOLLA', label: '전라' },
+  { type: 'GYEONGSANG', label: '경상' },
+  { type: 'JEJU', label: '제주' },
 ];
