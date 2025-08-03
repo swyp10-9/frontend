@@ -16,7 +16,7 @@ export default function LoginButton({
   return (
     <div>
       {type === 'not-login' && (
-        <a className=''>
+        <a className='cursor-pointer' href={'/'}>
           <div className='flex h-[58px] w-full min-w-[320px] items-center justify-center gap-2.5 rounded-lg border border-gray-50'>
             <p className='ui-text-sub-head-2'>로그인 없이 볼게요</p>
           </div>
