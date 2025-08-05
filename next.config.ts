@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
     // NOTE: 빌드 이전 직접 lint 실행
     ignoreDuringBuilds: true,
   },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
   images: {
     remotePatterns: [
       {
