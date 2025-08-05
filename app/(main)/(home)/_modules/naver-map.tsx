@@ -412,7 +412,7 @@ export default function NaverMap({
       const mapOptions: naver.maps.MapOptions = {
         center: new window.naver.maps.LatLng(lat, lng),
         zoom: initialZoom || 10,
-        minZoom: 5,
+        minZoom: 6,
         maxZoom: 17,
         disableKineticPan: false,
         scaleControl: false,
