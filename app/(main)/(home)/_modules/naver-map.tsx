@@ -182,7 +182,7 @@ export default function NaverMap({
     // 500ms 후에 축제 데이터 로드
     boundsChangeTimeoutRef.current = setTimeout(() => {
       loadFestivalsInBounds(boundsData);
-    }, 500);
+    }, 700);
   }, [onBoundsChange]);
 
   const loadFestivalsInBounds = useCallback(
@@ -412,8 +412,8 @@ export default function NaverMap({
       const mapOptions: naver.maps.MapOptions = {
         center: new window.naver.maps.LatLng(lat, lng),
         zoom: initialZoom || 10,
-        minZoom: 9,
-        maxZoom: 13,
+        minZoom: 5,
+        maxZoom: 17,
         disableKineticPan: false,
         scaleControl: false,
         logoControl: false,
