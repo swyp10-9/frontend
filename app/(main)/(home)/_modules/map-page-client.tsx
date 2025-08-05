@@ -179,18 +179,18 @@ export default function MapPageClient({
         <NaverMap
           initialCenter={getMapStateFromURL().center || undefined}
           initialZoom={getMapStateFromURL().zoom || undefined}
-          onMapReady={map => {
-            // console.log('map:::', map);
-          }}
-          onSizeChange={size => {
-            // console.log('size:::', size);
-          }}
-          onVisibilityChange={isVisible => {
-            // console.log('isVisible:::', isVisible);
-          }}
-          onBoundsChange={bounds => {
-            // console.log('bounds:::', bounds);
-          }}
+          // onMapReady={map => {
+          //   // console.log('map:::', map);
+          // }}
+          // onSizeChange={size => {
+          //   // console.log('size:::', size);
+          // }}
+          // onVisibilityChange={isVisible => {
+          //   // console.log('isVisible:::', isVisible);
+          // }}
+          // onBoundsChange={bounds => {
+          //   // console.log('bounds:::', bounds);
+          // }}
           onCenterChange={handleCenterChange}
           onZoomChange={handleZoomChange}
           onMarkerClick={handleMarkerClick}
