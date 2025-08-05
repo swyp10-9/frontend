@@ -8,7 +8,7 @@ import { FilterChip } from '@/components/filter-chip';
 import { Drawer, DrawerTrigger } from '@/components/shadcn/drawer';
 
 import MapBottomFilter from './map-bottom-filter';
-import NaverMap from './naver-map';
+import NaverMap, { getCurrentLocation } from './naver-map';
 
 // 축제 데이터 타입 (naver-map.tsx와 동일)
 interface Festival {
@@ -161,13 +161,17 @@ export default function MapPageClient({
           <FilterChip
             label='내 주변'
             is_selected={initialParams?.isNearBy === 'true'}
-            onClick={() => {
+            onClick={async () => {
               const params = new URLSearchParams(searchParams);
               if (initialParams?.isNearBy === 'true') {
                 params.delete(`isNearBy`);
                 router.replace(`?${params.toString()}`);
               } else {
+                const [nearLat, nearLng]: [number, number] =
+                  (await getCurrentLocation()) as [number, number];
                 params.set('isNearBy', 'true');
+                params.set('lat', `${nearLat}`);
+                params.set('lng', `${nearLng}`);
                 router.replace(`?${params.toString()}`);
               }
             }}
