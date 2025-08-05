@@ -5,6 +5,12 @@ import { useState } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import {
+  FestivalCalendarRequestRegion,
+  FestivalCalendarRequestTheme,
+  FestivalCalendarRequestWithWhom,
+  FestivalSummaryResponse,
+} from '@/apis/SWYP10BackendAPI.schemas';
 import FestivalListView from '@/components/festival-list-view';
 import { FilterChip, SelectedChip } from '@/components/filter-chip';
 import { DrawerTrigger } from '@/components/shadcn/drawer';
@@ -19,60 +25,67 @@ interface ListProps {
     label?: string | undefined;
   }[];
 }
-
-// 가상 API 응답 타입
-interface Festival {
-  id: number;
-  image: string;
-  theme: string;
-  title: string;
-  loc: string;
-  start_date: string;
-  end_date: string;
-  is_marked: boolean;
-}
-
 interface FestivalResponse {
-  festivals: Festival[];
+  festivals: FestivalSummaryResponse[];
   nextCursor: number | null;
   total: number;
 }
 
-// 가상 API 함수
-const fetchFestivals = async ({ pageParam = 0 }): Promise<FestivalResponse> => {
-  // 실제 API 호출을 시뮬레이션
-  await new Promise(resolve => setTimeout(resolve, 500));
-
+// API route를 통한 축제 데이터 가져오기
+const fetchFestivals = async ({
+  pageParam = 0,
+  region,
+  withWhom,
+  theme,
+  selected,
+}: {
+  pageParam?: number;
+  region?: FestivalCalendarRequestRegion;
+  withWhom?: FestivalCalendarRequestWithWhom;
+  theme?: FestivalCalendarRequestTheme;
+  selected?: string;
+}): Promise<FestivalResponse> => {
   const pageSize = 10;
-  const startIndex = pageParam * pageSize;
 
-  // 가상 데이터 생성
-  const festivals: Festival[] = Array.from(
-    { length: pageSize },
-    (_, index) => ({
-      id: startIndex + index + 1,
-      image: `https://picsum.photos/200/300?random=${startIndex + index + 1}`,
-      theme: [
-        'culture_art',
-        'food_cuisine',
-        'music_performance',
-        'nature_experience',
-        'tradition_history',
-      ][Math.floor(Math.random() * 5)],
-      title: `축제 제목 ${startIndex + index + 1}`,
-      loc: ['서울', '경기', '강원', '충청', '전라', '경상', '제주'][
-        Math.floor(Math.random() * 7)
-      ],
-      start_date: '2025-07-10',
-      end_date: '2025-07-10',
-      is_marked: Math.random() > 0.7,
-    }),
-  );
+  // URL 파라미터 구성
+  const params = new URLSearchParams({
+    page: pageParam.toString(),
+    size: pageSize.toString(),
+    sort: 'createdAt,desc',
+    region: region || FestivalCalendarRequestRegion.ALL,
+    withWhom: withWhom || FestivalCalendarRequestWithWhom.ALL,
+    theme: theme || FestivalCalendarRequestTheme.ALL,
+    offset: (pageParam * 10).toString(),
+  });
+
+  // selected 값이 있으면 date 파라미터 추가
+  if (selected) {
+    params.set('date', selected);
+  }
+
+  const response = await fetch(`/api/festivals/calendar?${params.toString()}`);
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    console.error('API response error:', {
+      status: response.status,
+      statusText: response.statusText,
+      errorData,
+    });
+    throw new Error(
+      `Failed to fetch festivals: ${response.status} ${response.statusText}`,
+    );
+  }
+
+  const responseData = await response.json();
+  console.log('Client - API response:', responseData);
+
+  const { content: festivals, totalElements } = responseData;
 
   return {
     festivals,
     nextCursor: pageParam < 9 ? pageParam + 1 : null, // 10페이지까지만
-    total: 100,
+    total: totalElements,
   };
 };
 
@@ -98,7 +111,20 @@ export default function List({ selected, paramsList, isNearBy }: ListProps) {
     isError,
   } = useInfiniteQuery({
     queryKey: ['festivals', selected],
-    queryFn: fetchFestivals,
+    queryFn: ({ pageParam }) =>
+      fetchFestivals({
+        pageParam,
+        region: paramsList
+          .find(item => item.name === 'region')
+          ?.type?.toLocaleUpperCase() as FestivalCalendarRequestRegion,
+        withWhom: paramsList
+          .find(item => item.name === 'withWhom')
+          ?.type?.toLocaleUpperCase() as FestivalCalendarRequestWithWhom,
+        theme: paramsList
+          .find(item => item.name === 'theme')
+          ?.type?.toLocaleUpperCase() as FestivalCalendarRequestTheme,
+        selected,
+      }),
     getNextPageParam: lastPage => lastPage.nextCursor,
     initialPageParam: 0,
   });
@@ -156,6 +182,19 @@ export default function List({ selected, paramsList, isNearBy }: ListProps) {
           <DrawerTrigger>
             <FilterChip label='필터' is_selected={false} downChevron />
           </DrawerTrigger>
+          {[...(paramsList || [])].map(param => {
+            return (
+              <SelectedChip
+                key={param?.type}
+                label={param?.label || ''}
+                onClick={() => {
+                  const params = new URLSearchParams(searchParams);
+                  params.delete(param?.name || '');
+                  router.replace(`?${params.toString()}`);
+                }}
+              />
+            );
+          })}
         </div>
         <div className='flex items-center gap-2'>
           <p className='ui-text-head-2'>오류가 발생했습니다</p>
@@ -204,16 +243,16 @@ export default function List({ selected, paramsList, isNearBy }: ListProps) {
         <p className='ui-text-body'>{formatDate(displayDate)}</p>
       </div>
       <div className='flex w-full flex-col gap-10'>
-        {allFestivals.map(festival => (
+        {[...(allFestivals || [])].map((festival, idx) => (
           <FestivalListView
-            key={festival.id}
-            image={festival.image}
-            theme={festival.theme}
-            title={festival.title}
-            loc={festival.loc}
-            start_date={festival.start_date}
-            end_date={festival.end_date}
-            is_marked={festival.is_marked}
+            key={festival?.id || idx}
+            image={festival?.thumbnail || ''}
+            theme={festival?.theme || ''}
+            title={festival?.title || ''}
+            loc={festival?.address || ''}
+            start_date={festival?.startDate || ''}
+            end_date={festival?.endDate || ''}
+            is_marked={festival?.bookmarked || false}
           />
         ))}
         {/* 무한 스크롤 감지용 요소 */}

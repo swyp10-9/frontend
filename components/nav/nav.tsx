@@ -28,8 +28,13 @@ export function Nav() {
           width={28}
           height={28}
           className='aspect-square cursor-pointer rounded-full object-cover'
-          onClick={() => {
-            router.push('/mypage');
+          onClick={async () => {
+            const access_token = await fetch('/api/auth/access-token')
+              .then(r => r.json())
+              .then(r => !!r?.access_token || false);
+            if (access_token) {
+              router.push('/mypage');
+            } else router.push('/login');
           }}
         />
       </div>

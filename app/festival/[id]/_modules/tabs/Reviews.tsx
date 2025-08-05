@@ -1,11 +1,32 @@
-export default function Reviews() {
+'use client';
+
+import { useRouter } from 'next/navigation';
+
+import { Button } from '@/components/Button';
+
+interface ReviewsProps {
+  id: string;
+}
+
+export default function Reviews({ id }: ReviewsProps) {
+  const router = useRouter();
+
   return (
     <div className='space-y-4'>
       <div className='flex items-center justify-between'>
         <h3 className='ui-text-sub-head text-black'>리뷰 (24)</h3>
         <div className='flex items-center gap-1'>
-          <span className='text-yellow-500'>★</span>
-          <span className='ui-text-body-2 text-black'>4.5</span>
+          <Button
+            variant='ghost'
+            size='sm'
+            onClick={() => {
+              router.push(`/festival/${id}/write-review`);
+            }}
+          >
+            <p className='ui-text-sub-head-3'>리뷰쓰기</p>
+          </Button>
+          {/* <span className='text-yellow-500'>★</span>
+          <span className='ui-text-body-2 text-black'>4.5</span> */}
         </div>
       </div>
 

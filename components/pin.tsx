@@ -21,15 +21,15 @@ export default function Pin(props: PinProps) {
   if (variant === 'default') {
     const image = themeList.find(theme => theme.type === type)?.image || '';
     switch (type) {
-      case 'culture_art':
+      case 'CULTURE_ART':
         return <Image src={image} alt={type} width={36} height={36} />;
-      case 'food_cuisine':
+      case 'FOOD':
         return <Image src={image} alt={type} width={36} height={36} />;
-      case 'music_performance':
+      case 'MUSIC':
         return <Image src={image} alt={type} width={36} height={36} />;
-      case 'nature_experience':
+      case 'NATURE':
         return <Image src={image} alt={type} width={36} height={36} />;
-      case 'tradition_history':
+      case 'TRADITION':
         return <Image src={image} alt={type} width={36} height={36} />;
     }
   } else {

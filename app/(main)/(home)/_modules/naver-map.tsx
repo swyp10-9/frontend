@@ -47,13 +47,9 @@ const fetchFestivalsInBounds = async (bounds: {
     return {
       id: index + 1,
       title: `축제 제목 ${index + 1}`,
-      theme: [
-        'culture_art',
-        'food_cuisine',
-        'music_performance',
-        'nature_experience',
-        'tradition_history',
-      ][Math.floor(Math.random() * 5)],
+      theme: ['CULTURE_ART', 'FOOD', 'MUSIC', 'NATURE', 'TRADITION'][
+        Math.floor(Math.random() * 5)
+      ],
       image: `https://picsum.photos/200/300?random=${index + 1}`,
       loc: ['서울', '경기', '강원', '충청', '전라', '경상', '제주'][
         Math.floor(Math.random() * 7)
@@ -105,6 +101,7 @@ export default function NaverMap({
   const [currentZoom, setCurrentZoom] = useState(10);
   const [festivals, setFestivals] = useState<Festival[]>([]);
   const [isLoadingFestivals, setIsLoadingFestivals] = useState(false);
+  const boundsChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleResize = useCallback(
     (entries: ResizeObserverEntry[]) => {
@@ -152,6 +149,8 @@ export default function NaverMap({
     const bounds = mapInstanceRef.current.getBounds();
     if (!bounds) return;
 
+    // console.log('bounds:::', bounds);
+
     const sw = bounds.getMin();
     const ne = bounds.getMax();
     const nw = new window.naver.maps.LatLng(ne.y, sw.x);
@@ -164,11 +163,42 @@ export default function NaverMap({
       se: { lat: se.lat(), lng: se.lng() },
     };
 
-    console.log('지도 경계 변화:', boundsData);
+    // console.log('지도 경계 변화:', boundsData);
     onBoundsChange?.(boundsData);
 
-    loadFestivalsInBounds(boundsData);
+    // 이전 타이머가 있다면 취소
+    if (boundsChangeTimeoutRef.current) {
+      clearTimeout(boundsChangeTimeoutRef.current);
+    }
+
+    // 500ms 후에 축제 데이터 로드
+    boundsChangeTimeoutRef.current = setTimeout(() => {
+      loadFestivalsInBounds(boundsData);
+    }, 500);
   }, [onBoundsChange]);
+
+  const loadFestivalsInBounds = useCallback(
+    async (bounds: {
+      sw: { lat: number; lng: number };
+      ne: { lat: number; lng: number };
+      nw: { lat: number; lng: number };
+      se: { lat: number; lng: number };
+    }) => {
+      if (isLoadingFestivals) return;
+
+      setIsLoadingFestivals(true);
+      try {
+        const response = await fetchFestivalsInBounds(bounds);
+        setFestivals(response.festivals);
+        console.log('축제 데이터 로드:', response.festivals.length);
+      } catch (error) {
+        console.error('축제 데이터 로드 실패:', error);
+      } finally {
+        setIsLoadingFestivals(false);
+      }
+    },
+    [isLoadingFestivals],
+  );
 
   const handleZoomChange = useCallback(() => {
     if (!mapInstanceRef.current) return;
@@ -312,51 +342,10 @@ export default function NaverMap({
     });
   }, [festivals, createMarker]);
 
-  const loadFestivalsInBounds = useCallback(
-    async (bounds: {
-      sw: { lat: number; lng: number };
-      ne: { lat: number; lng: number };
-      nw: { lat: number; lng: number };
-      se: { lat: number; lng: number };
-    }) => {
-      if (isLoadingFestivals) return;
-
-      setIsLoadingFestivals(true);
-      try {
-        const response = await fetchFestivalsInBounds(bounds);
-        setFestivals(response.festivals);
-        console.log('축제 데이터 로드:', response.festivals.length);
-      } catch (error) {
-        console.error('축제 데이터 로드 실패:', error);
-      } finally {
-        setIsLoadingFestivals(false);
-      }
-    },
-    [isLoadingFestivals],
-  );
-
   useEffect(() => {
     if (!mapRef.current) return;
 
     const basic_loc = [37.3595704, 127.105399];
-    const loc: number[] = [];
-
-    if (navigator?.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          console.log('position:::', position);
-          loc.push(position.coords.latitude, position.coords.longitude);
-        },
-        () => {
-          loc.push(basic_loc[0], basic_loc[1]);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0,
-        },
-      );
-    }
 
     resizeObserverRef.current = new ResizeObserver(handleResize);
     resizeObserverRef.current.observe(mapRef.current);
@@ -369,26 +358,41 @@ export default function NaverMap({
     );
     intersectionObserverRef.current.observe(mapRef.current);
 
-    if (window.naver && window.naver.maps) {
-      initializeMap();
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${clientId}`;
-    script.async = true;
-
-    script.onload = () => {
-      initializeMap();
+    // 위치 정보를 가져오는 함수
+    const getCurrentLocation = (): Promise<[number, number]> => {
+      return new Promise(resolve => {
+        if (navigator?.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            position => {
+              console.log('position:::', position);
+              resolve([position.coords.latitude, position.coords.longitude]);
+            },
+            () => {
+              console.log('위치 정보 가져오기 실패, 기본 위치 사용');
+              resolve([basic_loc[0], basic_loc[1]]);
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 5000,
+              maximumAge: 0,
+            },
+          );
+        } else {
+          console.log('Geolocation 지원하지 않음, 기본 위치 사용');
+          resolve([basic_loc[0], basic_loc[1]]);
+        }
+      });
     };
 
-    document.head.appendChild(script);
-
-    function initializeMap() {
+    // 지도 초기화 함수
+    const initializeMap = async () => {
       if (!mapRef.current) return;
 
+      // 위치 정보 가져오기
+      const [lat, lng] = await getCurrentLocation();
+
       const mapOptions: naver.maps.MapOptions = {
-        center: new window.naver.maps.LatLng(loc[0], loc[1]),
+        center: new window.naver.maps.LatLng(lat, lng),
         zoom: 10,
         minZoom: 9,
         maxZoom: 13,
@@ -416,7 +420,22 @@ export default function NaverMap({
       }, 100);
 
       onMapReady?.(map);
+    };
+
+    if (window.naver && window.naver.maps) {
+      initializeMap();
+      return;
     }
+
+    const script = document.createElement('script');
+    script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${clientId}`;
+    script.async = true;
+
+    script.onload = () => {
+      initializeMap();
+    };
+
+    document.head.appendChild(script);
 
     return () => {
       if (resizeObserverRef.current) {
@@ -434,6 +453,11 @@ export default function NaverMap({
           mapInstanceRef.current,
           'zoom_changed',
         );
+      }
+
+      // 타이머 정리
+      if (boundsChangeTimeoutRef.current) {
+        clearTimeout(boundsChangeTimeoutRef.current);
       }
 
       markersRef.current.forEach(marker => {
