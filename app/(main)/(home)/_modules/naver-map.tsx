@@ -171,7 +171,7 @@ export default function NaverMap({
       se: { lat: se.lat(), lng: se.lng() },
     };
 
-    // console.log('지도 경계 변화:', boundsData);
+    console.log('지도 경계 변화:', boundsData);
     onBoundsChange?.(boundsData);
 
     // 이전 타이머가 있다면 취소
@@ -354,8 +354,6 @@ export default function NaverMap({
   useEffect(() => {
     if (!mapRef.current) return;
 
-    const basic_loc = [37.3595704, 127.105399];
-
     resizeObserverRef.current = new ResizeObserver(handleResize);
     resizeObserverRef.current.observe(mapRef.current);
 
@@ -368,30 +366,6 @@ export default function NaverMap({
     intersectionObserverRef.current.observe(mapRef.current);
 
     // 위치 정보를 가져오는 함수
-    const getCurrentLocation = (): Promise<[number, number]> => {
-      return new Promise(resolve => {
-        if (navigator?.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            position => {
-              console.log('position:::', position);
-              resolve([position.coords.latitude, position.coords.longitude]);
-            },
-            () => {
-              console.log('위치 정보 가져오기 실패, 기본 위치 사용');
-              resolve([basic_loc[0], basic_loc[1]]);
-            },
-            {
-              enableHighAccuracy: true,
-              timeout: 5000,
-              maximumAge: 0,
-            },
-          );
-        } else {
-          console.log('Geolocation 지원하지 않음, 기본 위치 사용');
-          resolve([basic_loc[0], basic_loc[1]]);
-        }
-      });
-    };
 
     // 지도 초기화 함수
     const initializeMap = async () => {
@@ -514,3 +488,30 @@ export default function NaverMap({
     />
   );
 }
+
+export const getCurrentLocation = (): Promise<[number, number]> => {
+  const basic_loc = [37.3595704, 127.105399];
+
+  return new Promise(resolve => {
+    if (navigator?.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          console.log('position:::', position);
+          resolve([position.coords.latitude, position.coords.longitude]);
+        },
+        () => {
+          console.log('위치 정보 가져오기 실패, 기본 위치 사용');
+          resolve([basic_loc[0], basic_loc[1]]);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0,
+        },
+      );
+    } else {
+      console.log('Geolocation 지원하지 않음, 기본 위치 사용');
+      resolve([basic_loc[0], basic_loc[1]]);
+    }
+  });
+};
