@@ -38,8 +38,6 @@ const fetchFestivalsInBounds = async (bounds: {
   nw: { lat: number; lng: number };
   se: { lat: number; lng: number };
 }): Promise<FestivalResponse> => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-
   const festivals: Festival[] = Array.from({ length: 15 }, (_, index) => {
     const lat = bounds.sw.lat + Math.random() * (bounds.ne.lat - bounds.sw.lat);
     const lng = bounds.sw.lng + Math.random() * (bounds.ne.lng - bounds.sw.lng);
