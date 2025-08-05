@@ -6,7 +6,7 @@ import config from '@/config';
 
 const getAccessToken = async () => {
   try {
-    const response = await fetch('/api/auth/access-token');
+    const response = await fetch(`${config.base_url}/api/auth/access-token`);
     const data = await response.json();
     console.log('token data:::', data);
     return data.accessToken;
