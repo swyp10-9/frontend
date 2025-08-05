@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { getFestivalsForCalendar } from '@/apis/SWYP10BackendAPI';
 import {
   FestivalCalendarRequestRegion,
   FestivalCalendarRequestTheme,
@@ -45,48 +46,29 @@ const fetchFestivals = async ({
   theme?: FestivalCalendarRequestTheme;
   selected?: string;
 }): Promise<FestivalResponse> => {
-  const pageSize = 10;
-
-  // URL 파라미터 구성
-  const params = new URLSearchParams({
-    page: pageParam.toString(),
-    size: pageSize.toString(),
-    sort: 'createdAt,desc',
-    region: region || FestivalCalendarRequestRegion.ALL,
-    withWhom: withWhom || FestivalCalendarRequestWithWhom.ALL,
-    theme: theme || FestivalCalendarRequestTheme.ALL,
-    offset: (pageParam * 10).toString(),
-  });
-
-  // selected 값이 있으면 date 파라미터 추가
-  if (selected) {
-    params.set('date', selected);
-  }
-
-  const response = await fetch(`/api/festivals/calendar?${params.toString()}`);
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    console.error('API response error:', {
-      status: response.status,
-      statusText: response.statusText,
-      errorData,
+  try {
+    const response = await getFestivalsForCalendar({
+      page: pageParam || 0,
+      size: 10,
+      sort: 'createdAt,desc',
+      region: region || FestivalCalendarRequestRegion.ALL,
+      withWhom: withWhom || FestivalCalendarRequestWithWhom.ALL,
+      theme: theme || FestivalCalendarRequestTheme.ALL,
+      date: selected || new Date().toISOString().split('T')[0],
+      offset: (pageParam || 0) * 10,
     });
-    throw new Error(
-      `Failed to fetch festivals: ${response.status} ${response.statusText}`,
-    );
+
+    const { content: festivals, totalElements } = response;
+
+    return {
+      festivals,
+      nextCursor: pageParam < 9 ? (pageParam || 0) + 1 : null, // 10페이지까지만
+      total: totalElements,
+    };
+  } catch (error) {
+    console.error('축제 데이터 로드 실패:', error);
+    throw new Error('Failed to fetch festivals');
   }
-
-  const responseData = await response.json();
-  console.log('Client - API response:', responseData);
-
-  const { content: festivals, totalElements } = responseData;
-
-  return {
-    festivals,
-    nextCursor: pageParam < 9 ? pageParam + 1 : null, // 10페이지까지만
-    total: totalElements,
-  };
 };
 
 export default function List({ selected, paramsList, isNearBy }: ListProps) {

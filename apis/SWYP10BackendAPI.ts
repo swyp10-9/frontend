@@ -49,8 +49,10 @@
  */
 import type {
   CheckEmailParams,
+  FestivalCalendarRequest,
   FestivalDetailResponse,
   FestivalListResponse,
+  FestivalMapRequest,
   FestivalRestaurantListResponse,
   FestivalReviewCreateRequest,
   FestivalReviewListResponse,
@@ -58,8 +60,6 @@ import type {
   GetFestivalRestaurantsParams,
   GetFestivalReviewsParams,
   GetFestivalTravelCoursesParams,
-  GetFestivalsForCalendarParams,
-  GetFestivalsForMapParams,
   GetFestivalsForPersonalTestParams,
   GetMyPageFestivalsParams,
   GetMyReviewsParams,
@@ -305,11 +305,11 @@ export const getMyPageFestivals = (params: GetMyPageFestivalsParams) => {
  * 축제 리스트 조회 - 지도 페이지
  * @summary 축제 리스트 조회 - 지도 페이지
  */
-export const getFestivalsForMap = (params: GetFestivalsForMapParams) => {
+export const getFestivalsForMap = (params: FestivalMapRequest) => {
   return httpClient<FestivalListResponse>({
     url: `/api/v1/festivals/map`,
     method: 'GET',
-    ...params,
+    params: { ...params },
   });
 };
 
@@ -317,13 +317,11 @@ export const getFestivalsForMap = (params: GetFestivalsForMapParams) => {
  * 축제 리스트 조회 - 달력 페이지
  * @summary 축제 리스트 조회 - 달력 페이지
  */
-export const getFestivalsForCalendar = (
-  params: GetFestivalsForCalendarParams,
-) => {
+export const getFestivalsForCalendar = (params: FestivalCalendarRequest) => {
   return httpClient<FestivalListResponse>({
     url: `/api/v1/festivals/calendar`,
     method: 'GET',
-    ...params,
+    params: { ...params },
   });
 };
 

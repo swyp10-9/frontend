@@ -527,6 +527,10 @@ export interface FestivalSummaryResponse {
   startDate: string;
   /** 축제 종료일 */
   endDate: string;
+  /** 경도 */
+  map_x: number;
+  /** 위도 */
+  map_y: number;
 }
 
 /**
