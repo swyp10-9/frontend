@@ -309,7 +309,7 @@ export const getFestivalsForMap = (params: GetFestivalsForMapParams) => {
   return httpClient<FestivalListResponse>({
     url: `/api/v1/festivals/map`,
     method: 'GET',
-    params,
+    ...params,
   });
 };
 
@@ -323,7 +323,7 @@ export const getFestivalsForCalendar = (
   return httpClient<FestivalListResponse>({
     url: `/api/v1/festivals/calendar`,
     method: 'GET',
-    params,
+    ...params,
   });
 };
 
