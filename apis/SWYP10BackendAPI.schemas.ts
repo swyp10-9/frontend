@@ -802,14 +802,17 @@ export type GetMyPageFestivalsParams = {
   request: FestivalMyPageRequest;
 };
 
+export type CheckEmailParams = {
+  email: string;
+};
+
+/**
+ * TODO: 아래 두 타입은 현재 사용하지 않는 타입이므로 추후 삭제 예정
+ */
 export type GetFestivalsForMapParams = {
   request: FestivalMapRequest;
 };
 
 export type GetFestivalsForCalendarParams = {
   request: FestivalCalendarRequest;
-};
-
-export type CheckEmailParams = {
-  email: string;
 };

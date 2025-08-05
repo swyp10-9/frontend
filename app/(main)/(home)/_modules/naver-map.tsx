@@ -53,6 +53,7 @@ const fetchFestivalsInBounds = async (
 ): Promise<FestivalResponse> => {
   try {
     const response = await getFestivalsForMap({
+      // TODO: request 속성 사용하지 않음
       page: 0,
       size: 100,
       sort: 'createdAt,desc',

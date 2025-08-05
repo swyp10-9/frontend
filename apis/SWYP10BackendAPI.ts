@@ -321,7 +321,7 @@ export const getFestivalsForCalendar = (params: FestivalCalendarRequest) => {
   return httpClient<FestivalListResponse>({
     url: `/api/v1/festivals/calendar`,
     method: 'GET',
-    params: { ...params },
+    params: { ...params }, // TODO: request 속성 사용하지 않음
   });
 };
 
