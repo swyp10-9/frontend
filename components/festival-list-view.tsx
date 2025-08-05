@@ -19,7 +19,7 @@ export default function FestivalListView(props: FestivalListViewProps) {
   return (
     <div className='flex min-h-[108px] w-full gap-4'>
       <Image
-        src={image}
+        src={image || '/image/logo.png'}
         alt='festival'
         className='aspect-square rounded-sm object-cover'
         width={108}

@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { getFestivalsForCalendar } from '@/apis/SWYP10BackendAPI';
 import {
   FestivalCalendarRequestRegion,
   FestivalCalendarRequestTheme,
@@ -32,35 +31,56 @@ interface FestivalResponse {
   total: number;
 }
 
-// 가상 API 함수
+// API route를 통한 축제 데이터 가져오기
 const fetchFestivals = async ({
   pageParam = 0,
   region,
   withWhom,
   theme,
+  selected,
 }: {
   pageParam?: number;
   region?: FestivalCalendarRequestRegion;
   withWhom?: FestivalCalendarRequestWithWhom;
   theme?: FestivalCalendarRequestTheme;
+  selected?: string;
 }): Promise<FestivalResponse> => {
-  // 실제 API 호출을 시뮬레이션
-  await new Promise(resolve => setTimeout(resolve, 500));
-
   const pageSize = 10;
 
-  const { content: festivals, totalElements } = await getFestivalsForCalendar({
-    request: {
-      page: pageParam,
-      size: pageSize,
-      sort: 'createdAt,desc',
-      region: region || FestivalCalendarRequestRegion.ALL,
-      withWhom: withWhom || FestivalCalendarRequestWithWhom.ALL,
-      theme: theme || FestivalCalendarRequestTheme.ALL,
-      date: '2025-08-03',
-      offset: pageParam * 10,
-    },
-  }).then(r => r);
+  // URL 파라미터 구성
+  const params = new URLSearchParams({
+    page: pageParam.toString(),
+    size: pageSize.toString(),
+    sort: 'createdAt,desc',
+    region: region || FestivalCalendarRequestRegion.ALL,
+    withWhom: withWhom || FestivalCalendarRequestWithWhom.ALL,
+    theme: theme || FestivalCalendarRequestTheme.ALL,
+    offset: (pageParam * 10).toString(),
+  });
+
+  // selected 값이 있으면 date 파라미터 추가
+  if (selected) {
+    params.set('date', selected);
+  }
+
+  const response = await fetch(`/api/festivals/calendar?${params.toString()}`);
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    console.error('API response error:', {
+      status: response.status,
+      statusText: response.statusText,
+      errorData,
+    });
+    throw new Error(
+      `Failed to fetch festivals: ${response.status} ${response.statusText}`,
+    );
+  }
+
+  const responseData = await response.json();
+  console.log('Client - API response:', responseData);
+
+  const { content: festivals, totalElements } = responseData;
 
   return {
     festivals,
@@ -103,6 +123,7 @@ export default function List({ selected, paramsList, isNearBy }: ListProps) {
         theme: paramsList
           .find(item => item.name === 'theme')
           ?.type?.toLocaleUpperCase() as FestivalCalendarRequestTheme,
+        selected,
       }),
     getNextPageParam: lastPage => lastPage.nextCursor,
     initialPageParam: 0,
