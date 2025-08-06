@@ -48,6 +48,7 @@
     "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4",
     "@tanstack/eslint-plugin-query": "^5.73.3",
+    "@tanstack/react-query-devtools": "^5.84.1",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/navermaps": "^3.9.1",
     "@types/node": "^20",

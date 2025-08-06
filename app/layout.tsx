@@ -1,3 +1,4 @@
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 
@@ -41,6 +42,7 @@ export default function RootLayout({
             </body>
           </html>
         </DialogProvider>
+        <ReactQueryDevtools />
       </ReactQueryClientProvider>
     </MSWClientSideProvider>
   );
