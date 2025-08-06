@@ -13,7 +13,7 @@ export const attachAccessToken = async (config: InternalAxiosRequestConfig) => {
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
   } else {
-    throw new Error('Access token is not found');
+    // throw new Error('Access token is not found');
   }
   return config;
 };
