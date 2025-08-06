@@ -13,6 +13,8 @@ interface SearchParamsType {
   withWhom: string;
   theme: string;
   isNearBy: string;
+  startDate: string;
+  endDate: string;
 }
 
 export default async function CalendarPage({
@@ -20,7 +22,8 @@ export default async function CalendarPage({
 }: {
   searchParams: Promise<SearchParamsType>;
 }) {
-  const { selected, region, withWhom, theme, isNearBy } = await searchParams;
+  const { selected, region, withWhom, theme, isNearBy, startDate, endDate } =
+    await searchParams;
 
   const list = [];
   if (region) {
@@ -45,6 +48,8 @@ export default async function CalendarPage({
       <Calendar initialDate={new Date(selected)} />
       <Drawer>
         <List
+          calendarStartDate={startDate}
+          calendarEndDate={endDate}
           selected={selected}
           paramsList={list}
           isNearBy={isNearBy === 'true'}

@@ -950,6 +950,8 @@ export interface FestivalCalendarRequest {
   theme: FestivalCalendarRequestTheme;
   /** 조회 기준 날짜 */
   date: string;
+  startDate: string;
+  endDate: string;
   offset: number;
 }
 
