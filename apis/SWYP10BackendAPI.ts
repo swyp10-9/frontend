@@ -48,6 +48,8 @@
  * OpenAPI spec version: 1.0.0
  */
 import type {
+  FestivalCalendarDailyCountRequest,
+  FestivalCalendarDailyCountResponse,
   FestivalCalendarRequest,
   FestivalDetailResponse,
   FestivalListResponse,
@@ -290,6 +292,16 @@ export const getFestivalsForCalendar = (params: FestivalCalendarRequest) => {
     url: `/api/v1/festivals/calendar`,
     method: 'GET',
     params: { ...params }, // TODO: request 속성 사용하지 않음
+  });
+};
+
+export const getFestivalsCalendarDailyCount = (
+  params: FestivalCalendarDailyCountRequest,
+) => {
+  return httpClient<FestivalCalendarDailyCountResponse>({
+    url: 'api/v1/festivals/calendar/daily-count',
+    method: 'GET',
+    params: { ...params },
   });
 };
 

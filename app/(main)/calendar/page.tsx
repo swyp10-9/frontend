@@ -1,3 +1,4 @@
+import { getFestivalsCalendarDailyCount } from '@/apis/SWYP10BackendAPI';
 import Calendar from '@/components/Calendar/Calendar';
 import { Drawer } from '@/components/shadcn/drawer';
 import { regionList } from '@/constants/regionList';
@@ -43,9 +44,21 @@ export default async function CalendarPage({
     });
   }
 
+  const dailyCountList = await getFestivalsCalendarDailyCount({
+    startDate,
+    endDate,
+  })
+    .then(r => r?.data)
+    .then(r => r?.dailyCounts || []);
+
+  console.log('dailyCountList::::', dailyCountList);
+
   return (
     <div className='flex flex-col gap-5'>
-      <Calendar initialDate={new Date(selected)} />
+      <Calendar
+        initialDate={new Date(selected)}
+        dailyCountList={dailyCountList}
+      />
       <Drawer>
         <List
           calendarStartDate={startDate}

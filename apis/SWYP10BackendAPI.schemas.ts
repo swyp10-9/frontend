@@ -56,6 +56,15 @@ export interface FestivalReviewCreateRequest {
   content: string;
 }
 
+export interface FestivalCalendarDailyCountResponse {
+  startDate: string;
+  endDate: string;
+  dailyCounts: {
+    date: string;
+    count: number;
+  }[];
+}
+
 /**
  * JWT 토큰 응답
  */
@@ -953,6 +962,11 @@ export interface FestivalCalendarRequest {
   startDate: string;
   endDate: string;
   offset: number;
+}
+
+export interface FestivalCalendarDailyCountRequest {
+  startDate: string;
+  endDate: string;
 }
 
 /**
