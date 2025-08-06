@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { getFestivalsForCalendar } from '@/apis/SWYP10BackendAPI';
@@ -253,13 +254,18 @@ export default function List({
       </div>
       <div className='flex w-full flex-col gap-10'>
         {allFestivals.length === 0 ? (
-          <div className='flex flex-col items-center justify-center py-20'>
-            <div className='mb-4 text-6xl'>🎭</div>
-            <p className='mb-2 ui-text-head-2 text-gray-500'>축제가 없습니다</p>
-            <p className='text-center ui-text-body text-gray-400'>
-              {formatDate(displayDate)}에는 등록된 축제가 없어요.
-              <br />
-              다른 날짜를 선택해보세요!
+          <div className='flex min-h-[400px] flex-col items-center justify-center'>
+            <Image
+              src={'/image/no-list/no-festival-list.png'}
+              alt='no-festival-list'
+              width={68}
+              height={68}
+            />
+            <p className='mt-5 ui-text-sub-head text-gray-700'>
+              조건에 맞는 축제가 없습니다.
+            </p>
+            <p className='mt-1 ui-text-body-2 text-gray-400'>
+              적용한 필터를 변경해보세요.
             </p>
           </div>
         ) : (
