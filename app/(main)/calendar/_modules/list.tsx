@@ -20,6 +20,8 @@ import { useInView } from '@/hooks/useInView';
 interface ListProps {
   selected?: string;
   isNearBy: boolean;
+  calendarStartDate: string;
+  calendarEndDate: string;
   paramsList: {
     name: string;
     type?: string | undefined;
@@ -39,12 +41,16 @@ const fetchFestivals = async ({
   withWhom,
   theme,
   selected,
+  calendarStartDate,
+  calendarEndDate,
 }: {
   pageParam?: number;
   region?: FestivalCalendarRequestRegion;
   withWhom?: FestivalCalendarRequestWithWhom;
   theme?: FestivalCalendarRequestTheme;
   selected?: string;
+  calendarStartDate?: string;
+  calendarEndDate?: string;
 }): Promise<FestivalResponse> => {
   try {
     const response = await getFestivalsForCalendar({
@@ -56,6 +62,8 @@ const fetchFestivals = async ({
       theme: theme || FestivalCalendarRequestTheme.ALL,
       date: selected || '',
       offset: (pageParam || 0) * 10,
+      startDate: calendarStartDate || '',
+      endDate: calendarEndDate || '',
     }).then(r => r.data);
 
     const festivals = response?.content || [];
@@ -73,7 +81,13 @@ const fetchFestivals = async ({
   }
 };
 
-export default function List({ selected, paramsList, isNearBy }: ListProps) {
+export default function List({
+  selected,
+  paramsList,
+  isNearBy,
+  calendarStartDate,
+  calendarEndDate,
+}: ListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isBottomView, setIsBottomView] = useState(false);
@@ -93,7 +107,14 @@ export default function List({ selected, paramsList, isNearBy }: ListProps) {
     isLoading,
     isError,
   } = useInfiniteQuery({
-    queryKey: ['festivals', selected, paramsList, isNearBy],
+    queryKey: [
+      'festivals',
+      selected,
+      paramsList,
+      isNearBy,
+      calendarStartDate,
+      calendarEndDate,
+    ],
     queryFn: ({ pageParam }) =>
       fetchFestivals({
         pageParam,
@@ -107,6 +128,8 @@ export default function List({ selected, paramsList, isNearBy }: ListProps) {
           .find(item => item.name === 'theme')
           ?.type?.toLocaleUpperCase() as FestivalCalendarRequestTheme,
         selected,
+        calendarStartDate,
+        calendarEndDate,
       }),
     getNextPageParam: lastPage => lastPage.nextCursor,
     initialPageParam: 0,
