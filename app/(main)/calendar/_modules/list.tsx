@@ -58,7 +58,7 @@ const fetchFestivals = async ({
       offset: (pageParam || 0) * 10,
     });
 
-    const { content: festivals, totalElements } = response;
+    const { content: festivals, totalElements } = response.data;
 
     return {
       festivals,
