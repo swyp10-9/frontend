@@ -66,6 +66,26 @@ export default function TabBar() {
           </span>
         </Link>
         <Link
+          href='/search'
+          className={`${LinkClassName} ${pathname === '/search' ? '' : ''}`}
+        >
+          <Icon
+            className='mb-0.5'
+            icon={
+              pathname === '/search'
+                ? 'iconamoon:search-fill'
+                : 'iconamoon:search'
+            }
+            fontSize={24}
+            color={pathname === '/search' ? undefined : 'gray'}
+          />
+          <span
+            className={`${pathname === '/search' ? 'ui-text-head-3' : 'ui-text-caption'}`}
+          >
+            검색
+          </span>
+        </Link>
+        <Link
           href='/customized'
           className={`${LinkClassName} ${pathname === '/customized' ? '' : ''}`}
         >
