@@ -4,7 +4,13 @@ import { Icon } from '@iconify/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-export default function Profile() {
+import { UserInfo } from '@/apis/SWYP10BackendAPI.schemas';
+
+interface ProfileProps {
+  userInfo: UserInfo | null;
+}
+
+export default function Profile({ userInfo }: ProfileProps) {
   const router = useRouter();
 
   return (
@@ -18,7 +24,7 @@ export default function Profile() {
       />
       <div className='flex flex-col'>
         <div className='flex items-center gap-1'>
-          <p className='ui-text-head-2'>홍길동 님</p>
+          <p className='ui-text-head-2'>{userInfo?.nickname || '사용자'} 님</p>
           <Icon
             icon='ic:baseline-edit'
             fontSize={20}
@@ -28,7 +34,9 @@ export default function Profile() {
             }}
           />
         </div>
-        <p className='ui-text-body-2'>chukjibeob@gmail.com</p>
+        <p className='ui-text-body-2'>
+          {userInfo?.email || '이메일 정보 없음'}
+        </p>
       </div>
     </div>
   );
