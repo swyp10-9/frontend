@@ -54,15 +54,17 @@ const fetchFestivals = async ({
       region: region || FestivalCalendarRequestRegion.ALL,
       withWhom: withWhom || FestivalCalendarRequestWithWhom.ALL,
       theme: theme || FestivalCalendarRequestTheme.ALL,
-      date: selected || new Date().toISOString().split('T')[0],
+      date: selected || '',
       offset: (pageParam || 0) * 10,
     });
 
-    const { content: festivals, totalElements } = response;
+    const festivals = response?.content || [];
+    const totalElements = response?.totalElements || 0;
+    const totalPages = response?.totalPages || 0;
 
     return {
       festivals,
-      nextCursor: pageParam < 9 ? (pageParam || 0) + 1 : null, // 10페이지까지만
+      nextCursor: pageParam < totalPages - 1 ? (pageParam || 0) + 1 : null,
       total: totalElements,
     };
   } catch (error) {
@@ -72,7 +74,6 @@ const fetchFestivals = async ({
 };
 
 export default function List({ selected, paramsList, isNearBy }: ListProps) {
-  console.log('paramsList::::', paramsList);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isBottomView, setIsBottomView] = useState(false);
@@ -92,7 +93,7 @@ export default function List({ selected, paramsList, isNearBy }: ListProps) {
     isLoading,
     isError,
   } = useInfiniteQuery({
-    queryKey: ['festivals', selected],
+    queryKey: ['festivals', selected, paramsList, isNearBy],
     queryFn: ({ pageParam }) =>
       fetchFestivals({
         pageParam,
@@ -112,10 +113,13 @@ export default function List({ selected, paramsList, isNearBy }: ListProps) {
   });
 
   // 선택된 날짜가 없으면 오늘 날짜 사용
-  const displayDate = selected || new Date().toISOString().split('T')[0];
+  const displayDate = selected || '';
 
   // 날짜 포맷팅 함수
   const formatDate = (dateString: string) => {
+    if (dateString === '') {
+      return '';
+    }
     const date = new Date(dateString);
 
     return `${date.getMonth() + 1}월 ${date.getDate()}일`;
@@ -225,33 +229,47 @@ export default function List({ selected, paramsList, isNearBy }: ListProps) {
         <p className='ui-text-body'>{formatDate(displayDate)}</p>
       </div>
       <div className='flex w-full flex-col gap-10'>
-        {[...(allFestivals || [])].map((festival, idx) => (
-          <FestivalListView
-            key={festival?.id || idx}
-            image={festival?.thumbnail || ''}
-            theme={festival?.theme || ''}
-            title={festival?.title || ''}
-            loc={festival?.address || ''}
-            start_date={festival?.startDate || ''}
-            end_date={festival?.endDate || ''}
-            is_marked={festival?.bookmarked || false}
-          />
-        ))}
-        {/* 무한 스크롤 감지용 요소 */}
-        <div
-          ref={el => {
-            if (el) {
-              observeBottom(el);
-            }
-          }}
-          className='h-4'
-        />
-        {isFetchingNextPage && (
-          <div className='flex justify-center py-4'>
-            <p className='ui-text-body text-gray-500'>
-              더 많은 축제를 불러오는 중...
+        {allFestivals.length === 0 ? (
+          <div className='flex flex-col items-center justify-center py-20'>
+            <div className='mb-4 text-6xl'>🎭</div>
+            <p className='mb-2 ui-text-head-2 text-gray-500'>축제가 없습니다</p>
+            <p className='text-center ui-text-body text-gray-400'>
+              {formatDate(displayDate)}에는 등록된 축제가 없어요.
+              <br />
+              다른 날짜를 선택해보세요!
             </p>
           </div>
+        ) : (
+          <>
+            {[...(allFestivals || [])].map((festival, idx) => (
+              <FestivalListView
+                key={festival?.id || idx}
+                image={festival?.thumbnail || ''}
+                theme={festival?.theme || ''}
+                title={festival?.title || ''}
+                loc={festival?.address || ''}
+                start_date={festival?.startDate || ''}
+                end_date={festival?.endDate || ''}
+                is_marked={festival?.bookmarked || false}
+              />
+            ))}
+            {/* 무한 스크롤 감지용 요소 */}
+            <div
+              ref={el => {
+                if (el) {
+                  observeBottom(el);
+                }
+              }}
+              className='h-4'
+            />
+            {isFetchingNextPage && (
+              <div className='flex justify-center py-4'>
+                <p className='ui-text-body text-gray-500'>
+                  더 많은 축제를 불러오는 중...
+                </p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
