@@ -5,6 +5,8 @@ import React, { useEffect, useState } from 'react';
 import { Icon } from '@iconify/react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
+import { FestivalCalendarDailyCountResponse } from '@/apis/SWYP10BackendAPI.schemas';
+
 // 이벤트 데이터 타입
 export interface EventData {
   id: string;
@@ -33,6 +35,7 @@ export interface CalendarProps {
   onDateSelect?: (date: string) => void;
   showNavigation?: boolean;
   showHolidays?: boolean;
+  dailyCountList?: FestivalCalendarDailyCountResponse['dailyCounts'];
 }
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
@@ -43,6 +46,7 @@ const Calendar = ({
   onDateSelect,
   showNavigation = true,
   showHolidays = true,
+  dailyCountList = [],
 }: CalendarProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -97,6 +101,15 @@ const Calendar = ({
     {} as Record<string, EventData[]>,
   );
 
+  // dailyCountList를 날짜별로 매핑
+  const dailyCountMap: Record<string, number> = dailyCountList.reduce(
+    (acc, item) => {
+      acc[item.date] = item.count;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
   // 날짜를 YYYY-MM-DD 형식으로 변환
   const formatDate = (year: number, month: number, day: number): string => {
     const monthStr = String(month + 1).padStart(2, '0');
@@ -138,7 +151,7 @@ const Calendar = ({
         date: dateStr,
         day: prevDay,
         events: [],
-        totalCount: 0,
+        totalCount: dailyCountMap[dateStr] || 0,
         isToday: false,
         isSelected: false,
         isHoliday:
@@ -155,7 +168,7 @@ const Calendar = ({
         date: dateStr,
         day: i,
         events: eventsForDate,
-        totalCount: eventsForDate.length > 0 ? eventsForDate.length : 99, // 임시로 99, API 연동 시 실제 개수로 교체
+        totalCount: dailyCountMap[dateStr] || 0, // dailyCountList에서 해당 날짜의 개수 가져오기
         isToday: isToday(i),
         isSelected: selectedDate === dateStr,
         isHoliday: showHolidays && new Date(year, month, i).getDay() === 0, // 일요일
@@ -174,7 +187,7 @@ const Calendar = ({
         date: dateStr,
         day: i,
         events: [],
-        totalCount: 0,
+        totalCount: dailyCountMap[dateStr] || 0,
         isToday: false,
         isSelected: false,
         isHoliday:

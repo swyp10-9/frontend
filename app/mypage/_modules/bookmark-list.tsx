@@ -3,65 +3,47 @@
 import { useState } from 'react';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
+import Image from 'next/image';
 
+import { getMyPageFestivals } from '@/apis/SWYP10BackendAPI';
+import { FestivalSummaryResponse } from '@/apis/SWYP10BackendAPI.schemas';
 import BookmarkItem from '@/components/festival-list-view';
 import { useInView } from '@/hooks/useInView';
 
-interface Bookmark {
-  id: number;
-  image: string;
-  theme: string;
-  title: string;
-  loc: string;
-  start_date: string;
-  end_date: string;
-  is_marked: boolean;
-}
-
 interface BookmarkResponse {
-  bookmarks: Bookmark[];
+  bookmarks: FestivalSummaryResponse[];
   nextCursor: number | null;
   total: number;
 }
 
 const fetchBookmarks = async ({ pageParam = 0 }): Promise<BookmarkResponse> => {
-  await new Promise(resolve => setTimeout(resolve, 500));
+  const response = await getMyPageFestivals({
+    page: pageParam,
+    size: 10,
+    sort: 'createdAt,desc',
+    bookmarked: true,
+    offset: pageParam * 10,
+  });
 
-  const pageSize = 10;
-  const total = 72;
-  const startIndex = pageParam * pageSize;
-  const maxPage = Math.ceil(total / pageSize) - 1;
-
-  const bookmarks: Bookmark[] = Array.from(
-    { length: pageSize },
-    (_, index) => ({
-      id: startIndex + index + 1,
-      image: `https://picsum.photos/200/300?random=${startIndex + index + 1}`,
-      theme: [
-        'culture_art',
-        'food_cuisine',
-        'music_performance',
-        'nature_experience',
-        'tradition_history',
-      ][Math.floor(Math.random() * 5)],
-      title: `북마크 제목 ${startIndex + index + 1}`,
-      loc: ['서울', '경기', '강원', '충청', '전라', '경상', '제주'][
-        Math.floor(Math.random() * 7)
-      ],
-      start_date: '2025.01.01',
-      end_date: '2025.01.01',
-      is_marked: true,
-    }),
-  );
+  const bookmarks = response.data.content;
+  const total = response.data.totalElements;
+  const totalPages = response.data.totalPages;
+  const nextCursor = pageParam < totalPages - 1 ? pageParam + 1 : null;
 
   return {
     bookmarks,
-    nextCursor: pageParam < maxPage ? pageParam + 1 : null,
+    nextCursor,
     total,
   };
 };
 
-export default function BookmarkList() {
+interface BookmarkListProps {
+  initialBookmarkList: FestivalSummaryResponse[];
+}
+
+export default function BookmarkList({
+  initialBookmarkList,
+}: BookmarkListProps) {
   const [isBottomView, setIsBottomView] = useState(false);
   const [observeBottom] = useInView((isShow: boolean) => {
     console.log('%c bottom-view', 'color:blue;font-weight:bold;', isShow);
@@ -82,6 +64,16 @@ export default function BookmarkList() {
     queryFn: fetchBookmarks,
     getNextPageParam: lastPage => lastPage.nextCursor,
     initialPageParam: 0,
+    initialData: {
+      pages: [
+        {
+          bookmarks: initialBookmarkList,
+          nextCursor: initialBookmarkList.length >= 10 ? 1 : null,
+          total: initialBookmarkList.length,
+        },
+      ],
+      pageParams: [0],
+    },
   });
 
   const allBookmarks = data?.pages.flatMap(page => page.bookmarks) || [];
@@ -117,32 +109,51 @@ export default function BookmarkList() {
 
   return (
     <div className='flex flex-col gap-5 overflow-y-auto py-5'>
-      {allBookmarks.map(bookmark => (
-        <BookmarkItem
-          key={bookmark.id}
-          image={bookmark.image}
-          theme={bookmark.theme}
-          title={bookmark.title}
-          loc={bookmark.loc}
-          end_date={bookmark.end_date}
-          start_date={bookmark.start_date}
-          is_marked={bookmark.is_marked}
-        />
-      ))}
-      <div
-        ref={el => {
-          if (el) {
-            observeBottom(el);
-          }
-        }}
-        className='h-4'
-      />
-      {isFetchingNextPage && (
-        <div className='flex justify-center py-4'>
-          <p className='ui-text-body text-gray-500'>
-            더 많은 북마크를 불러오는 중...
+      {allBookmarks.length === 0 ? (
+        <div className='flex min-h-[400px] flex-col items-center justify-center'>
+          <Image
+            src={'/image/no-list/no-bookmark-list.png'}
+            alt='no-bookmark-list'
+            width={68}
+            height={68}
+          />
+          <p className='mt-5 ui-text-sub-head text-gray-700'>
+            마음에 든 축제를 북마크해보세요!
+          </p>
+          <p className='mt-1 ui-text-body-2 text-gray-400'>
+            가고 싶은 축제를 간편하게 모아볼 수 있어요.
           </p>
         </div>
+      ) : (
+        <>
+          {allBookmarks.map(bookmark => (
+            <BookmarkItem
+              key={bookmark.id}
+              image={bookmark.thumbnail || '/image/logo.png'}
+              theme={bookmark.theme || ''}
+              title={bookmark.title}
+              loc={bookmark.address || ''}
+              end_date={bookmark.endDate || ''}
+              start_date={bookmark.startDate || ''}
+              is_marked={bookmark.bookmarked}
+            />
+          ))}
+          <div
+            ref={el => {
+              if (el) {
+                observeBottom(el);
+              }
+            }}
+            className='h-4'
+          />
+          {isFetchingNextPage && (
+            <div className='flex justify-center py-4'>
+              <p className='ui-text-body text-gray-500'>
+                더 많은 북마크를 불러오는 중...
+              </p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

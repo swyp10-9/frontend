@@ -3,49 +3,44 @@
 import { useState } from 'react';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
+import Image from 'next/image';
 
+import { getMyReviews } from '@/apis/SWYP10BackendAPI';
+import { MyReviewResponse } from '@/apis/SWYP10BackendAPI.schemas';
 import { useInView } from '@/hooks/useInView';
 
 import ReviewItem from './review-item';
 
-interface Review {
-  id: number;
-  image: string;
-  title: string;
-  date: string;
-  content: string;
-}
-
 interface ReviewResponse {
-  reviews: Review[];
+  reviews: MyReviewResponse[];
   nextCursor: number | null;
   total: number;
 }
 
 const fetchReviews = async ({ pageParam = 0 }): Promise<ReviewResponse> => {
-  await new Promise(resolve => setTimeout(resolve, 500));
+  const response = await getMyReviews({
+    page: pageParam,
+    size: 10,
+    offset: pageParam * 10,
+  });
 
-  const pageSize = 10;
-  const total = 128;
-  const startIndex = pageParam * pageSize;
-  const maxPage = Math.ceil(total / pageSize) - 1;
-
-  const reviews: Review[] = Array.from({ length: pageSize }, (_, index) => ({
-    id: startIndex + index + 1,
-    image: `https://picsum.photos/200/300?random=${startIndex + index + 1}`,
-    title: `리뷰 작성자 ${startIndex + index + 1}`,
-    date: '2025.01.01',
-    content: `리뷰 내용 ${startIndex + index + 1}입니다. `,
-  }));
+  const reviews = response.data.content;
+  const total = response.data.totalElements;
+  const totalPages = response.data.totalPages;
+  const nextCursor = pageParam < totalPages - 1 ? pageParam + 1 : null;
 
   return {
     reviews,
-    nextCursor: pageParam < maxPage ? pageParam + 1 : null,
+    nextCursor,
     total,
   };
 };
 
-export default function ReviewList() {
+interface ReviewListProps {
+  initialReviewList: MyReviewResponse[];
+}
+
+export default function ReviewList({ initialReviewList }: ReviewListProps) {
   const [isBottomView, setIsBottomView] = useState(false);
   const [observeBottom] = useInView((isShow: boolean) => {
     console.log('%c bottom-view', 'color:blue;font-weight:bold;', isShow);
@@ -66,6 +61,16 @@ export default function ReviewList() {
     queryFn: fetchReviews,
     getNextPageParam: lastPage => lastPage.nextCursor,
     initialPageParam: 0,
+    initialData: {
+      pages: [
+        {
+          reviews: initialReviewList,
+          nextCursor: initialReviewList.length >= 10 ? 1 : null,
+          total: initialReviewList.length,
+        },
+      ],
+      pageParams: [0],
+    },
   });
 
   const allReviews = data?.pages.flatMap(page => page.reviews) || [];
@@ -101,29 +106,48 @@ export default function ReviewList() {
 
   return (
     <div className='flex flex-col gap-5 overflow-y-auto py-5'>
-      {allReviews.map(review => (
-        <ReviewItem
-          key={review.id}
-          image={review.image}
-          title={review.title}
-          date={review.date}
-          content={review.content}
-        />
-      ))}
-      <div
-        ref={el => {
-          if (el) {
-            observeBottom(el);
-          }
-        }}
-        className='h-4'
-      />
-      {isFetchingNextPage && (
-        <div className='flex justify-center py-4'>
-          <p className='ui-text-body text-gray-500'>
-            더 많은 리뷰를 불러오는 중...
+      {allReviews.length === 0 ? (
+        <div className='flex min-h-[400px] flex-col items-center justify-center'>
+          <Image
+            src={'/image/no-list/no-review-list.png'}
+            alt='no-review-list'
+            width={68}
+            height={68}
+          />
+          <p className='mt-5 ui-text-sub-head text-gray-700'>
+            리뷰를 남겨 축제의 순간을 기록해보세요.
+          </p>
+          <p className='mt-1 ui-text-body-2 text-gray-400'>
+            내가 느낀 감정이 다른 이에게 좋은 힌트가 될지도 몰라요.
           </p>
         </div>
+      ) : (
+        <>
+          {allReviews.map(review => (
+            <ReviewItem
+              key={review.id}
+              image={review.festivalThumbnail || '/image/logo.png'}
+              title={review.festivalTitle}
+              date={review.createdAt}
+              content={review.content}
+            />
+          ))}
+          <div
+            ref={el => {
+              if (el) {
+                observeBottom(el);
+              }
+            }}
+            className='h-4'
+          />
+          {isFetchingNextPage && (
+            <div className='flex justify-center py-4'>
+              <p className='ui-text-body text-gray-500'>
+                더 많은 리뷰를 불러오는 중...
+              </p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

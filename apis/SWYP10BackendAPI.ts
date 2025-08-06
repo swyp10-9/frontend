@@ -48,10 +48,13 @@
  * OpenAPI spec version: 1.0.0
  */
 import type {
+  FestivalCalendarDailyCountRequest,
+  FestivalCalendarDailyCountResponse,
   FestivalCalendarRequest,
   FestivalDetailResponse,
   FestivalListResponse,
   FestivalMapRequest,
+  FestivalMyPageRequest,
   FestivalRestaurantListResponse,
   FestivalReviewCreateRequest,
   FestivalReviewListResponse,
@@ -60,12 +63,11 @@ import type {
   GetFestivalReviewsParams,
   GetFestivalTravelCoursesParams,
   GetFestivalsForPersonalTestParams,
-  GetMyPageFestivalsParams,
-  GetMyReviewsParams,
   GetTopKeywordsParams,
   MyInfoResponse,
   MyReviewListResponse,
   OauthLoginParams,
+  PageRequest,
   RunFestivalSyncJob200,
   SearchFestivalsParams,
   SearchKeywordListResponse,
@@ -182,11 +184,11 @@ export const getTopKeywords = (params?: GetTopKeywordsParams) => {
  * 사용자 리뷰 작성 목록 조회 (페이징 지원)
  * @summary 리뷰 목록 조회
  */
-export const getMyReviews = (params: GetMyReviewsParams) => {
+export const getMyReviews = (params: PageRequest) => {
   return httpClient<MyReviewListResponse>({
     url: `/api/v1/mypage/reviews`,
     method: 'GET',
-    params,
+    params: { ...params },
   });
 };
 
@@ -261,11 +263,11 @@ export const getFestivalsForPersonalTest = (
  * 축제 리스트 조회 - 마이페이지
  * @summary 축제 리스트 조회 - 마이페이지
  */
-export const getMyPageFestivals = (params: GetMyPageFestivalsParams) => {
+export const getMyPageFestivals = (params: FestivalMyPageRequest) => {
   return httpClient<FestivalListResponse>({
     url: `/api/v1/festivals/mypage`,
     method: 'GET',
-    params,
+    params: { ...params },
   });
 };
 
@@ -290,6 +292,16 @@ export const getFestivalsForCalendar = (params: FestivalCalendarRequest) => {
     url: `/api/v1/festivals/calendar`,
     method: 'GET',
     params: { ...params }, // TODO: request 속성 사용하지 않음
+  });
+};
+
+export const getFestivalsCalendarDailyCount = (
+  params: FestivalCalendarDailyCountRequest,
+) => {
+  return httpClient<FestivalCalendarDailyCountResponse>({
+    url: 'api/v1/festivals/calendar/daily-count',
+    method: 'GET',
+    params: { ...params },
   });
 };
 
