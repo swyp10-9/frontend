@@ -20,10 +20,8 @@ interface Festival {
   start_date: string;
   end_date: string;
   is_marked: boolean;
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
+  map_x: number;
+  map_y: number;
   isDetailed?: boolean;
 }
 
@@ -198,6 +196,12 @@ export default function MapPageClient({
           onCenterChange={handleCenterChange}
           onZoomChange={handleZoomChange}
           onMarkerClick={handleMarkerClick}
+          queryParams={{
+            status: initialParams.status,
+            period: initialParams.period,
+            withWhom: initialParams.withWhom,
+            theme: initialParams.theme,
+          }}
         />
         <MapBottomFilter initialParams={initialParams} />
       </Drawer>

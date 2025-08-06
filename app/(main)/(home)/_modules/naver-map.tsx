@@ -2,6 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { getFestivalsForMap } from '@/apis/SWYP10BackendAPI';
+import type {
+  FestivalMapRequestPeriod,
+  FestivalMapRequestStatus,
+  FestivalMapRequestTheme,
+  FestivalMapRequestWithWhom,
+} from '@/apis/SWYP10BackendAPI.schemas';
 import config from '@/config';
 import themeList from '@/constants/themeList';
 
@@ -20,10 +27,8 @@ interface Festival {
   start_date: string;
   end_date: string;
   is_marked: boolean;
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
+  map_x: number;
+  map_y: number;
   isDetailed?: boolean;
 }
 
@@ -32,37 +37,63 @@ interface FestivalResponse {
   total: number;
 }
 
-const fetchFestivalsInBounds = async (bounds: {
-  sw: { lat: number; lng: number };
-  ne: { lat: number; lng: number };
-  nw: { lat: number; lng: number };
-  se: { lat: number; lng: number };
-}): Promise<FestivalResponse> => {
-  const festivals: Festival[] = Array.from({ length: 15 }, (_, index) => {
-    const lat = bounds.sw.lat + Math.random() * (bounds.ne.lat - bounds.sw.lat);
-    const lng = bounds.sw.lng + Math.random() * (bounds.ne.lng - bounds.sw.lng);
+const fetchFestivalsInBounds = async (
+  bounds: {
+    sw: { lat: number; lng: number };
+    ne: { lat: number; lng: number };
+    nw: { lat: number; lng: number };
+    se: { lat: number; lng: number };
+  },
+  queryParams?: {
+    status?: string;
+    period?: string;
+    withWhom?: string;
+    theme?: string;
+  },
+): Promise<FestivalResponse> => {
+  try {
+    const response = await getFestivalsForMap({
+      // TODO: request 속성 사용하지 않음
+      page: 0,
+      size: 100,
+      sort: 'createdAt,desc',
+      status: (queryParams?.status as FestivalMapRequestStatus) || 'ALL',
+      period: (queryParams?.period as FestivalMapRequestPeriod) || 'ALL',
+      withWhom: (queryParams?.withWhom as FestivalMapRequestWithWhom) || 'ALL',
+      theme: (queryParams?.theme as FestivalMapRequestTheme) || 'ALL',
+      latTopLeft: bounds.nw.lat,
+      lngTopLeft: bounds.nw.lng,
+      latBottomRight: bounds.se.lat,
+      lngBottomRight: bounds.se.lng,
+      offset: 0,
+    });
+
+    // API 응답을 Festival 인터페이스에 맞게 변환
+    const content = response?.content || [];
+    const festivals: Festival[] = [...(content || [])].map(festival => ({
+      id: festival.id,
+      title: festival.title,
+      theme: festival.theme,
+      image: festival.thumbnail,
+      loc: festival.address,
+      start_date: festival.startDate,
+      end_date: festival.endDate,
+      is_marked: festival.bookmarked,
+      map_x: festival.map_x,
+      map_y: festival.map_y,
+    }));
 
     return {
-      id: index + 1,
-      title: `축제 제목 ${index + 1}`,
-      theme: ['CULTURE_ART', 'FOOD', 'MUSIC', 'NATURE', 'TRADITION'][
-        Math.floor(Math.random() * 5)
-      ],
-      image: `https://picsum.photos/200/300?random=${index + 1}`,
-      loc: ['서울', '경기', '강원', '충청', '전라', '경상', '제주'][
-        Math.floor(Math.random() * 7)
-      ],
-      start_date: '2025-07-10',
-      end_date: '2025-07-10',
-      is_marked: Math.random() > 0.7,
-      coordinates: { lat, lng },
+      festivals,
+      total: response.totalElements,
     };
-  });
-
-  return {
-    festivals,
-    total: festivals.length,
-  };
+  } catch (error) {
+    console.error('축제 데이터 로드 실패:', error);
+    return {
+      festivals: [],
+      total: 0,
+    };
+  }
 };
 
 interface NaverMapProps {
@@ -82,6 +113,12 @@ interface NaverMapProps {
   onMarkerClick?: (festival: Festival, isDetailed: boolean) => void;
   className?: string;
   style?: React.CSSProperties;
+  queryParams?: {
+    status?: string;
+    period?: string;
+    withWhom?: string;
+    theme?: string;
+  };
 }
 
 export default function NaverMap({
@@ -96,6 +133,7 @@ export default function NaverMap({
   onMarkerClick,
   className = '',
   style = {},
+  queryParams,
 }: NaverMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<naver.maps.Map | null>(null);
@@ -179,22 +217,30 @@ export default function NaverMap({
 
     // 500ms 후에 축제 데이터 로드
     boundsChangeTimeoutRef.current = setTimeout(() => {
-      loadFestivalsInBounds(boundsData);
+      loadFestivalsInBounds(boundsData, queryParams);
     }, 700);
-  }, [onBoundsChange]);
+  }, [onBoundsChange, queryParams]);
 
   const loadFestivalsInBounds = useCallback(
-    async (bounds: {
-      sw: { lat: number; lng: number };
-      ne: { lat: number; lng: number };
-      nw: { lat: number; lng: number };
-      se: { lat: number; lng: number };
-    }) => {
+    async (
+      bounds: {
+        sw: { lat: number; lng: number };
+        ne: { lat: number; lng: number };
+        nw: { lat: number; lng: number };
+        se: { lat: number; lng: number };
+      },
+      queryParams?: {
+        status?: string;
+        period?: string;
+        withWhom?: string;
+        theme?: string;
+      },
+    ) => {
       if (isLoadingFestivals) return;
 
       setIsLoadingFestivals(true);
       try {
-        const response = await fetchFestivalsInBounds(bounds);
+        const response = await fetchFestivalsInBounds(bounds, queryParams);
         setFestivals(response.festivals);
         console.log('축제 데이터 로드:', response.festivals.length);
       } catch (error) {
@@ -203,7 +249,7 @@ export default function NaverMap({
         setIsLoadingFestivals(false);
       }
     },
-    [isLoadingFestivals],
+    [isLoadingFestivals, queryParams],
   );
 
   const handleZoomChange = useCallback(() => {
@@ -244,8 +290,8 @@ export default function NaverMap({
       if (!theme) return null;
 
       const position = new window.naver.maps.LatLng(
-        festival.coordinates.lat,
-        festival.coordinates.lng,
+        festival.map_y,
+        festival.map_x,
       );
 
       const isDetailed = currentZoom >= 12 || festival.isDetailed;
