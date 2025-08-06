@@ -2,14 +2,20 @@
 
 import { useState } from 'react';
 
-import { SearchInput } from './_modules/search-input';
-import { TrendingSearchItem } from './_modules/trending-search-item';
-import { transformApiDataToTrendingItems } from './_modules/types';
-import { useTopKeywords } from './_modules/use-top-keywords';
+import { useQuery } from '@tanstack/react-query';
 
+import { topKeyWords } from '@/apis/queries';
+
+import {
+  SearchInput,
+  TrendingSearchItem,
+  transformApiDataToTrendingItems,
+} from './_modules';
+
+// NOTE: 클라이언트 컴포넌트로 렌더링
 export default function SearchPage() {
   const [searchValue, setSearchValue] = useState('');
-  const { data, isLoading, error } = useTopKeywords(10);
+  const { data, isLoading, error } = useQuery(topKeyWords(10));
 
   const handleSearch = (keyword: string) => {
     setSearchValue(keyword);
