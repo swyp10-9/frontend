@@ -79,32 +79,23 @@ export interface TokenResponse {
    * 사용자 ID (OAuth 단계에서는 null)
    * @nullable
    */
-  userId: number | null;
+  userId?: number | null;
   /** 사용자 닉네임 */
   nickname: string;
   /** 추가 회원가입 필요 여부 */
   needsAdditionalSignup: boolean;
 }
 
-export interface MyInfoUpdateRequest {
-  /**
-   * 닉네임
-   * @minLength 0
-   * @maxLength 20
-   */
-  nickname: string;
-}
-
 export interface MyInfoResponse {
   /** 회원 ID */
-  userId: number;
+  userId?: number;
   /** 닉네임 */
-  nickname: string;
+  nickname?: string;
   /**
    * 프로필 이미지 URL
    * @nullable
    */
-  profileImage: string | null;
+  profileImage?: string | null;
 }
 
 /**
@@ -112,21 +103,21 @@ export interface MyInfoResponse {
  */
 export interface SearchKeywordListResponse {
   /** 응답 데이터 목록 */
-  content: SearchKeywordResponse[];
+  content?: SearchKeywordResponse[];
   /** 현재 페이지 번호 (0부터 시작) */
-  page: number;
+  page?: number;
   /** 페이지 크기 */
-  size: number;
+  size?: number;
   /** 전체 요소 개수 */
-  totalElements: number;
+  totalElements?: number;
   /** 전체 페이지 개수 */
-  totalPages: number;
+  totalPages?: number;
   /** 첫 번째 페이지 여부 */
-  first: boolean;
+  first?: boolean;
   /** 마지막 페이지 여부 */
-  last: boolean;
+  last?: boolean;
   /** 빈 페이지 여부 */
-  empty: boolean;
+  empty?: boolean;
 }
 
 /**
@@ -134,29 +125,11 @@ export interface SearchKeywordListResponse {
  */
 export interface SearchKeywordResponse {
   /** 검색어 */
-  keyword: string;
+  keyword?: string;
   /** 검색 횟수 */
-  count: number;
+  count?: number;
   /** 최근 검색일시 */
-  lastSearchedAt: string;
-}
-
-/**
- * 페이징 요청 정보
- */
-export interface PageRequest {
-  /**
-   * 페이지 번호 (0부터 시작)
-   * @minimum 0
-   */
-  page: number;
-  /**
-   * 페이지 크기
-   * @minimum 1
-   * @maximum 100
-   */
-  size: number;
-  offset: number;
+  lastSearchedAt?: string;
 }
 
 /**
@@ -164,21 +137,21 @@ export interface PageRequest {
  */
 export interface MyReviewListResponse {
   /** 응답 데이터 목록 */
-  content: MyReviewResponse[];
+  content?: MyReviewResponse[];
   /** 현재 페이지 번호 (0부터 시작) */
-  page: number;
+  page?: number;
   /** 페이지 크기 */
-  size: number;
+  size?: number;
   /** 전체 요소 개수 */
-  totalElements: number;
+  totalElements?: number;
   /** 전체 페이지 개수 */
-  totalPages: number;
+  totalPages?: number;
   /** 첫 번째 페이지 여부 */
-  first: boolean;
+  first?: boolean;
   /** 마지막 페이지 여부 */
-  last: boolean;
+  last?: boolean;
   /** 빈 페이지 여부 */
-  empty: boolean;
+  empty?: boolean;
 }
 
 /**
@@ -186,20 +159,20 @@ export interface MyReviewListResponse {
  */
 export interface MyReviewResponse {
   /** 리뷰 ID */
-  id: number;
+  id?: number;
   /** 축제 ID */
-  festivalId: number;
+  festivalId?: number;
   /** 축제명 */
-  festivalTitle: string;
+  festivalTitle?: string;
   /**
    * 썸네일 이미지 URL
    * @nullable
    */
-  festivalThumbnail: string | null;
+  festivalThumbnail?: string | null;
   /** 리뷰 내용 */
-  content: string;
+  content?: string;
   /** 리뷰 작성 날짜 */
-  createdAt: string;
+  createdAt?: string;
 }
 
 /**
@@ -211,76 +184,76 @@ export type ContentResponse = {
    * 축제 타이틀
    * @nullable
    */
-  title: string | null;
+  title?: string | null;
   /**
    * 홈페이지 HTML
    * @nullable
    */
-  homepage: string | null;
+  homepage?: string | null;
   /**
    * 주소1
    * @nullable
    */
-  addr1: string | null;
+  addr1?: string | null;
   /**
    * 주소2
    * @nullable
    */
-  addr2: string | null;
+  addr2?: string | null;
   /**
    * 개요/소개
    * @nullable
    */
-  overview: string | null;
+  overview?: string | null;
 } | null;
 
 export interface FestivalDetailResponse {
   /** 축제 ID */
-  id: number;
+  id?: number;
   /** 축제명 */
-  title: string;
+  title?: string;
   /**
    * 주소
    * @nullable
    */
-  address: string | null;
+  address?: string | null;
   /**
    * 테마
    * @nullable
    */
-  theme: string | null;
+  theme?: string | null;
   /**
    * 축제 시작일
    * @nullable
    */
-  startDate: string | null;
+  startDate?: string | null;
   /**
    * 축제 종료일
    * @nullable
    */
-  endDate: string | null;
+  endDate?: string | null;
   /**
    * 썸네일 이미지 URL
    * @nullable
    */
-  thumbnail: string | null;
+  thumbnail?: string | null;
   /**
    * 경도
    * @nullable
    */
-  mapx: string | null;
+  mapx?: string | null;
   /**
    * 위도
    * @nullable
    */
-  mapy: string | null;
+  mapy?: string | null;
   /**
    * 이미지 목록
    * @nullable
    */
-  images: ImageResponse[] | null;
-  content: ContentResponse;
-  info: InfoResponse;
+  images?: ImageResponse[] | null;
+  content?: ContentResponse;
+  info?: InfoResponse;
 }
 
 /**
@@ -292,22 +265,22 @@ export type ImageResponse = {
    * 콘텐츠ID
    * @nullable
    */
-  contentid: string | null;
+  contentid?: string | null;
   /**
    * 원본 이미지 URL
    * @nullable
    */
-  originimgurl: string | null;
+  originimgurl?: string | null;
   /**
    * 이미지명
    * @nullable
    */
-  imgname: string | null;
+  imgname?: string | null;
   /**
    * 작은 이미지 URL
    * @nullable
    */
-  smallimageurl: string | null;
+  smallimageurl?: string | null;
 } | null;
 
 /**
@@ -319,100 +292,65 @@ export type InfoResponse = {
    * 주최
    * @nullable
    */
-  sponsor1: string | null;
+  sponsor1?: string | null;
   /**
    * 주최 연락처
    * @nullable
    */
-  sponsor1tel: string | null;
+  sponsor1tel?: string | null;
   /**
    * 행사 시작일(YYYYMMDD)
    * @nullable
    */
-  eventstartdate: string | null;
+  eventstartdate?: string | null;
   /**
    * 행사 종료일(YYYYMMDD)
    * @nullable
    */
-  eventenddate: string | null;
+  eventenddate?: string | null;
   /**
    * 운영 시간
    * @nullable
    */
-  playtime: string | null;
+  playtime?: string | null;
   /**
    * 장소
    * @nullable
    */
-  eventplace: string | null;
+  eventplace?: string | null;
   /**
    * 행사 홈페이지
    * @nullable
    */
-  eventhomepage: string | null;
+  eventhomepage?: string | null;
   /**
    * 이용 요금
    * @nullable
    */
-  usetimefestival: string | null;
+  usetimefestival?: string | null;
   /**
    * 할인 정보
    * @nullable
    */
-  discountinfofestival: string | null;
+  discountinfofestival?: string | null;
   /**
    * 소요 시간
    * @nullable
    */
-  spendtimefestival: string | null;
+  spendtimefestival?: string | null;
 } | null;
-
-/**
- * 축제 여행코스 목록 조회 요청
- */
-export interface FestivalTravelCoursePageRequest {
-  /**
-   * 페이지 번호 (0부터 시작)
-   * @minimum 0
-   */
-  page: number;
-  /**
-   * 페이지 크기
-   * @minimum 1
-   * @maximum 100
-   */
-  size: number;
-  /** 축제 ID */
-  festivalId: number;
-  /**
-   * 코스 타입
-   * @nullable
-   */
-  courseType: string | null;
-  /**
-   * 테마
-   * @nullable
-   */
-  theme: string | null;
-  /**
-   * 정렬 기준 (popularity,desc | duration,asc)
-   * @nullable
-   */
-  sort: string | null;
-  offset: number;
-}
 
 export interface FestivalTravelCourseListResponse {
   /**
    * 여행 코스 목록
    * @nullable
    */
-  courses: FestivalTravelCourseResponse[] | null;
+  courses?: FestivalTravelCourseResponse[] | null;
   /**
    * 근처 볼거리 목록
    * @nullable
    */
-  nearbyAttractions: NearbyAttractionResponse[] | null;
+  nearbyAttractions?: NearbyAttractionResponse[] | null;
 }
 
 /**
@@ -421,14 +359,14 @@ export interface FestivalTravelCourseListResponse {
  */
 export type FestivalTravelCourseResponse = {
   /** 코스 ID */
-  id: number;
+  id?: number;
   /** 코스명 */
-  title: string;
+  title?: string;
   /**
    * 시각
    * @nullable
    */
-  time: string | null;
+  time?: string | null;
 } | null;
 
 /**
@@ -437,27 +375,27 @@ export type FestivalTravelCourseResponse = {
  */
 export type NearbyAttractionResponse = {
   /** 장소명 */
-  name: string;
+  name?: string;
   /**
    * 썸네일 이미지 URL
    * @nullable
    */
-  thumbnail: string | null;
+  thumbnail?: string | null;
   /**
    * 경도
    * @nullable
    */
-  mapx: string | null;
+  mapx?: string | null;
   /**
    * 위도
    * @nullable
    */
-  mapy: string | null;
+  mapy?: string | null;
   /**
    * 장소 설명/상세 페이지 URL
    * @nullable
    */
-  descriptionUrl: string | null;
+  descriptionUrl?: string | null;
 } | null;
 
 /**
@@ -465,21 +403,21 @@ export type NearbyAttractionResponse = {
  */
 export interface FestivalReviewListResponse {
   /** 응답 데이터 목록 */
-  content: FestivalReviewResponse[];
+  content?: FestivalReviewResponse[];
   /** 현재 페이지 번호 (0부터 시작) */
-  page: number;
+  page?: number;
   /** 페이지 크기 */
-  size: number;
+  size?: number;
   /** 전체 요소 개수 */
-  totalElements: number;
+  totalElements?: number;
   /** 전체 페이지 개수 */
-  totalPages: number;
+  totalPages?: number;
   /** 첫 번째 페이지 여부 */
-  first: boolean;
+  first?: boolean;
   /** 마지막 페이지 여부 */
-  last: boolean;
+  last?: boolean;
   /** 빈 페이지 여부 */
-  empty: boolean;
+  empty?: boolean;
 }
 
 /**
@@ -487,53 +425,18 @@ export interface FestivalReviewListResponse {
  */
 export interface FestivalReviewResponse {
   /** 리뷰 ID */
-  id: number;
+  id?: number;
   /** 작성자 닉네임 */
-  nickname: string;
+  nickname?: string;
   /**
    * 작성자 프로필 이미지 URL
    * @nullable
    */
-  profileImage: string | null;
+  profileImage?: string | null;
   /** 리뷰 내용 */
-  content: string;
+  content?: string;
   /** 작성일 */
-  createdAt: string;
-}
-
-/**
- * 축제 주변 맛집 목록 조회 요청
- */
-export interface FestivalRestaurantPageRequest {
-  /**
-   * 페이지 번호 (0부터 시작)
-   * @minimum 0
-   */
-  page: number;
-  /**
-   * 페이지 크기
-   * @minimum 1
-   * @maximum 100
-   */
-  size: number;
-  /** 축제 ID */
-  festivalId: number;
-  /**
-   * 검색 반경 (미터)
-   * @nullable
-   */
-  radius: number | null;
-  /**
-   * 음식 카테고리
-   * @nullable
-   */
-  category: string | null;
-  /**
-   * 정렬 기준 (distance,asc | rating,desc)
-   * @nullable
-   */
-  sort: string | null;
-  offset: number;
+  createdAt?: string;
 }
 
 /**
@@ -541,21 +444,21 @@ export interface FestivalRestaurantPageRequest {
  */
 export interface FestivalRestaurantListResponse {
   /** 응답 데이터 목록 */
-  content: FestivalRestaurantResponse[];
+  content?: FestivalRestaurantResponse[];
   /** 현재 페이지 번호 (0부터 시작) */
-  page: number;
+  page?: number;
   /** 페이지 크기 */
-  size: number;
+  size?: number;
   /** 전체 요소 개수 */
-  totalElements: number;
+  totalElements?: number;
   /** 전체 페이지 개수 */
-  totalPages: number;
+  totalPages?: number;
   /** 첫 번째 페이지 여부 */
-  first: boolean;
+  first?: boolean;
   /** 마지막 페이지 여부 */
-  last: boolean;
+  last?: boolean;
   /** 빈 페이지 여부 */
-  empty: boolean;
+  empty?: boolean;
 }
 
 /**
@@ -563,94 +466,17 @@ export interface FestivalRestaurantListResponse {
  */
 export interface FestivalRestaurantResponse {
   /** 식당명 */
-  name: string;
+  name?: string;
   /**
    * 주소
    * @nullable
    */
-  address: string | null;
+  address?: string | null;
   /**
    * 대표 이미지
    * @nullable
    */
-  imageUrl: string | null;
-}
-
-/**
- * 축제 테마
- * @nullable
- */
-export type FestivalSearchRequestTheme =
-  | (typeof FestivalSearchRequestTheme)[keyof typeof FestivalSearchRequestTheme]
-  | null;
-
-export const FestivalSearchRequestTheme = {
-  CULTURE_ART: 'CULTURE_ART',
-  FOOD: 'FOOD',
-  MUSIC: 'MUSIC',
-  NATURE: 'NATURE',
-  TRADITION: 'TRADITION',
-  ALL: 'ALL',
-} as const;
-
-export interface FestivalSearchRequest {
-  /**
-   * 페이지 번호 (0부터 시작)
-   * @minimum 0
-   */
-  page: number;
-  /**
-   * 페이지 크기
-   * @minimum 1
-   * @maximum 100
-   */
-  size: number;
-  /**
-   * 정렬 기준 (예: createdAt,desc)
-   * @nullable
-   */
-  sort: string | null;
-  /**
-   * 검색 시작 날짜
-   * @nullable
-   */
-  startDate: string | null;
-  /**
-   * 검색 종료 날짜
-   * @nullable
-   */
-  endDate: string | null;
-  /**
-   * 경도 (한국 범위: 124~132)
-   * @nullable
-   */
-  mapX: number | null;
-  /**
-   * 위도 (한국 범위: 33~39)
-   * @nullable
-   */
-  mapY: number | null;
-  /**
-   * 검색 반경(미터)
-   * @nullable
-   */
-  radius: number | null;
-  /**
-   * 지역 코드
-   * @nullable
-   */
-  regionCode: number | null;
-  /**
-   * 축제 테마
-   * @nullable
-   */
-  theme: FestivalSearchRequestTheme;
-  /**
-   * 검색 키워드 (축제명, 설명, 지역명 등 자유 검색)
-   * @nullable
-   */
-  searchParam: string | null;
-  offset: number;
+  imageUrl?: string | null;
 }
 
 /**
@@ -658,21 +484,21 @@ export interface FestivalSearchRequest {
  */
 export interface FestivalListResponse {
   /** 응답 데이터 목록 */
-  content: FestivalSummaryResponse[];
+  content?: FestivalSummaryResponse[];
   /** 현재 페이지 번호 (0부터 시작) */
-  page: number;
+  page?: number;
   /** 페이지 크기 */
-  size: number;
+  size?: number;
   /** 전체 요소 개수 */
-  totalElements: number;
+  totalElements?: number;
   /** 전체 페이지 개수 */
-  totalPages: number;
+  totalPages?: number;
   /** 첫 번째 페이지 여부 */
-  first: boolean;
+  first?: boolean;
   /** 마지막 페이지 여부 */
-  last: boolean;
+  last?: boolean;
   /** 빈 페이지 여부 */
-  empty: boolean;
+  empty?: boolean;
 }
 
 /**
@@ -680,31 +506,31 @@ export interface FestivalListResponse {
  */
 export interface FestivalSummaryResponse {
   /** 축제 ID */
-  id: number;
+  id?: number;
   /**
    * 썸네일 이미지 URL
    * @nullable
    */
-  thumbnail: string | null;
+  thumbnail?: string | null;
   /**
    * 테마
    * @nullable
    */
-  theme: string | null;
+  theme?: string | null;
   /** 축제명 */
-  title: string;
+  title?: string;
   /** 북마크 여부 */
-  bookmarked: boolean;
+  bookmarked?: boolean;
   /**
    * 주소
    * @nullable
    */
-  address: string | null;
+  address?: string | null;
   /**
    * 축제 시작일
    * @nullable
    */
-  startDate: string | null;
+  startDate?: string | null;
   /**
    * 축제 종료일
    * @nullable
@@ -986,7 +812,17 @@ export type RunFestivalSyncJob200 = {
 };
 
 export type GetFestivalReviewsParams = {
-  pageRequest: PageRequest;
+  /**
+   * 페이지 번호 (0부터 시작)
+   * @minimum 0
+   */
+  page?: number;
+  /**
+   * 페이지 크기
+   * @minimum 1
+   * @maximum 100
+   */
+  size?: number;
 };
 
 export type OauthLoginParams = {
@@ -997,48 +833,392 @@ export type OauthLoginParams = {
 };
 
 export type UpdateMyInfoParams = {
-  request: MyInfoUpdateRequest;
+  /**
+   * 닉네임
+   * @minLength 0
+   * @maxLength 20
+   */
+  nickname: string;
 };
 
 export type GetTopKeywordsParams = {
-  limit: number;
+  limit?: number;
 };
 
 export type GetMyReviewsParams = {
-  pageRequest: PageRequest;
+  /**
+   * 페이지 번호 (0부터 시작)
+   * @minimum 0
+   */
+  page?: number;
+  /**
+   * 페이지 크기
+   * @minimum 1
+   * @maximum 100
+   */
+  size?: number;
 };
 
 export type GetFestivalTravelCoursesParams = {
-  request: FestivalTravelCoursePageRequest;
+  /**
+   * 코스 타입
+   * @nullable
+   */
+  courseType?: string | null;
+  /**
+   * 테마
+   * @nullable
+   */
+  theme?: string | null;
+  /**
+   * 정렬 기준 (popularity,desc | duration,asc)
+   * @nullable
+   */
+  sort?: string | null;
+  /**
+   * 페이지 번호 (0부터 시작)
+   * @minimum 0
+   */
+  page?: number;
+  /**
+   * 페이지 크기
+   * @minimum 1
+   * @maximum 100
+   */
+  size?: number;
 };
 
 export type GetFestivalRestaurantsParams = {
-  request: FestivalRestaurantPageRequest;
+  /**
+   * 검색 반경 (미터)
+   * @nullable
+   */
+  radius?: number | null;
+  /**
+   * 음식 카테고리
+   * @nullable
+   */
+  category?: string | null;
+  /**
+   * 정렬 기준 (distance,asc | rating,desc)
+   * @nullable
+   */
+  sort?: string | null;
+  /**
+   * 페이지 번호 (0부터 시작)
+   * @minimum 0
+   */
+  page?: number;
+  /**
+   * 페이지 크기
+   * @minimum 1
+   * @maximum 100
+   */
+  size?: number;
 };
 
 export type SearchFestivalsParams = {
-  request: FestivalSearchRequest;
+  /**
+   * 검색 시작 날짜
+   * @nullable
+   */
+  startDate?: string | null;
+  /**
+   * 검색 종료 날짜
+   * @nullable
+   */
+  endDate?: string | null;
+  /**
+   * 경도 (한국 범위: 124~132)
+   * @nullable
+   */
+  mapX?: number | null;
+  /**
+   * 위도 (한국 범위: 33~39)
+   * @nullable
+   */
+  mapY?: number | null;
+  /**
+   * 검색 반경(미터)
+   * @nullable
+   */
+  radius?: number | null;
+  /**
+   * 지역 코드
+   * @nullable
+   */
+  regionCode?: number | null;
+  /**
+   * 축제 테마
+   * @nullable
+   */
+  theme?: SearchFestivalsTheme;
+  /**
+   * 검색 키워드 (축제명, 설명, 지역명 등 자유 검색)
+   * @nullable
+   */
+  searchParam?: string | null;
+  /**
+   * 정렬 기준 (예: createdAt,desc)
+   * @nullable
+   */
+  sort?: string | null;
+  /**
+   * 페이지 번호 (0부터 시작)
+   * @minimum 0
+   */
+  page?: number;
+  /**
+   * 페이지 크기
+   * @minimum 1
+   * @maximum 100
+   */
+  size?: number;
 };
+
+export type SearchFestivalsTheme =
+  | (typeof SearchFestivalsTheme)[keyof typeof SearchFestivalsTheme]
+  | null;
+
+export const SearchFestivalsTheme = {
+  CULTURE_ART: 'CULTURE_ART',
+  FOOD: 'FOOD',
+  MUSIC: 'MUSIC',
+  NATURE: 'NATURE',
+  TRADITION: 'TRADITION',
+  ALL: 'ALL',
+} as const;
 
 export type GetFestivalsForPersonalTestParams = {
-  request: FestivalPersonalTestRequest;
+  /**
+   * 테스트 성향 결과
+   * @nullable
+   */
+  personalityType?: GetFestivalsForPersonalTestPersonalityType;
+  /**
+   * 정렬 기준 (예: createdAt,desc)
+   * @nullable
+   */
+  sort?: string | null;
+  /**
+   * 페이지 번호 (0부터 시작)
+   * @minimum 0
+   */
+  page?: number;
+  /**
+   * 페이지 크기
+   * @minimum 1
+   * @maximum 100
+   */
+  size?: number;
 };
+
+export type GetFestivalsForPersonalTestPersonalityType =
+  | (typeof GetFestivalsForPersonalTestPersonalityType)[keyof typeof GetFestivalsForPersonalTestPersonalityType]
+  | null;
+
+export const GetFestivalsForPersonalTestPersonalityType = {
+  ENERGIZER: 'ENERGIZER',
+  EXPLORER: 'EXPLORER',
+  CURATOR: 'CURATOR',
+  SOCIALIZER: 'SOCIALIZER',
+  HEALER: 'HEALER',
+} as const;
 
 export type GetMyPageFestivalsParams = {
-  request: FestivalMyPageRequest;
+  /**
+   * 북마크 여부
+   * @nullable
+   */
+  bookmarked?: boolean | null;
+  /**
+   * 정렬 기준 (예: createdAt,desc)
+   * @nullable
+   */
+  sort?: string | null;
+  /**
+   * 페이지 번호 (0부터 시작)
+   * @minimum 0
+   */
+  page?: number;
+  /**
+   * 페이지 크기
+   * @minimum 1
+   * @maximum 100
+   */
+  size?: number;
 };
 
-export type CheckEmailParams = {
-  email: string;
-};
-
-/**
- * TODO: 아래 두 타입은 현재 사용하지 않는 타입이므로 추후 삭제 예정
- */
 export type GetFestivalsForMapParams = {
-  request: FestivalMapRequest;
+  /**
+   * 축제 상태
+   */
+  status?: GetFestivalsForMapStatus;
+  /**
+   * 기간
+   */
+  period?: GetFestivalsForMapPeriod;
+  /**
+   * 누구랑
+   */
+  withWhom?: GetFestivalsForMapWithWhom;
+  /**
+   * 테마
+   */
+  theme?: GetFestivalsForMapTheme;
+  /**
+   * 좌상단 위도
+   * @nullable
+   */
+  latTopLeft?: number | null;
+  /**
+   * 좌상단 경도
+   * @nullable
+   */
+  lngTopLeft?: number | null;
+  /**
+   * 우하단 위도
+   * @nullable
+   */
+  latBottomRight?: number | null;
+  /**
+   * 우하단 경도
+   * @nullable
+   */
+  lngBottomRight?: number | null;
+  /**
+   * 정렬 기준 (예: createdAt,desc)
+   * @nullable
+   */
+  sort?: string | null;
+  /**
+   * 페이지 번호 (0부터 시작)
+   * @minimum 0
+   */
+  page?: number;
+  /**
+   * 페이지 크기
+   * @minimum 1
+   * @maximum 100
+   */
+  size?: number;
 };
+
+export type GetFestivalsForMapStatus =
+  (typeof GetFestivalsForMapStatus)[keyof typeof GetFestivalsForMapStatus];
+
+export const GetFestivalsForMapStatus = {
+  ONGOING: 'ONGOING',
+  UPCOMING: 'UPCOMING',
+  ENDED: 'ENDED',
+  ALL: 'ALL',
+} as const;
+
+export type GetFestivalsForMapPeriod =
+  (typeof GetFestivalsForMapPeriod)[keyof typeof GetFestivalsForMapPeriod];
+
+export const GetFestivalsForMapPeriod = {
+  THIS_WEEK: 'THIS_WEEK',
+  THIS_MONTH: 'THIS_MONTH',
+  NEXT_MONTH: 'NEXT_MONTH',
+  ALL: 'ALL',
+} as const;
+
+export type GetFestivalsForMapWithWhom =
+  (typeof GetFestivalsForMapWithWhom)[keyof typeof GetFestivalsForMapWithWhom];
+
+export const GetFestivalsForMapWithWhom = {
+  FAMILY: 'FAMILY',
+  COUPLE: 'COUPLE',
+  PARENTS: 'PARENTS',
+  PET: 'PET',
+  FRIENDS: 'FRIENDS',
+  ALL: 'ALL',
+} as const;
+
+export type GetFestivalsForMapTheme =
+  (typeof GetFestivalsForMapTheme)[keyof typeof GetFestivalsForMapTheme];
+
+export const GetFestivalsForMapTheme = {
+  CULTURE_ART: 'CULTURE_ART',
+  FOOD: 'FOOD',
+  MUSIC: 'MUSIC',
+  NATURE: 'NATURE',
+  TRADITION: 'TRADITION',
+  ALL: 'ALL',
+} as const;
 
 export type GetFestivalsForCalendarParams = {
-  request: FestivalCalendarRequest;
+  /**
+   * 지역 필터
+   * @nullable
+   */
+  region?: GetFestivalsForCalendarRegion;
+  /**
+   * 누구랑
+   */
+  withWhom?: GetFestivalsForCalendarWithWhom;
+  /**
+   * 테마
+   */
+  theme?: GetFestivalsForCalendarTheme;
+  /**
+   * 조회 기준 날짜
+   */
+  date?: string;
+  /**
+   * 정렬 기준 (예: createdAt,desc)
+   * @nullable
+   */
+  sort?: string | null;
+  /**
+   * 페이지 번호 (0부터 시작)
+   * @minimum 0
+   */
+  page?: number;
+  /**
+   * 페이지 크기
+   * @minimum 1
+   * @maximum 100
+   */
+  size?: number;
 };
+
+export type GetFestivalsForCalendarRegion =
+  | (typeof GetFestivalsForCalendarRegion)[keyof typeof GetFestivalsForCalendarRegion]
+  | null;
+
+export const GetFestivalsForCalendarRegion = {
+  SEOUL: 'SEOUL',
+  GYEONGGI: 'GYEONGGI',
+  GANGWON: 'GANGWON',
+  CHUNGCHEONG: 'CHUNGCHEONG',
+  JEOLLA: 'JEOLLA',
+  GYEONGSANG: 'GYEONGSANG',
+  JEJU: 'JEJU',
+  ALL: 'ALL',
+} as const;
+
+export type GetFestivalsForCalendarWithWhom =
+  (typeof GetFestivalsForCalendarWithWhom)[keyof typeof GetFestivalsForCalendarWithWhom];
+
+export const GetFestivalsForCalendarWithWhom = {
+  FAMILY: 'FAMILY',
+  COUPLE: 'COUPLE',
+  PARENTS: 'PARENTS',
+  PET: 'PET',
+  FRIENDS: 'FRIENDS',
+  ALL: 'ALL',
+} as const;
+
+export type GetFestivalsForCalendarTheme =
+  (typeof GetFestivalsForCalendarTheme)[keyof typeof GetFestivalsForCalendarTheme];
+
+export const GetFestivalsForCalendarTheme = {
+  CULTURE_ART: 'CULTURE_ART',
+  FOOD: 'FOOD',
+  MUSIC: 'MUSIC',
+  NATURE: 'NATURE',
+  TRADITION: 'TRADITION',
+  ALL: 'ALL',
+} as const;
