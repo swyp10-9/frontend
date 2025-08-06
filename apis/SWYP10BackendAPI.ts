@@ -140,10 +140,17 @@ export const refreshToken = () => {
  * @summary OAuth 인가 코드 로그인
  */
 export const oauthLogin = (provider: string, params: OauthLoginParams) => {
+  if (!process.env.NEXT_PUBLIC_WEB_URL) {
+    throw new Error('NEXT_PUBLIC_WEB_URL is not set');
+  }
+
   return httpClient<TokenResponse>({
     url: `/api/v1/auth/oauth/login/${provider}`,
     method: 'POST',
     params,
+    headers: {
+      Origin: process.env.NEXT_PUBLIC_WEB_URL, // 브라우저를 거쳤으면 기본 탑재되었을 헤더
+    },
   });
 };
 

@@ -1,86 +1,12 @@
-import axios, { InternalAxiosRequestConfig } from 'axios';
+// src/api/api.ts
+// 서버용 Axios 인스턴스 (cookies() 사용)
+import { httpClient as browserClient } from './browserHttpClient';
 
-// import { cookies } from 'next/headers';
+// 현재 환경이 서버인지 클라이언트인지 판단하는 함수
+const isServer = typeof window === 'undefined';
 
-import config from '@/config';
-
-const getAccessToken = async () => {
-  try {
-    const response = await fetch(`${config.base_url}/api/auth/access-token`);
-    const data = await response.json();
-    console.log('token data:::', data);
-    return data.accessToken;
-  } catch (error) {
-    console.error('Error fetching access token:', error);
-    return '';
-  }
-};
-
-export const attachAccessToken = async (config: InternalAxiosRequestConfig) => {
-  const accessToken = await getAccessToken();
-  if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`;
-  }
-  return config;
-};
-
-const baseURL = config.api.baseURL;
-const instance = axios.create({
-  baseURL: config.api.baseURL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-instance.interceptors.request.use(attachAccessToken);
-
-// 요청 로깅 인터셉터 추가
-instance.interceptors.request.use(
-  config => {
-    console.log(' Request:', {
-      method: config.method?.toUpperCase(),
-      url: baseURL + (config.url ?? ''),
-      headers: config.headers,
-      params: config.params,
-      data: config.data,
-    });
-    return config;
-  },
-  error => {
-    console.error('❌ Request Error:', error);
-    return Promise.reject(error);
-  },
-);
-
-// 응답 로깅 인터셉터 추가
-instance.interceptors.response.use(
-  response => {
-    console.log('✅ Response:', {
-      status: response.status,
-      statusText: response.statusText,
-      data: response.data,
-      headers: response.headers,
-    });
-    return response;
-  },
-  error => {
-    console.error('❌ Response Error:', {
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      data: error.response?.data,
-      message: error.message,
-      config: {
-        url: error.config?.url,
-        method: error.config?.method,
-        baseURL: error.config?.baseURL,
-      },
-    });
-    return Promise.reject(error);
-  },
-);
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const httpClient = async <T = any>({
+// 실제 API 호출을 수행하는 함수
+export const httpClient = async <T = unknown>({
   url,
   method,
   params,
@@ -92,14 +18,15 @@ export const httpClient = async <T = any>({
   params?: Record<string, unknown>;
   data?: unknown;
   headers?: Record<string, string>;
-}): Promise<T> => {
-  const response = await instance({
-    url,
-    method,
-    params,
-    data,
-    headers,
-  });
+}) => {
+  if (isServer) {
+    console.log('server');
+    // 서버 환경에서는 동적 임포트 사용
+    const { httpClient: serverClient } = await import('./serverHttpClient');
 
-  return response.data;
+    return serverClient<T>({ url, method, params, data, headers });
+  } else {
+    // 클라이언트 환경에서는 정적 임포트 사용
+    return browserClient<T>({ url, method, params, data, headers });
+  }
 };

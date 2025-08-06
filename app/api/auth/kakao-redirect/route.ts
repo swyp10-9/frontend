@@ -7,8 +7,9 @@ import { oauthLogin } from '@/apis/SWYP10BackendAPI';
 export async function GET(req: NextRequest) {
   try {
     const kakaoOAuthCode = validateKakaoOAuthCode(req);
-    const { accessToken, needsAdditionalSignup } =
-      await getAccessToken(kakaoOAuthCode);
+    const response = await getAccessToken(kakaoOAuthCode);
+
+    const { accessToken, needsAdditionalSignup } = response.data;
 
     await setAccessTokenCookie(accessToken);
 
@@ -30,11 +31,11 @@ function validateKakaoOAuthCode(req: NextRequest) {
 }
 
 async function getAccessToken(kakaoOAuthCode: string) {
-  const { accessToken, needsAdditionalSignup } = await oauthLogin('kakao', {
+  const response = await oauthLogin('kakao', {
     code: kakaoOAuthCode,
   });
 
-  return { accessToken, needsAdditionalSignup };
+  return response;
 }
 
 async function setAccessTokenCookie(accessToken: string) {
@@ -43,8 +44,8 @@ async function setAccessTokenCookie(accessToken: string) {
   cookieStore.set('accessToken', accessToken, {
     // NOTE: `domain` 값 없으면 현재 도메인 범위로 설정됨
     path: '/',
-    httpOnly: true,
-    secure: true,
+    httpOnly: false,
+    secure: process.env.NODE_ENV === 'production',
     maxAge: 60 * 60 * 24 * 30,
   });
 }
