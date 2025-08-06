@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -17,8 +17,8 @@ import {
   transformApiDataToTrendingItems,
 } from './_modules';
 
-// NOTE: 클라이언트 컴포넌트로 렌더링
-export default function SearchPage() {
+// 검색 기능을 담당하는 클라이언트 컴포넌트
+function SearchPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchValue, setSearchValue] = useState('');
@@ -172,5 +172,34 @@ export default function SearchPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// 로딩 상태를 표시하는 컴포넌트
+function SearchPageLoading() {
+  return (
+    <div className='relative min-h-screen w-full bg-[#ffffff]'>
+      <div className='sticky top-0 z-10 bg-white pt-6 pb-2.5'>
+        <div className='px-5'>
+          <div className='h-10 animate-pulse rounded-lg bg-gray-200' />
+        </div>
+      </div>
+      <div className='px-5 pb-20'>
+        <div className='py-8 text-center'>
+          <p className="font-['Pretendard'] text-[14px] text-[#868c98]">
+            로딩 중...
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 메인 페이지 컴포넌트
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<SearchPageLoading />}>
+      <SearchPageClient />
+    </Suspense>
   );
 }
