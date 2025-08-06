@@ -68,6 +68,8 @@ const fetchFestivalsInBounds = async (
       offset: 0,
     });
 
+    //
+
     // API 응답을 Festival 인터페이스에 맞게 변환
     const content = response?.data.content || [];
     // @ts-expect-error 잘못된 타입 사용
