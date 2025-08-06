@@ -45,9 +45,9 @@ const callBackendAPI = async (requestData: {
       page: requestData.page.toString(),
       size: requestData.size.toString(),
       sort: requestData.sort,
-      region: requestData.region,
-      withWhom: requestData.withWhom,
-      theme: requestData.theme,
+      region: requestData.region?.toString() || 'ALL',
+      withWhom: requestData.withWhom?.toString() || 'ALL',
+      theme: requestData.theme?.toString() || 'ALL',
       offset: requestData.offset.toString(),
     });
 
