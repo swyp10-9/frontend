@@ -3,14 +3,9 @@ import localFont from 'next/font/local';
 
 import { DialogProvider } from '@/components/Dialog';
 import { MSWClientSideProvider } from '@/configs/msw/MSWClientSideProvider';
-import { initializeMSWOnServer } from '@/configs/msw/initializeMSWOnServer';
 
 import './globals.css';
 import { ReactQueryClientProvider } from './react-query-provider';
-
-if (process.env.NODE_ENV === 'development') {
-  initializeMSWOnServer();
-}
 
 // NOTE: Next lint 규칙이라 끌 수도 없음
 const _ONLY_FOR_LOAD_Pretendard = localFont({
