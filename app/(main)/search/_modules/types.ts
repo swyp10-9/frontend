@@ -23,6 +23,7 @@ export function transformApiDataToTrendingItems(
 export interface SearchInputProps {
   value: string;
   onChange: (value: string) => void;
+  onClear?: () => void;
 }
 
 export interface TrendingSearchItemProps {

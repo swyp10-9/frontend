@@ -15,6 +15,10 @@ export default function SearchPage() {
     setSearchValue(keyword);
   };
 
+  const handleClear = () => {
+    setSearchValue('');
+  };
+
   const trendingItems = data?.data?.content
     ? transformApiDataToTrendingItems(data.data.content)
     : [];
@@ -22,7 +26,11 @@ export default function SearchPage() {
   return (
     <div className='relative min-h-screen w-full bg-[#ffffff]'>
       <div className='pt-6 pb-8'>
-        <SearchInput value={searchValue} onChange={setSearchValue} />
+        <SearchInput
+          value={searchValue}
+          onChange={setSearchValue}
+          onClear={handleClear}
+        />
       </div>
 
       <div className='px-5'>
