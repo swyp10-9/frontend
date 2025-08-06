@@ -48,7 +48,6 @@
  * OpenAPI spec version: 1.0.0
  */
 import type {
-  CheckEmailParams,
   FestivalCalendarRequest,
   FestivalDetailResponse,
   FestivalListResponse,
@@ -64,19 +63,24 @@ import type {
   GetMyPageFestivalsParams,
   GetMyReviewsParams,
   GetTopKeywordsParams,
-  LinkOAuthAccountParams,
-  LoginRequest,
   MyInfoResponse,
   MyReviewListResponse,
   OauthLoginParams,
+  RunFestivalSyncJob200,
   SearchFestivalsParams,
   SearchKeywordListResponse,
-  SignupRequest,
   TokenResponse,
   UpdateMyInfoParams,
   UserInfo,
 } from './SWYP10BackendAPI.schemas';
 import { httpClient } from './httpClient';
+
+export const runFestivalSyncJob = () => {
+  return httpClient<RunFestivalSyncJob200>({
+    url: `/batch/run-festival-sync`,
+    method: 'POST',
+  });
+};
 
 /**
  * 해당 축제의 리뷰 목록 조회 (페이징 지원)
@@ -121,28 +125,13 @@ export const addBookmark = (festivalId: number) => {
 };
 
 /**
- * 이메일을 통한 회원가입
- * @summary 이메일 회원가입
+ * 현재 토큰을 연장하여 새로운 토큰 발급
+ * @summary 토큰 연장
  */
-export const signup = (signupRequest: SignupRequest) => {
+export const refreshToken = () => {
   return httpClient<TokenResponse>({
-    url: `/api/v1/auth/signup`,
+    url: `/api/v1/auth/refresh`,
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    data: signupRequest,
-  });
-};
-
-/**
- * OAuth 토큰을 통해 추가 회원가입 완료
- * @summary 추가 회원가입 완료
- */
-export const completeAdditionalSignup = (signupRequest: SignupRequest) => {
-  return httpClient<TokenResponse>({
-    url: `/api/v1/auth/oauth/signup`,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    data: signupRequest,
   });
 };
 
@@ -151,38 +140,17 @@ export const completeAdditionalSignup = (signupRequest: SignupRequest) => {
  * @summary OAuth 인가 코드 로그인
  */
 export const oauthLogin = (provider: string, params: OauthLoginParams) => {
+  if (!process.env.NEXT_PUBLIC_WEB_URL) {
+    throw new Error('NEXT_PUBLIC_WEB_URL is not set');
+  }
+
   return httpClient<TokenResponse>({
     url: `/api/v1/auth/oauth/login/${provider}`,
     method: 'POST',
     params,
-  });
-};
-
-/**
- * 이메일과 비밀번호로 로그인
- * @summary 이메일 로그인
- */
-export const login = (loginRequest: LoginRequest) => {
-  return httpClient<TokenResponse>({
-    url: `/api/v1/auth/login`,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    data: loginRequest,
-  });
-};
-
-/**
- * 이메일 사용자가 OAuth 계정을 연동
- * @summary OAuth 계정 연동
- */
-export const linkOAuthAccount = (
-  provider: string,
-  params: LinkOAuthAccountParams,
-) => {
-  return httpClient<string>({
-    url: `/api/v1/auth/link-oauth/${provider}`,
-    method: 'POST',
-    params,
+    headers: {
+      Origin: process.env.NEXT_PUBLIC_WEB_URL, // 브라우저를 거쳤으면 기본 탑재되었을 헤더
+    },
   });
 };
 
@@ -334,18 +302,6 @@ export const getCurrentUser = () => {
 };
 
 /**
- * 이메일 사용 가능 여부 확인
- * @summary 이메일 중복 확인
- */
-export const checkEmail = (params: CheckEmailParams) => {
-  return httpClient<boolean>({
-    url: `/api/v1/auth/check-email`,
-    method: 'GET',
-    params,
-  });
-};
-
-/**
  * 사용자 리뷰 삭제
  * @summary 리뷰 삭제
  */
@@ -367,6 +323,9 @@ export const cancelBookmark = (festivalId: number) => {
   });
 };
 
+export type RunFestivalSyncJobResult = NonNullable<
+  Awaited<ReturnType<typeof runFestivalSyncJob>>
+>;
 export type GetFestivalReviewsResult = NonNullable<
   Awaited<ReturnType<typeof getFestivalReviews>>
 >;
@@ -376,16 +335,11 @@ export type CreateFestivalReviewResult = NonNullable<
 export type AddBookmarkResult = NonNullable<
   Awaited<ReturnType<typeof addBookmark>>
 >;
-export type SignupResult = NonNullable<Awaited<ReturnType<typeof signup>>>;
-export type CompleteAdditionalSignupResult = NonNullable<
-  Awaited<ReturnType<typeof completeAdditionalSignup>>
+export type RefreshTokenResult = NonNullable<
+  Awaited<ReturnType<typeof refreshToken>>
 >;
 export type OauthLoginResult = NonNullable<
   Awaited<ReturnType<typeof oauthLogin>>
->;
-export type LoginResult = NonNullable<Awaited<ReturnType<typeof login>>>;
-export type LinkOAuthAccountResult = NonNullable<
-  Awaited<ReturnType<typeof linkOAuthAccount>>
 >;
 export type UpdateMyInfoResult = NonNullable<
   Awaited<ReturnType<typeof updateMyInfo>>
@@ -422,9 +376,6 @@ export type GetFestivalsForCalendarResult = NonNullable<
 >;
 export type GetCurrentUserResult = NonNullable<
   Awaited<ReturnType<typeof getCurrentUser>>
->;
-export type CheckEmailResult = NonNullable<
-  Awaited<ReturnType<typeof checkEmail>>
 >;
 export type DeleteMyReviewResult = NonNullable<
   Awaited<ReturnType<typeof deleteMyReview>>

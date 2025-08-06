@@ -57,34 +57,24 @@ export interface FestivalReviewCreateRequest {
 }
 
 /**
- * 추가 회원가입 정보
+ * JWT 토큰 응답
  */
-export interface SignupRequest {
-  email: string;
-  /**
-   * @minLength 8
-   * @maxLength 2147483647
-   */
-  password: string;
-  /**
-   * @minLength 2
-   * @maxLength 20
-   */
-  nickname: string;
-}
-
 export interface TokenResponse {
+  /** JWT 액세스 토큰 */
   accessToken: string;
+  /** 토큰 타입 */
   tokenType: string;
+  /** 토큰 만료 시간 (초) */
   expiresIn: number;
-  userId: number;
+  /**
+   * 사용자 ID (OAuth 단계에서는 null)
+   * @nullable
+   */
+  userId: number | null;
+  /** 사용자 닉네임 */
   nickname: string;
+  /** 추가 회원가입 필요 여부 */
   needsAdditionalSignup: boolean;
-}
-
-export interface LoginRequest {
-  email: string;
-  password: string;
 }
 
 export interface MyInfoUpdateRequest {
@@ -101,8 +91,11 @@ export interface MyInfoResponse {
   userId: number;
   /** 닉네임 */
   nickname: string;
-  /** 프로필 이미지 URL */
-  profileImage: string;
+  /**
+   * 프로필 이미지 URL
+   * @nullable
+   */
+  profileImage: string | null;
 }
 
 /**
@@ -189,8 +182,11 @@ export interface MyReviewResponse {
   festivalId: number;
   /** 축제명 */
   festivalTitle: string;
-  /** 썸네일 이미지 URL */
-  festivalThumbnail: string;
+  /**
+   * 썸네일 이미지 URL
+   * @nullable
+   */
+  festivalThumbnail: string | null;
   /** 리뷰 내용 */
   content: string;
   /** 리뷰 작성 날짜 */
@@ -199,84 +195,168 @@ export interface MyReviewResponse {
 
 /**
  * 상세 내용
+ * @nullable
  */
-export interface ContentResponse {
-  /** 축제 타이틀 */
-  title: string;
-  /** 홈페이지 HTML */
-  homepage: string;
-  /** 주소1 */
-  addr1: string;
-  /** 주소2 */
-  addr2: string;
-  /** 개요/소개 */
-  overview: string;
-}
+export type ContentResponse = {
+  /**
+   * 축제 타이틀
+   * @nullable
+   */
+  title: string | null;
+  /**
+   * 홈페이지 HTML
+   * @nullable
+   */
+  homepage: string | null;
+  /**
+   * 주소1
+   * @nullable
+   */
+  addr1: string | null;
+  /**
+   * 주소2
+   * @nullable
+   */
+  addr2: string | null;
+  /**
+   * 개요/소개
+   * @nullable
+   */
+  overview: string | null;
+} | null;
 
 export interface FestivalDetailResponse {
   /** 축제 ID */
   id: number;
   /** 축제명 */
   title: string;
-  /** 주소 */
-  address: string;
-  /** 테마 */
-  theme: string;
-  /** 축제 시작일 */
-  startDate: string;
-  /** 축제 종료일 */
-  endDate: string;
-  /** 썸네일 이미지 URL */
-  thumbnail: string;
-  /** 경도 */
-  mapx: string;
-  /** 위도 */
-  mapy: string;
-  /** 이미지 목록 */
-  images: ImageResponse[];
+  /**
+   * 주소
+   * @nullable
+   */
+  address: string | null;
+  /**
+   * 테마
+   * @nullable
+   */
+  theme: string | null;
+  /**
+   * 축제 시작일
+   * @nullable
+   */
+  startDate: string | null;
+  /**
+   * 축제 종료일
+   * @nullable
+   */
+  endDate: string | null;
+  /**
+   * 썸네일 이미지 URL
+   * @nullable
+   */
+  thumbnail: string | null;
+  /**
+   * 경도
+   * @nullable
+   */
+  mapx: string | null;
+  /**
+   * 위도
+   * @nullable
+   */
+  mapy: string | null;
+  /**
+   * 이미지 목록
+   * @nullable
+   */
+  images: ImageResponse[] | null;
   content: ContentResponse;
   info: InfoResponse;
 }
 
 /**
  * 이미지 목록
+ * @nullable
  */
-export interface ImageResponse {
-  /** 콘텐츠ID */
-  contentid: string;
-  /** 원본 이미지 URL */
-  originimgurl: string;
-  /** 이미지명 */
-  imgname: string;
-  /** 작은 이미지 URL */
-  smallimageurl: string;
-}
+export type ImageResponse = {
+  /**
+   * 콘텐츠ID
+   * @nullable
+   */
+  contentid: string | null;
+  /**
+   * 원본 이미지 URL
+   * @nullable
+   */
+  originimgurl: string | null;
+  /**
+   * 이미지명
+   * @nullable
+   */
+  imgname: string | null;
+  /**
+   * 작은 이미지 URL
+   * @nullable
+   */
+  smallimageurl: string | null;
+} | null;
 
 /**
  * 추가 정보
+ * @nullable
  */
-export interface InfoResponse {
-  /** 주최 */
-  sponsor1: string;
-  /** 주최 연락처 */
-  sponsor1tel: string;
-  /** 행사 시작일(YYYYMMDD) */
-  eventstartdate: string;
-  /** 행사 종료일(YYYYMMDD) */
-  eventenddate: string;
-  /** 운영 시간 */
-  playtime: string;
-  /** 장소 */
-  eventplace: string;
-  /** 행사 홈페이지 */
-  eventhomepage: string;
-  /** 이용 요금 */
-  usetimefestival: string;
-  /** 할인 정보 */
-  discountinfofestival: string;
-  /** 소요 시간 */
-  spendtimefestival: string;
-}
+export type InfoResponse = {
+  /**
+   * 주최
+   * @nullable
+   */
+  sponsor1: string | null;
+  /**
+   * 주최 연락처
+   * @nullable
+   */
+  sponsor1tel: string | null;
+  /**
+   * 행사 시작일(YYYYMMDD)
+   * @nullable
+   */
+  eventstartdate: string | null;
+  /**
+   * 행사 종료일(YYYYMMDD)
+   * @nullable
+   */
+  eventenddate: string | null;
+  /**
+   * 운영 시간
+   * @nullable
+   */
+  playtime: string | null;
+  /**
+   * 장소
+   * @nullable
+   */
+  eventplace: string | null;
+  /**
+   * 행사 홈페이지
+   * @nullable
+   */
+  eventhomepage: string | null;
+  /**
+   * 이용 요금
+   * @nullable
+   */
+  usetimefestival: string | null;
+  /**
+   * 할인 정보
+   * @nullable
+   */
+  discountinfofestival: string | null;
+  /**
+   * 소요 시간
+   * @nullable
+   */
+  spendtimefestival: string | null;
+} | null;
 
 /**
  * 축제 여행코스 목록 조회 요청
@@ -295,49 +375,81 @@ export interface FestivalTravelCoursePageRequest {
   size: number;
   /** 축제 ID */
   festivalId: number;
-  /** 코스 타입 */
-  courseType: string;
-  /** 테마 */
-  theme: string;
-  /** 정렬 기준 (popularity,desc | duration,asc) */
-  sort: string;
+  /**
+   * 코스 타입
+   * @nullable
+   */
+  courseType: string | null;
+  /**
+   * 테마
+   * @nullable
+   */
+  theme: string | null;
+  /**
+   * 정렬 기준 (popularity,desc | duration,asc)
+   * @nullable
+   */
+  sort: string | null;
   offset: number;
 }
 
 export interface FestivalTravelCourseListResponse {
-  /** 여행 코스 목록 */
-  courses: FestivalTravelCourseResponse[];
-  /** 근처 볼거리 목록 */
-  nearbyAttractions: NearbyAttractionResponse[];
+  /**
+   * 여행 코스 목록
+   * @nullable
+   */
+  courses: FestivalTravelCourseResponse[] | null;
+  /**
+   * 근처 볼거리 목록
+   * @nullable
+   */
+  nearbyAttractions: NearbyAttractionResponse[] | null;
 }
 
 /**
  * 여행 코스 목록
+ * @nullable
  */
-export interface FestivalTravelCourseResponse {
+export type FestivalTravelCourseResponse = {
   /** 코스 ID */
   id: number;
   /** 코스명 */
   title: string;
-  /** 시각 */
-  time: string;
-}
+  /**
+   * 시각
+   * @nullable
+   */
+  time: string | null;
+} | null;
 
 /**
  * 근처 볼거리 목록
+ * @nullable
  */
-export interface NearbyAttractionResponse {
+export type NearbyAttractionResponse = {
   /** 장소명 */
   name: string;
-  /** 썸네일 이미지 URL */
-  thumbnail: string;
-  /** 경도 */
-  mapx: string;
-  /** 위도 */
-  mapy: string;
-  /** 장소 설명/상세 페이지 URL */
-  descriptionUrl: string;
-}
+  /**
+   * 썸네일 이미지 URL
+   * @nullable
+   */
+  thumbnail: string | null;
+  /**
+   * 경도
+   * @nullable
+   */
+  mapx: string | null;
+  /**
+   * 위도
+   * @nullable
+   */
+  mapy: string | null;
+  /**
+   * 장소 설명/상세 페이지 URL
+   * @nullable
+   */
+  descriptionUrl: string | null;
+} | null;
 
 /**
  * 축제 리뷰 목록 응답
@@ -369,8 +481,11 @@ export interface FestivalReviewResponse {
   id: number;
   /** 작성자 닉네임 */
   nickname: string;
-  /** 작성자 프로필 이미지 URL */
-  profileImage: string;
+  /**
+   * 작성자 프로필 이미지 URL
+   * @nullable
+   */
+  profileImage: string | null;
   /** 리뷰 내용 */
   content: string;
   /** 작성일 */
@@ -394,12 +509,21 @@ export interface FestivalRestaurantPageRequest {
   size: number;
   /** 축제 ID */
   festivalId: number;
-  /** 검색 반경 (미터) */
-  radius: number;
-  /** 음식 카테고리 */
-  category: string;
-  /** 정렬 기준 (distance,asc | rating,desc) */
-  sort: string;
+  /**
+   * 검색 반경 (미터)
+   * @nullable
+   */
+  radius: number | null;
+  /**
+   * 음식 카테고리
+   * @nullable
+   */
+  category: string | null;
+  /**
+   * 정렬 기준 (distance,asc | rating,desc)
+   * @nullable
+   */
+  sort: string | null;
   offset: number;
 }
 
@@ -431,17 +555,25 @@ export interface FestivalRestaurantListResponse {
 export interface FestivalRestaurantResponse {
   /** 식당명 */
   name: string;
-  /** 주소 */
-  address: string;
-  /** 대표 이미지 */
-  imageUrl: string;
+  /**
+   * 주소
+   * @nullable
+   */
+  address: string | null;
+  /**
+   * 대표 이미지
+   * @nullable
+   */
+  imageUrl: string | null;
 }
 
 /**
  * 축제 테마
+ * @nullable
  */
 export type FestivalSearchRequestTheme =
-  (typeof FestivalSearchRequestTheme)[keyof typeof FestivalSearchRequestTheme];
+  | (typeof FestivalSearchRequestTheme)[keyof typeof FestivalSearchRequestTheme]
+  | null;
 
 export const FestivalSearchRequestTheme = {
   CULTURE_ART: 'CULTURE_ART',
@@ -464,24 +596,51 @@ export interface FestivalSearchRequest {
    * @maximum 100
    */
   size: number;
-  /** 정렬 기준 (예: createdAt,desc) */
-  sort: string;
-  /** 검색 시작 날짜 */
-  startDate: string;
-  /** 검색 종료 날짜 */
-  endDate: string;
-  /** 경도 (한국 범위: 124~132) */
-  mapX: number;
-  /** 위도 (한국 범위: 33~39) */
-  mapY: number;
-  /** 검색 반경(미터) */
-  radius: number;
-  /** 지역 코드 */
-  regionCode: number;
-  /** 축제 테마 */
+  /**
+   * 정렬 기준 (예: createdAt,desc)
+   * @nullable
+   */
+  sort: string | null;
+  /**
+   * 검색 시작 날짜
+   * @nullable
+   */
+  startDate: string | null;
+  /**
+   * 검색 종료 날짜
+   * @nullable
+   */
+  endDate: string | null;
+  /**
+   * 경도 (한국 범위: 124~132)
+   * @nullable
+   */
+  mapX: number | null;
+  /**
+   * 위도 (한국 범위: 33~39)
+   * @nullable
+   */
+  mapY: number | null;
+  /**
+   * 검색 반경(미터)
+   * @nullable
+   */
+  radius: number | null;
+  /**
+   * 지역 코드
+   * @nullable
+   */
+  regionCode: number | null;
+  /**
+   * 축제 테마
+   * @nullable
+   */
   theme: FestivalSearchRequestTheme;
-  /** 검색 키워드 (축제명, 설명, 지역명 등 자유 검색) */
-  searchParam: string;
+  /**
+   * 검색 키워드 (축제명, 설명, 지역명 등 자유 검색)
+   * @nullable
+   */
+  searchParam: string | null;
   offset: number;
 }
 
@@ -513,31 +672,44 @@ export interface FestivalListResponse {
 export interface FestivalSummaryResponse {
   /** 축제 ID */
   id: number;
-  /** 썸네일 이미지 URL */
-  thumbnail: string;
-  /** 테마 */
-  theme: string;
+  /**
+   * 썸네일 이미지 URL
+   * @nullable
+   */
+  thumbnail: string | null;
+  /**
+   * 테마
+   * @nullable
+   */
+  theme: string | null;
   /** 축제명 */
   title: string;
   /** 북마크 여부 */
   bookmarked: boolean;
-  /** 주소 */
-  address: string;
-  /** 축제 시작일 */
-  startDate: string;
-  /** 축제 종료일 */
-  endDate: string;
-  /** 경도 */
-  map_x: number;
-  /** 위도 */
-  map_y: number;
+  /**
+   * 주소
+   * @nullable
+   */
+  address: string | null;
+  /**
+   * 축제 시작일
+   * @nullable
+   */
+  startDate: string | null;
+  /**
+   * 축제 종료일
+   * @nullable
+   */
+  endDate: string | null;
 }
 
 /**
  * 테스트 성향 결과
+ * @nullable
  */
 export type FestivalPersonalTestRequestPersonalityType =
-  (typeof FestivalPersonalTestRequestPersonalityType)[keyof typeof FestivalPersonalTestRequestPersonalityType];
+  | (typeof FestivalPersonalTestRequestPersonalityType)[keyof typeof FestivalPersonalTestRequestPersonalityType]
+  | null;
 
 export const FestivalPersonalTestRequestPersonalityType = {
   ENERGIZER: 'ENERGIZER',
@@ -559,9 +731,15 @@ export interface FestivalPersonalTestRequest {
    * @maximum 100
    */
   size: number;
-  /** 정렬 기준 (예: createdAt,desc) */
-  sort: string;
-  /** 테스트 성향 결과 */
+  /**
+   * 정렬 기준 (예: createdAt,desc)
+   * @nullable
+   */
+  sort: string | null;
+  /**
+   * 테스트 성향 결과
+   * @nullable
+   */
   personalityType: FestivalPersonalTestRequestPersonalityType;
   offset: number;
 }
@@ -578,10 +756,16 @@ export interface FestivalMyPageRequest {
    * @maximum 100
    */
   size: number;
-  /** 정렬 기준 (예: createdAt,desc) */
-  sort: string;
-  /** 북마크 여부 */
-  bookmarked: boolean;
+  /**
+   * 정렬 기준 (예: createdAt,desc)
+   * @nullable
+   */
+  sort: string | null;
+  /**
+   * 북마크 여부
+   * @nullable
+   */
+  bookmarked: boolean | null;
   offset: number;
 }
 
@@ -653,8 +837,11 @@ export interface FestivalMapRequest {
    * @maximum 100
    */
   size: number;
-  /** 정렬 기준 (예: createdAt,desc) */
-  sort: string;
+  /**
+   * 정렬 기준 (예: createdAt,desc)
+   * @nullable
+   */
+  sort: string | null;
   /** 축제 상태 */
   status: FestivalMapRequestStatus;
   /** 기간 */
@@ -663,22 +850,36 @@ export interface FestivalMapRequest {
   withWhom: FestivalMapRequestWithWhom;
   /** 테마 */
   theme: FestivalMapRequestTheme;
-  /** 좌상단 위도 */
-  latTopLeft: number;
-  /** 좌상단 경도 */
-  lngTopLeft: number;
-  /** 우하단 위도 */
-  latBottomRight: number;
-  /** 우하단 경도 */
-  lngBottomRight: number;
+  /**
+   * 좌상단 위도
+   * @nullable
+   */
+  latTopLeft: number | null;
+  /**
+   * 좌상단 경도
+   * @nullable
+   */
+  lngTopLeft: number | null;
+  /**
+   * 우하단 위도
+   * @nullable
+   */
+  latBottomRight: number | null;
+  /**
+   * 우하단 경도
+   * @nullable
+   */
+  lngBottomRight: number | null;
   offset: number;
 }
 
 /**
  * 지역 필터
+ * @nullable
  */
 export type FestivalCalendarRequestRegion =
-  (typeof FestivalCalendarRequestRegion)[keyof typeof FestivalCalendarRequestRegion];
+  | (typeof FestivalCalendarRequestRegion)[keyof typeof FestivalCalendarRequestRegion]
+  | null;
 
 export const FestivalCalendarRequestRegion = {
   SEOUL: 'SEOUL',
@@ -733,9 +934,15 @@ export interface FestivalCalendarRequest {
    * @maximum 100
    */
   size: number;
-  /** 정렬 기준 (예: createdAt,desc) */
-  sort: string;
-  /** 지역 필터 */
+  /**
+   * 정렬 기준 (예: createdAt,desc)
+   * @nullable
+   */
+  sort: string | null;
+  /**
+   * 지역 필터
+   * @nullable
+   */
   region: FestivalCalendarRequestRegion;
   /** 누구랑 */
   withWhom: FestivalCalendarRequestWithWhom;
@@ -746,24 +953,27 @@ export interface FestivalCalendarRequest {
   offset: number;
 }
 
+/**
+ * 사용자 정보
+ */
 export interface UserInfo {
+  /** 사용자 ID */
   userId: number;
+  /** 이메일 주소 */
   email: string;
+  /** 닉네임 */
   nickname: string;
 }
+
+export type RunFestivalSyncJob200 = {
+  [key: string]: { [key: string]: unknown };
+};
 
 export type GetFestivalReviewsParams = {
   pageRequest: PageRequest;
 };
 
 export type OauthLoginParams = {
-  /**
-   * OAuth 인가 코드
-   */
-  code: string;
-};
-
-export type LinkOAuthAccountParams = {
   /**
    * OAuth 인가 코드
    */

@@ -56,7 +56,9 @@ const fetchFestivals = async ({
       theme: theme || FestivalCalendarRequestTheme.ALL,
       date: selected || '',
       offset: (pageParam || 0) * 10,
-    });
+    }).then(r => r.data);
+
+    console.log('response::::::', response);
 
     const festivals = response?.content || [];
     const totalElements = response?.totalElements || 0;
