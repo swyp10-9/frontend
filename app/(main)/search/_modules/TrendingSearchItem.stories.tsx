@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 
+import { TrendingSearchItem } from './TrendingSearchItem';
 import { mockTrendingData } from './mock-data';
-import { TrendingSearchItem } from './trending-search-item';
 
 const meta: Meta<typeof TrendingSearchItem> = {
-  title: 'Search/TrendingSearchList',
+  title: 'Search/TrendingSearchItem',
   component: TrendingSearchItem,
   parameters: {
     layout: 'padded',

@@ -1,3 +1,4 @@
-export * from './search-input';
-export * from './trending-search-item';
+export * from './SearchInput';
+export * from './TrendingSearchItem';
 export * from './types';
+export * from './SearchResults';

@@ -24,6 +24,7 @@ export interface SearchInputProps {
   value: string;
   onChange: (value: string) => void;
   onClear?: () => void;
+  onSubmit?: (e: React.FormEvent) => void;
 }
 
 export interface TrendingSearchItemProps {
