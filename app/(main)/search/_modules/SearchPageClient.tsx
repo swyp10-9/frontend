@@ -177,17 +177,30 @@ export function SearchPageClient() {
 
   const handleSearch = (keyword: string) => {
     setSearchValue(keyword);
+
+    // 기존 URL 파라미터 유지하면서 검색어만 업데이트
+    const params = new URLSearchParams(searchParams.toString());
+
     if (keyword.trim()) {
-      // NOTE: push를 하면 매번 RSC를 거쳐서 반응성이 떨어짐
-      router.replace(`/search?q=${encodeURIComponent(keyword.trim())}`);
+      params.set('q', keyword.trim());
     } else {
-      router.replace('/search');
+      params.delete('q');
     }
+
+    const newUrl = `/search?${params.toString()}`;
+    // NOTE: push를 하면 매번 RSC를 거쳐서 반응성이 떨어짐
+    router.replace(newUrl);
   };
 
   const handleClear = () => {
     setSearchValue('');
-    router.replace('/search');
+
+    // 기존 필터 파라미터 유지하면서 검색어만 제거
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('q');
+
+    const newUrl = `/search?${params.toString()}`;
+    router.replace(newUrl);
   };
 
   const handleFilterApply = (values: FilterValues) => {
