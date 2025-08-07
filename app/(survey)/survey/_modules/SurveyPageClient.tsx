@@ -4,6 +4,8 @@ import { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import { Button } from '@/components/Button';
+
 // 성향 점수 타입
 interface PersonalityScores {
   활동적: number;
@@ -36,7 +38,7 @@ const surveyQuestions: Question[] = [
     options: [
       {
         id: '1-1',
-        title: '전통 박물관/ 역사 체험',
+        title: '전통 박물관 / 역사 체험',
         subtitle: '우리 역사 및 전통문화를 체험',
         scores: {
           전통적: 3,
@@ -331,7 +333,7 @@ function ProgressBar({ currentStep }: { currentStep: number }) {
   const progress = (currentStep / 5) * 100;
 
   return (
-    <div className='absolute top-24 left-1/2 h-1 w-80 -translate-x-1/2 overflow-clip rounded-[100px] bg-[#f1f2f4]'>
+    <div className='h-1 overflow-clip rounded-[100px] bg-[#f1f2f4]'>
       <div
         className='h-1 rounded-[100px] bg-[#ff8757] transition-all duration-300 ease-in-out'
         style={{ width: `${progress}%` }}
@@ -352,16 +354,16 @@ function ChoiceOption({
 }) {
   return (
     <div
-      className={`relative cursor-pointer rounded-lg transition-all duration-200 ${
+      className={`cursor-pointer rounded-lg transition-all duration-200 ${
         isSelected
           ? 'border-[#5e6573] bg-[#f1f2f4]'
           : 'border-[#d5d7db] bg-[#ffffff]'
       } border`}
       onClick={onSelect}
     >
-      <div className='flex flex-col items-center justify-center gap-1 px-[105px] py-4 text-center'>
+      <div className='flex flex-col items-center justify-center gap-1 py-4 text-center'>
         <div
-          className={`relative shrink-0 text-[16px] tracking-[-0.16px] ${
+          className={`shrink-0 text-[16px] tracking-[-0.16px] ${
             isSelected
               ? 'font-bold text-[#090a0c]'
               : 'font-medium text-[#26282e]'
@@ -370,7 +372,7 @@ function ChoiceOption({
           <p className='leading-[22px]'>{option.title}</p>
         </div>
         <div
-          className={`relative shrink-0 text-[14px] tracking-[-0.14px] ${
+          className={`shrink-0 text-[14px] tracking-[-0.14px] ${
             isSelected ? 'text-[#868c98]' : 'text-[#5e6573]'
           }`}
         >
@@ -461,72 +463,39 @@ export function SurveyPageClient() {
     }
   };
 
-  const handleBack = () => {
-    router.back();
-  };
-
   if (!currentQuestion) return null;
 
   return (
-    <div className='relative min-h-screen w-full bg-[#ffffff]'>
-      {/* Status Bar */}
-      <div className='h-[49.466px] w-full' />
-
-      {/* Top Bar */}
-      <div className='relative h-[92px] w-full bg-[#ffffff]'>
-        <div className='absolute top-[52px] left-0 box-border flex w-full flex-row items-center justify-start px-3 py-0'>
-          <button
-            onClick={handleBack}
-            className='relative flex size-8 shrink-0 items-center justify-center'
-          >
-            <svg
-              width='7'
-              height='13'
-              viewBox='0 0 7 13'
-              fill='none'
-              xmlns='http://www.w3.org/2000/svg'
-            >
-              <path
-                d='M6 1L1 6.5L6 12'
-                stroke='#868C98'
-                strokeWidth='1.5'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
-
+    <div className='flex h-full w-full flex-col bg-white px-5'>
       {/* Progress Bar */}
       <ProgressBar currentStep={currentStep} />
 
       {/* Question Content */}
-      <div className='absolute top-[124px] left-1/2 box-border flex w-80 -translate-x-1/2 flex-col items-start justify-start gap-9 p-0'>
+      <div className='box-border flex flex-1 flex-col items-start justify-start gap-9 p-0 pt-6'>
         {/* Progress Text */}
-        <div className='relative box-border flex w-80 shrink-0 flex-col items-start justify-start gap-2 p-0'>
-          <div className='relative box-border flex w-80 shrink-0 flex-row items-start justify-start p-0 text-left text-[14px] leading-[0] tracking-[-0.14px] not-italic'>
-            <div className='relative shrink-0 font-bold text-nowrap text-[#ff8757]'>
+        <div className='box-border flex shrink-0 flex-col items-start justify-start gap-2 p-0'>
+          <div className='box-border flex shrink-0 flex-row items-start justify-start p-0 text-left text-[14px] leading-[0] tracking-[-0.14px] not-italic'>
+            <div className='shrink-0 font-bold text-nowrap text-[#ff8757]'>
               <p className='leading-[1.4]'>{currentStep}</p>
             </div>
-            <div className='relative h-5 w-80 shrink-0 font-medium text-[#5e6573]'>
+            <div className='h-5 shrink-0 font-medium text-[#5e6573]'>
               <p className='leading-[1.4]'>/5</p>
             </div>
           </div>
 
           {/* Question Title */}
-          <div className='relative box-border flex w-full shrink-0 flex-col items-start justify-start gap-1 p-0 text-left leading-[0] not-italic'>
-            <div className='relative w-full shrink-0 text-[20px] leading-[28px] font-bold tracking-[-0.2px] text-[#090a0c]'>
+          <div className='box-border flex w-full shrink-0 flex-col items-start justify-start gap-1 p-0 text-left leading-[0] not-italic'>
+            <div className='w-full shrink-0 text-[20px] leading-[28px] font-bold tracking-[-0.2px] text-[#090a0c]'>
               <p className='mb-0 block'>{currentQuestion.title}</p>
             </div>
-            <div className='relative w-full shrink-0 text-[14px] font-medium tracking-[-0.14px] text-[#5e6573]'>
+            <div className='w-full shrink-0 text-[14px] font-medium tracking-[-0.14px] text-[#5e6573]'>
               <p className='block leading-[20px]'>{currentQuestion.subtitle}</p>
             </div>
           </div>
         </div>
 
         {/* Options */}
-        <div className='relative box-border flex w-80 shrink-0 flex-col items-center justify-start gap-3 p-0'>
+        <div className='box-border flex w-full flex-1 shrink-0 flex-col gap-3 p-0'>
           {currentQuestion.options.map(option => (
             <ChoiceOption
               key={option.id}
@@ -538,40 +507,30 @@ export function SurveyPageClient() {
         </div>
       </div>
 
-      {/* Bottom Buttons */}
-      <div className='absolute bottom-0 box-border flex w-full flex-col items-start justify-start gap-2.5 bg-[#ffffff] px-5 pt-4 pb-10'>
-        <div className='relative box-border flex w-full shrink-0 flex-row items-start justify-start gap-2 p-0'>
+      {/* Bottom Buttons - Fixed at bottom */}
+      <div className='mt-auto box-border flex w-full flex-col items-start justify-start gap-2.5 bg-[#ffffff] px-5 pt-4 pb-10'>
+        <div className='box-border flex w-full shrink-0 flex-row items-start justify-start gap-2 p-0'>
           {/* Previous Button */}
-          <button
+          <Button
             onClick={handlePrevious}
             disabled={isFirstStep}
-            className={`relative min-h-px min-w-px shrink-0 grow basis-0 rounded-lg ${
-              isFirstStep
-                ? 'bg-[#f1f2f4] text-[#868c98]'
-                : 'border border-[#d5d7db] bg-[#ffffff] text-[#26282e]'
-            }`}
+            variant={isFirstStep ? 'secondary' : 'secondary'}
+            size='md'
+            className='flex-1'
           >
-            <div className='relative box-border flex w-full flex-row items-center justify-center gap-2.5 overflow-clip px-[105px] py-[17px]'>
-              <div className='relative shrink-0 text-center text-[16px] leading-[0] font-bold tracking-[-0.16px] text-nowrap not-italic'>
-                <p className='leading-[22px]'>이전 질문</p>
-              </div>
-            </div>
-          </button>
+            이전 질문
+          </Button>
 
           {/* Next Button */}
-          <button
+          <Button
             onClick={handleNext}
             disabled={!hasSelection}
-            className={`relative box-border flex min-h-px min-w-px shrink-0 grow basis-0 flex-row items-center justify-center gap-2.5 overflow-clip rounded-lg px-[105px] py-[17px] ${
-              hasSelection
-                ? 'bg-[#26282e] text-[#ffffff]'
-                : 'bg-[#f1f2f4] text-[#868c98]'
-            }`}
+            variant={hasSelection ? 'primary' : 'secondary'}
+            size='md'
+            className='flex-1'
           >
-            <div className='relative shrink-0 text-center text-[16px] leading-[0] font-bold tracking-[-0.16px] text-nowrap not-italic'>
-              <p className='leading-[22px]'>다음 질문</p>
-            </div>
-          </button>
+            다음 질문
+          </Button>
         </div>
       </div>
     </div>

@@ -1,0 +1,46 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+
+export default function MainLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
+
+  const handleBack = () => {
+    router.back();
+  };
+
+  return (
+    <div className='relative box-border flex h-screen w-full max-w-[600px] flex-col px-5'>
+      <div className='sticky top-0 z-10 flex w-full flex-col bg-white pb-2'>
+        <div className='box-border flex w-full flex-row items-center justify-start px-3 py-0'>
+          <button
+            onClick={handleBack}
+            className='relative flex size-8 shrink-0 items-center justify-center'
+          >
+            <svg
+              width='7'
+              height='13'
+              viewBox='0 0 7 13'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <path
+                d='M6 1L1 6.5L6 12'
+                stroke='#868C98'
+                strokeWidth='1.5'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div className='flex-1'>{children}</div>
+    </div>
+  );
+}
