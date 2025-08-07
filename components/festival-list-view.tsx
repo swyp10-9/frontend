@@ -89,6 +89,22 @@ export default function FestivalListView(props: FestivalListViewProps) {
                 icon='lucide:share'
                 className='cursor-pointer text-gray-300'
                 fontSize={20}
+                onClick={e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  try {
+                    if (typeof window === 'undefined') return;
+                    window.navigator.clipboard.writeText(
+                      `${process.env.NEXT_PUBLIC_WEB_URL}/festival/${id}`,
+                    );
+                    dialogOpen({
+                      title: '링크가 복사되었습니다.',
+                      type: 'alert',
+                    });
+                  } catch (error) {
+                    console.error(error);
+                  }
+                }}
               />
             </div>
           </div>
