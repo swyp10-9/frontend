@@ -466,73 +466,74 @@ export function SurveyPageClient() {
   if (!currentQuestion) return null;
 
   return (
-    <div className='flex h-full w-full flex-col bg-white px-5'>
-      {/* Progress Bar */}
+    <>
       <ProgressBar currentStep={currentStep} />
-
-      {/* Question Content */}
-      <div className='box-border flex flex-1 flex-col items-start justify-start gap-9 p-0 pt-6'>
-        {/* Progress Text */}
-        <div className='box-border flex shrink-0 flex-col items-start justify-start gap-2 p-0'>
-          <div className='box-border flex shrink-0 flex-row items-start justify-start p-0 text-left text-[14px] leading-[0] tracking-[-0.14px] not-italic'>
-            <div className='shrink-0 font-bold text-nowrap text-[#ff8757]'>
-              <p className='leading-[1.4]'>{currentStep}</p>
+      <div className='flex w-full flex-col bg-white'>
+        {/* Question Content */}
+        <div className='box-border flex flex-col items-start justify-start gap-9 p-0 pt-6'>
+          {/* Progress Text */}
+          <div className='box-border flex shrink-0 flex-col items-start justify-start gap-2 p-0'>
+            <div className='box-border flex shrink-0 flex-row items-start justify-start p-0 text-left text-[14px] leading-[0] tracking-[-0.14px] not-italic'>
+              <div className='shrink-0 font-bold text-nowrap text-[#ff8757]'>
+                <p className='leading-[1.4]'>{currentStep}</p>
+              </div>
+              <div className='h-5 shrink-0 font-medium text-[#5e6573]'>
+                <p className='leading-[1.4]'>/5</p>
+              </div>
             </div>
-            <div className='h-5 shrink-0 font-medium text-[#5e6573]'>
-              <p className='leading-[1.4]'>/5</p>
+
+            {/* Question Title */}
+            <div className='box-border flex w-full shrink-0 flex-col items-start justify-start gap-1 p-0 text-left leading-[0] not-italic'>
+              <div className='w-full shrink-0 text-[20px] leading-[28px] font-bold tracking-[-0.2px] text-[#090a0c]'>
+                <p className='mb-0 block'>{currentQuestion.title}</p>
+              </div>
+              <div className='w-full shrink-0 text-[14px] font-medium tracking-[-0.14px] text-[#5e6573]'>
+                <p className='block leading-[20px]'>
+                  {currentQuestion.subtitle}
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Question Title */}
-          <div className='box-border flex w-full shrink-0 flex-col items-start justify-start gap-1 p-0 text-left leading-[0] not-italic'>
-            <div className='w-full shrink-0 text-[20px] leading-[28px] font-bold tracking-[-0.2px] text-[#090a0c]'>
-              <p className='mb-0 block'>{currentQuestion.title}</p>
-            </div>
-            <div className='w-full shrink-0 text-[14px] font-medium tracking-[-0.14px] text-[#5e6573]'>
-              <p className='block leading-[20px]'>{currentQuestion.subtitle}</p>
-            </div>
+          {/* Options */}
+          <div className='box-border flex w-full flex-1 shrink-0 flex-col gap-3 p-0'>
+            {currentQuestion.options.map(option => (
+              <ChoiceOption
+                key={option.id}
+                option={option}
+                isSelected={selectedOptions[currentStep] === option.id}
+                onSelect={() => handleOptionSelect(option.id)}
+              />
+            ))}
           </div>
         </div>
 
-        {/* Options */}
-        <div className='box-border flex w-full flex-1 shrink-0 flex-col gap-3 p-0'>
-          {currentQuestion.options.map(option => (
-            <ChoiceOption
-              key={option.id}
-              option={option}
-              isSelected={selectedOptions[currentStep] === option.id}
-              onSelect={() => handleOptionSelect(option.id)}
-            />
-          ))}
+        <div className='fixed bottom-0 left-1/2 box-border flex w-full max-w-[600px] -translate-x-1/2 flex-col justify-start gap-2.5 bg-[#ffffff] px-5 pt-4 pb-10'>
+          <div className='box-border flex w-full shrink-0 flex-row items-start justify-start gap-2 p-0'>
+            {/* Previous Button */}
+            <Button
+              onClick={handlePrevious}
+              disabled={isFirstStep}
+              variant={isFirstStep ? 'secondary' : 'secondary'}
+              size='md'
+              className='flex-1'
+            >
+              이전 질문
+            </Button>
+
+            {/* Next Button */}
+            <Button
+              onClick={handleNext}
+              disabled={!hasSelection}
+              variant={hasSelection ? 'primary' : 'secondary'}
+              size='md'
+              className='flex-1'
+            >
+              다음 질문
+            </Button>
+          </div>
         </div>
       </div>
-
-      {/* Bottom Buttons - Fixed at bottom */}
-      <div className='mt-auto box-border flex w-full flex-col items-start justify-start gap-2.5 bg-[#ffffff] px-5 pt-4 pb-10'>
-        <div className='box-border flex w-full shrink-0 flex-row items-start justify-start gap-2 p-0'>
-          {/* Previous Button */}
-          <Button
-            onClick={handlePrevious}
-            disabled={isFirstStep}
-            variant={isFirstStep ? 'secondary' : 'secondary'}
-            size='md'
-            className='flex-1'
-          >
-            이전 질문
-          </Button>
-
-          {/* Next Button */}
-          <Button
-            onClick={handleNext}
-            disabled={!hasSelection}
-            variant={hasSelection ? 'primary' : 'secondary'}
-            size='md'
-            className='flex-1'
-          >
-            다음 질문
-          </Button>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

@@ -15,8 +15,8 @@ export default function MainLayout({
 
   return (
     <div className='relative box-border flex h-screen w-full max-w-[600px] flex-col px-5'>
-      <div className='sticky top-0 z-10 flex w-full flex-col bg-white pb-2'>
-        <div className='box-border flex w-full flex-row items-center justify-start px-3 py-0'>
+      <div className='sticky top-0 z-10 flex w-full flex-col bg-transparent pb-2'>
+        <div className='-mx-2 box-border flex w-full flex-row items-center justify-start py-0'>
           <button
             onClick={handleBack}
             className='relative flex size-8 shrink-0 items-center justify-center'

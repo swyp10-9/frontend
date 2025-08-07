@@ -8,6 +8,7 @@ import curatorImage from '@/assets/images/festival-recommendation/curator.png';
 import energizerImage from '@/assets/images/festival-recommendation/energizer.png';
 import healerImage from '@/assets/images/festival-recommendation/healer.png';
 import socializerImage from '@/assets/images/festival-recommendation/socializer.png';
+import HorizontalFestivalList from '@/components/HorizontalFestivalList';
 
 // 결과별 이미지 매핑
 const resultImages = {
@@ -80,6 +81,47 @@ export function SurveyResultClient() {
     router.push('/');
   };
 
+  const handleRetakeTest = () => {
+    router.push('/survey');
+  };
+
+  const handleShareResult = () => {
+    // TODO: 결과 공유 기능 구현
+    console.log('결과 공유하기');
+  };
+
+  const handleFestivalClick = (festival: { id: string }) => {
+    router.push(`/festival/${festival.id}`);
+  };
+
+  // 추천 축제 데이터 (임시 데이터)
+  const recommendedFestivals = [
+    {
+      id: '1',
+      image: 'https://picsum.photos/140/140?random=1',
+      theme: '문화/예술',
+      title: '대구치맥페스티벌',
+      location: '대구',
+      isMarked: true,
+    },
+    {
+      id: '2',
+      image: 'https://picsum.photos/140/140?random=2',
+      theme: '문화/예술',
+      title: '문화 축제 샘플',
+      location: '대구',
+      isMarked: false,
+    },
+    {
+      id: '3',
+      image: 'https://picsum.photos/140/140?random=3',
+      theme: '음악',
+      title: '음악 페스티벌',
+      location: '서울',
+      isMarked: false,
+    },
+  ];
+
   // URL 파라미터에서 결과 타입을 가져와서 해당 결과 반환
   const getResultFromType = () => {
     const type = searchParams.get('type');
@@ -98,38 +140,9 @@ export function SurveyResultClient() {
     resultImages[resultKey as keyof typeof resultImages] || resultImages.healer;
 
   return (
-    <div className='relative min-h-screen w-full bg-[#ffffff]'>
-      {/* Status Bar */}
-      <div className='h-[49.466px] w-full' />
-
-      {/* Top Bar */}
-      <div className='relative h-[92px] w-full bg-[#ffffff]'>
-        <div className='absolute top-[52px] left-0 box-border flex w-full flex-row items-center justify-start px-3 py-0'>
-          <button
-            onClick={handleBackToHome}
-            className='relative flex size-8 shrink-0 items-center justify-center'
-          >
-            <svg
-              width='7'
-              height='13'
-              viewBox='0 0 7 13'
-              fill='none'
-              xmlns='http://www.w3.org/2000/svg'
-            >
-              <path
-                d='M6 1L1 6.5L6 12'
-                stroke='#868C98'
-                strokeWidth='1.5'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
-
+    <div className='relative min-h-screen w-full bg-[#ffffff] pb-[100px]'>
       {/* Content */}
-      <div className='flex flex-col items-center gap-7 px-5 pb-20'>
+      <div className='flex flex-col items-center gap-7'>
         {/* Result Header */}
         <div className='flex flex-col items-center gap-3'>
           <div className='flex w-full flex-col items-center gap-1 text-center'>
@@ -176,6 +189,32 @@ export function SurveyResultClient() {
           <p className='w-full text-[14px] leading-[20px] font-medium tracking-[-0.14px] text-[#26282e]'>
             {result.longDescription}
           </p>
+        </div>
+
+        {/* Recommended Festivals Section */}
+        <div className='w-full'>
+          <HorizontalFestivalList
+            festivals={recommendedFestivals}
+            onFestivalClick={handleFestivalClick}
+          />
+        </div>
+      </div>
+
+      {/* Fixed Bottom Actions */}
+      <div className='fixed bottom-0 left-1/2 w-full max-w-[600px] -translate-x-1/2 bg-transparent px-5 py-4'>
+        <div className='flex gap-3'>
+          <button
+            onClick={handleRetakeTest}
+            className='h-12 flex-1 rounded-lg border border-[#d5d7db] bg-white text-sm font-medium text-[#090a0c]'
+          >
+            다시 테스트하기
+          </button>
+          <button
+            onClick={handleShareResult}
+            className='h-12 flex-1 rounded-lg bg-[#090a0c] text-sm font-medium text-white'
+          >
+            결과 공유
+          </button>
         </div>
       </div>
     </div>
