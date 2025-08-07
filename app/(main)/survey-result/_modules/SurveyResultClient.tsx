@@ -7,14 +7,264 @@ import adventurerImage from '@/assets/images/festival-recommendation/adventurer.
 import curatorImage from '@/assets/images/festival-recommendation/curator.png';
 import energizerImage from '@/assets/images/festival-recommendation/energizer.png';
 import healerImage from '@/assets/images/festival-recommendation/healer.png';
+import socializerImage from '@/assets/images/festival-recommendation/socializer.png';
+
+// 설문 질문 데이터 (점수 계산용)
+const surveyQuestions = [
+  {
+    id: 1,
+    options: [
+      {
+        id: '1-1',
+        scores: {
+          전통적: 3,
+          조용한: 2,
+          활동적: 0,
+          사교적: 0,
+          현대적: 0,
+          계획적: 0,
+        },
+      },
+      {
+        id: '1-2',
+        scores: {
+          현대적: 2,
+          사교적: 2,
+          활동적: 0,
+          전통적: 0,
+          조용한: 0,
+          계획적: 0,
+        },
+      },
+      {
+        id: '1-3',
+        scores: {
+          현대적: 3,
+          활동적: 2,
+          사교적: 0,
+          전통적: 0,
+          조용한: 0,
+          계획적: 0,
+        },
+      },
+      {
+        id: '1-4',
+        scores: {
+          조용한: 3,
+          계획적: 1,
+          활동적: 0,
+          사교적: 0,
+          전통적: 0,
+          현대적: 0,
+        },
+      },
+    ],
+  },
+  {
+    id: 2,
+    options: [
+      {
+        id: '2-1',
+        scores: {
+          조용한: 3,
+          활동적: 0,
+          사교적: 0,
+          전통적: 0,
+          현대적: 0,
+          계획적: 0,
+        },
+      },
+      {
+        id: '2-2',
+        scores: {
+          사교적: 2,
+          계획적: 2,
+          활동적: 0,
+          전통적: 0,
+          현대적: 0,
+          조용한: 0,
+        },
+      },
+      {
+        id: '2-3',
+        scores: {
+          사교적: 1,
+          현대적: 2,
+          활동적: 0,
+          전통적: 0,
+          조용한: 0,
+          계획적: 0,
+        },
+      },
+      {
+        id: '2-4',
+        scores: {
+          사교적: 3,
+          활동적: 1,
+          전통적: 0,
+          현대적: 0,
+          조용한: 0,
+          계획적: 0,
+        },
+      },
+    ],
+  },
+  {
+    id: 3,
+    options: [
+      {
+        id: '3-1',
+        scores: {
+          활동적: 3,
+          사교적: 3,
+          전통적: 0,
+          현대적: 0,
+          조용한: 0,
+          계획적: 0,
+        },
+      },
+      {
+        id: '3-2',
+        scores: {
+          활동적: 2,
+          사교적: 2,
+          전통적: 0,
+          현대적: 0,
+          조용한: 0,
+          계획적: 0,
+        },
+      },
+      {
+        id: '3-3',
+        scores: {
+          활동적: 1,
+          사교적: 1,
+          조용한: 2,
+          전통적: 0,
+          현대적: 0,
+          계획적: 0,
+        },
+      },
+      {
+        id: '3-4',
+        scores: {
+          활동적: 2,
+          사교적: 1,
+          전통적: 0,
+          현대적: 0,
+          조용한: 0,
+          계획적: 0,
+        },
+      },
+    ],
+  },
+  {
+    id: 4,
+    options: [
+      {
+        id: '4-1',
+        scores: {
+          활동적: 3,
+          사교적: 2,
+          전통적: 0,
+          현대적: 0,
+          조용한: 0,
+          계획적: 0,
+        },
+      },
+      {
+        id: '4-2',
+        scores: {
+          활동적: 2,
+          계획적: 2,
+          사교적: 0,
+          전통적: 0,
+          현대적: 0,
+          조용한: 0,
+        },
+      },
+      {
+        id: '4-3',
+        scores: {
+          조용한: 3,
+          활동적: 0,
+          사교적: 0,
+          전통적: 0,
+          현대적: 0,
+          계획적: 0,
+        },
+      },
+      {
+        id: '4-4',
+        scores: {
+          조용한: 2,
+          계획적: 1,
+          활동적: 0,
+          사교적: 0,
+          전통적: 0,
+          현대적: 0,
+        },
+      },
+    ],
+  },
+  {
+    id: 5,
+    options: [
+      {
+        id: '5-1',
+        scores: {
+          활동적: 1,
+          사교적: 0,
+          전통적: 0,
+          현대적: 0,
+          조용한: 0,
+          계획적: 0,
+        },
+      },
+      {
+        id: '5-2',
+        scores: {
+          계획적: 2,
+          활동적: 0,
+          사교적: 0,
+          전통적: 0,
+          현대적: 0,
+          조용한: 0,
+        },
+      },
+      {
+        id: '5-3',
+        scores: {
+          계획적: 3,
+          조용한: 1,
+          활동적: 0,
+          사교적: 0,
+          전통적: 0,
+          현대적: 0,
+        },
+      },
+      {
+        id: '5-4',
+        scores: {
+          현대적: 1,
+          활동적: 0,
+          사교적: 0,
+          전통적: 0,
+          조용한: 0,
+          계획적: 0,
+        },
+      },
+    ],
+  },
+];
 
 // 결과별 이미지 매핑
 const resultImages = {
-  '1-1': energizerImage,
-  '1-2': curatorImage,
-  '1-3': adventurerImage,
-  '1-4': energizerImage, // 소셜라이저는 에너자이저 이미지 사용
-  '1-5': healerImage, // 힐러는 힐러 이미지 사용
+  energizer: energizerImage,
+  curator: curatorImage,
+  adventurer: adventurerImage,
+  socializer: socializerImage, // 소셜라이저는 에너자이저 이미지 사용
+  healer: healerImage,
 };
 
 // 결과 데이터 타입
@@ -27,7 +277,7 @@ interface SurveyResult {
 
 // 결과 데이터
 const surveyResults: Record<string, SurveyResult> = {
-  '1-1': {
+  energizer: {
     type: 'energizer',
     title: '축제 에너자이저',
     description: '축제장이 당신을 기다려요!',
@@ -38,7 +288,7 @@ const surveyResults: Record<string, SurveyResult> = {
       '적극적이고 에너지 넘치는 축제를 선호해요',
     ],
   },
-  '1-2': {
+  curator: {
     type: 'curator',
     title: '축제 큐레이터',
     description: '완벽한 축제 경험을 설계하는 당신',
@@ -49,7 +299,7 @@ const surveyResults: Record<string, SurveyResult> = {
       '완벽한 축제를 설계하는 능력을 가지고 있어요',
     ],
   },
-  '1-3': {
+  adventurer: {
     type: 'adventurer',
     title: '문화 탐험가',
     description: '깊이 있는 문화가 당신을 부릅니다',
@@ -60,7 +310,7 @@ const surveyResults: Record<string, SurveyResult> = {
       '역사적 의미가 있는 축제를 선호해요',
     ],
   },
-  '1-4': {
+  socializer: {
     type: 'socializer',
     title: '축제 소셜라이저',
     description: '친구들과의 즐거운 시간이 최고!',
@@ -71,7 +321,7 @@ const surveyResults: Record<string, SurveyResult> = {
       '사람들과의 소통을 중요하게 생각해요',
     ],
   },
-  '1-5': {
+  healer: {
     type: 'healer',
     title: '축제 힐러',
     description: '자연스럽고 여유로운 힐링이 필요해요',
@@ -108,23 +358,62 @@ export function SurveyResultClient() {
       const data = searchParams.get('data');
       if (data) {
         const surveyData = JSON.parse(decodeURIComponent(data));
-        // 첫 번째 질문의 답변을 기반으로 결과 결정
-        const firstAnswer = surveyData[1];
 
-        return surveyResults[firstAnswer] || surveyResults['1-1'];
+        // 점수 계산
+        const scores = calculateScores(surveyData);
+
+        // 결과 결정 (우선순위 순)
+        if (scores.활동적 >= 8 && scores.사교적 >= 6) {
+          return surveyResults['energizer'];
+        } else if (scores.전통적 >= 3 && scores.조용한 >= 4) {
+          return surveyResults['adventurer'];
+        } else if (scores.조용한 >= 8 && scores.계획적 >= 2) {
+          return surveyResults['curator'];
+        } else if (scores.사교적 >= 5) {
+          return surveyResults['socializer'];
+        } else {
+          return surveyResults['healer']; // 기본값
+        }
       }
     } catch (error) {
       console.error('설문 데이터 파싱 오류:', error);
     }
-    return surveyResults['1-1']; // 기본값
+    return surveyResults['healer']; // 기본값
+  };
+
+  // 점수 계산 함수
+  const calculateScores = (surveyData: Record<number, string>) => {
+    const scores = {
+      활동적: 0,
+      사교적: 0,
+      전통적: 0,
+      현대적: 0,
+      조용한: 0,
+      계획적: 0,
+    };
+
+    // 각 질문의 선택된 답변에 따른 점수 누적
+    Object.entries(surveyData).forEach(([questionId, answerId]) => {
+      const question = surveyQuestions.find(q => q.id === parseInt(questionId));
+      if (question) {
+        const selectedOption = question.options.find(
+          opt => opt.id === answerId,
+        );
+        if (selectedOption) {
+          Object.entries(selectedOption.scores).forEach(([trait, score]) => {
+            scores[trait as keyof typeof scores] += score as number;
+          });
+        }
+      }
+    });
+
+    return scores;
   };
 
   const result = getResultFromSurvey();
-  const resultKey =
-    Object.keys(surveyResults).find(key => surveyResults[key] === result) ||
-    '1-1';
+  const resultKey = result.type;
   const resultImage =
-    resultImages[resultKey as keyof typeof resultImages] || resultImages['1-1'];
+    resultImages[resultKey as keyof typeof resultImages] || resultImages.healer;
 
   return (
     <div className='relative min-h-screen w-full bg-[#ffffff]'>
