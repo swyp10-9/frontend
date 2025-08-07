@@ -47,7 +47,9 @@ export default function FestivalListView(props: FestivalListViewProps) {
                   icon='mynaui:star-solid'
                   className='cursor-pointer text-yellow'
                   fontSize={20}
-                  onClick={async () => {
+                  onClick={async e => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     try {
                       await cancelBookmark(id).then(() => {
                         dialogOpen({
@@ -66,7 +68,9 @@ export default function FestivalListView(props: FestivalListViewProps) {
                   icon='mynaui:star'
                   className='cursor-pointer text-gray-300'
                   fontSize={20}
-                  onClick={async () => {
+                  onClick={async e => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     try {
                       await addBookmark(id).then(() => {
                         dialogOpen({
