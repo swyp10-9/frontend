@@ -25,7 +25,7 @@ export function TrendingSearches({ onSearch }: TrendingSearchesProps) {
   return (
     <>
       <div className='mb-5'>
-        <h2 className="font-['Pretendard'] text-[14px] leading-[20px] font-semibold tracking-[-0.14px] text-[#090a0c]">
+        <h2 className='text-[14px] leading-[20px] font-semibold tracking-[-0.14px] text-[#090a0c]'>
           인기 검색어
         </h2>
       </div>
@@ -33,15 +33,13 @@ export function TrendingSearches({ onSearch }: TrendingSearchesProps) {
       <div className='flex flex-col gap-3'>
         {isLoadingKeywords && (
           <div className='py-8 text-center'>
-            <p className="font-['Pretendard'] text-[14px] text-[#868c98]">
-              로딩 중...
-            </p>
+            <p className='text-[14px] text-[#868c98]'>로딩 중...</p>
           </div>
         )}
 
         {keywordsError && (
           <div className='py-8 text-center'>
-            <p className="font-['Pretendard'] text-[14px] text-[#868c98]">
+            <p className='text-[14px] text-[#868c98]'>
               인기 검색어를 불러올 수 없습니다.
             </p>
           </div>
@@ -49,7 +47,7 @@ export function TrendingSearches({ onSearch }: TrendingSearchesProps) {
 
         {!isLoadingKeywords && !keywordsError && trendingItems.length === 0 && (
           <div className='py-8 text-center'>
-            <p className="font-['Pretendard'] text-[14px] text-[#868c98]">
+            <p className='text-[14px] text-[#868c98]'>
               인기 검색어가 없습니다.
             </p>
           </div>

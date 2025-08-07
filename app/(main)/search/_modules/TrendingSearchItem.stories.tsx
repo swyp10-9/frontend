@@ -12,7 +12,7 @@ const meta: Meta<typeof TrendingSearchItem> = {
   decorators: [
     Story => (
       <div className='w-[320px] bg-white p-5'>
-        <h2 className="mb-5 font-['Pretendard'] text-[14px] leading-[20px] font-semibold tracking-[-0.14px] text-[#090a0c]">
+        <h2 className='mb-5 text-[14px] leading-[20px] font-semibold tracking-[-0.14px] text-[#090a0c]'>
           인기 검색어
         </h2>
         <div className='flex flex-col gap-3'>

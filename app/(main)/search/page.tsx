@@ -15,9 +15,7 @@ function SearchPageLoading() {
       </div>
       <div className='px-5 pb-20'>
         <div className='py-8 text-center'>
-          <p className="font-['Pretendard'] text-[14px] text-[#868c98]">
-            로딩 중...
-          </p>
+          <p className='text-[14px] text-[#868c98]'>로딩 중...</p>
         </div>
       </div>
     </div>

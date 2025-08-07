@@ -32,7 +32,7 @@ export function SearchInput({
               onChange={e => onChange(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder='축제 이름을 입력해주세요.'
-              className="flex-1 bg-transparent font-['Pretendard'] text-[14px] leading-[20px] font-medium tracking-[-0.14px] text-[#090a0c] outline-none placeholder:text-[#5e6573]"
+              className='flex-1 bg-transparent text-[14px] leading-[20px] font-medium tracking-[-0.14px] text-[#090a0c] outline-none placeholder:text-[#5e6573]'
             />
             {value && (
               <button

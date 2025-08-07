@@ -90,7 +90,7 @@ export function SearchResults({
     <Drawer>
       <div className='flex flex-col gap-5'>
         <div>
-          <h2 className="mb-5 font-['Pretendard'] text-[20px] leading-[28px] font-bold tracking-[-0.2px] text-[#090a0c]">
+          <h2 className='mb-5 text-[20px] leading-[28px] font-bold tracking-[-0.2px] text-[#090a0c]'>
             {totalCount || results.length}개의 관련 축제
           </h2>
 
@@ -114,13 +114,11 @@ export function SearchResults({
         <div className='flex flex-col gap-5'>
           {isLoading ? (
             <div className='py-8 text-center'>
-              <p className="font-['Pretendard'] text-[14px] text-[#868c98]">
-                검색 중...
-              </p>
+              <p className='text-[14px] text-[#868c98]'>검색 중...</p>
             </div>
           ) : error ? (
             <div className='py-8 text-center'>
-              <p className="font-['Pretendard'] text-[14px] text-[#868c98]">
+              <p className='text-[14px] text-[#868c98]'>
                 검색 결과를 불러올 수 없습니다.
               </p>
             </div>
@@ -133,10 +131,10 @@ export function SearchResults({
                     className='h-12 w-12 text-[#c1c7d0]'
                   />
                 </div>
-                <p className="mb-2 font-['Pretendard'] text-[18px] leading-[26px] font-bold tracking-[-0.18px] text-[#090a0c]">
+                <p className='mb-2 text-[18px] leading-[26px] font-bold tracking-[-0.18px] text-[#090a0c]'>
                   '{searchQuery}' 검색 결과가 없습니다.
                 </p>
-                <p className="font-['Pretendard'] text-[14px] leading-[20px] font-medium tracking-[-0.14px] text-[#868c98]">
+                <p className='text-[14px] leading-[20px] font-medium tracking-[-0.14px] text-[#868c98]'>
                   검색어를 변경해 다시 시도해 보세요.
                 </p>
               </div>
@@ -164,7 +162,7 @@ export function SearchResults({
                         }}
                       />
 
-                      <div className='flex w-[196px] flex-col items-start gap-3 overflow-hidden'>
+                      <div className='flex flex-1 flex-col items-start gap-3 overflow-hidden'>
                         <div className='flex h-12 w-full flex-col items-start gap-1'>
                           <div className='flex w-full flex-row items-start justify-between'>
                             <div className='flex items-center'>
@@ -174,7 +172,7 @@ export function SearchResults({
                                   style={{ backgroundColor: themeInfo.bg }}
                                 >
                                   <span
-                                    className="font-['Pretendard'] text-[12px] leading-[18px] font-semibold tracking-[-0.12px]"
+                                    className='text-[12px] leading-[18px] font-semibold tracking-[-0.12px]'
                                     style={{ color: themeInfo.color }}
                                   >
                                     {themeInfo.text}
@@ -195,12 +193,12 @@ export function SearchResults({
                             </div>
                           </div>
 
-                          <h3 className="w-full font-['Pretendard'] text-[16px] leading-[22px] font-bold tracking-[-0.16px] text-[#090a0c]">
+                          <h3 className='w-full text-[16px] leading-[22px] font-bold tracking-[-0.16px] text-[#090a0c]'>
                             {festival.title}
                           </h3>
                         </div>
 
-                        <div className='flex w-44 flex-col items-start gap-1'>
+                        <div className='flex w-full flex-col items-start gap-1'>
                           <div className='flex w-full flex-row items-start gap-0.5'>
                             <div className='flex items-center p-[2px]'>
                               <Icon
@@ -208,11 +206,11 @@ export function SearchResults({
                                 className='h-4 w-4 text-[#868c98]'
                               />
                             </div>
-                            <div className='flex w-[152px] flex-row items-center gap-1'>
-                              <span className="font-['Pretendard'] text-[14px] leading-[20px] font-medium tracking-[-0.14px] text-[#5e6573]">
+                            <div className='flex flex-row items-center gap-1'>
+                              <span className='text-[14px] leading-[20px] font-medium tracking-[-0.14px] text-[#5e6573]'>
                                 {festival.address}
                               </span>
-                              <span className="font-['Pretendard'] text-[12px] leading-[18px] font-semibold tracking-[-0.12px] text-[#26282e] underline">
+                              <span className='text-[12px] leading-[18px] font-semibold tracking-[-0.12px] text-[#26282e] underline'>
                                 지도보기
                               </span>
                             </div>
@@ -225,7 +223,7 @@ export function SearchResults({
                                 className='h-4 w-4 text-[#868c98]'
                               />
                             </div>
-                            <span className="font-['Pretendard'] text-[14px] leading-[20px] font-medium tracking-[-0.14px] text-[#5e6573]">
+                            <span className='text-[14px] leading-[20px] font-medium tracking-[-0.14px] text-[#5e6573]'>
                               {festival.startDate} ~ {festival.endDate}
                             </span>
                           </div>
