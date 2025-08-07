@@ -7,11 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import type { FestivalSummaryResponse } from '@/apis/SWYP10BackendAPI.schemas';
 import FestivalListView from '@/components/festival-list-view';
 import { FilterChip } from '@/components/filter-chip';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerTrigger,
-} from '@/components/shadcn/drawer';
+import { FilterValues } from '@/components/filter-modal';
 
 import { TrendingSearches } from './TrendingSearches';
 
@@ -22,6 +18,8 @@ interface SearchResultsProps {
   searchQuery: string;
   totalCount?: number;
   onSearch: (keyword: string) => void;
+  filterValues: FilterValues;
+  onFilterClick: () => void;
 }
 
 export function SearchResults({
@@ -31,6 +29,8 @@ export function SearchResults({
   searchQuery,
   totalCount,
   onSearch,
+  filterValues,
+  onFilterClick,
 }: SearchResultsProps) {
   const searchParams = useSearchParams();
 
@@ -79,91 +79,88 @@ export function SearchResults({
   };
 
   return (
-    <Drawer>
-      <div className='flex flex-col gap-5'>
-        <div>
-          <h2 className='mb-5 text-[20px] leading-[28px] font-bold tracking-[-0.2px] text-[#090a0c]'>
-            {totalCount || results.length}개의 관련 축제
-          </h2>
+    <div className='flex flex-col gap-5'>
+      <div>
+        <h2 className='mb-5 text-[20px] leading-[28px] font-bold tracking-[-0.2px] text-[#090a0c]'>
+          {totalCount || results.length}개의 관련 축제
+        </h2>
 
-          <div className='flex flex-row items-start justify-start gap-1'>
-            <FilterChip
-              label='내 주변'
-              is_selected={isNearbySelected}
-              onClick={toggleNearby}
-            />
-            <FilterChip
-              label='이번 달 축제'
-              is_selected={isThisMonthSelected}
-              onClick={toggleThisMonth}
-            />
-            <DrawerTrigger>
-              <FilterChip label='필터' is_selected={false} downChevron />
-            </DrawerTrigger>
-          </div>
-        </div>
-
-        <div className='flex flex-col gap-5'>
-          {isLoading ? (
-            <div className='py-8 text-center'>
-              <p className='text-[14px] text-[#868c98]'>검색 중...</p>
-            </div>
-          ) : error ? (
-            <div className='py-8 text-center'>
-              <p className='text-[14px] text-[#868c98]'>
-                검색 결과를 불러올 수 없습니다.
-              </p>
-            </div>
-          ) : !results || results.length === 0 ? (
-            <>
-              <div className='flex flex-col items-center pt-20 pb-10'>
-                <div className='mb-4 flex h-16 w-16 items-center justify-center'>
-                  <Icon
-                    icon='lucide:search'
-                    className='h-12 w-12 text-[#c1c7d0]'
-                  />
-                </div>
-                <p className='mb-2 text-[18px] leading-[26px] font-bold tracking-[-0.18px] text-[#090a0c]'>
-                  '{searchQuery}' 검색 결과가 없습니다.
-                </p>
-                <p className='text-[14px] leading-[20px] font-medium tracking-[-0.14px] text-[#868c98]'>
-                  검색어를 변경해 다시 시도해 보세요.
-                </p>
-              </div>
-
-              <div className='border-t border-[#f1f2f4] pt-8'>
-                <TrendingSearches onSearch={onSearch} />
-              </div>
-            </>
-          ) : (
-            results.map((festival, index) => (
-              <div key={festival.id}>
-                <Link href={`/festival/${festival.id}`} className='block'>
-                  <FestivalListView
-                    image={festival.thumbnail || ''}
-                    theme={festival.theme || ''}
-                    title={festival.title || ''}
-                    loc={festival.address || ''}
-                    start_date={festival.startDate || ''}
-                    end_date={festival.endDate || ''}
-                    is_marked={false}
-                  />
-                </Link>
-
-                {index < results.length - 1 && (
-                  <div className='mt-5 h-px bg-[#f1f2f4]' />
-                )}
-              </div>
-            ))
-          )}
+        <div className='flex flex-row items-start justify-start gap-1'>
+          <FilterChip
+            label='내 주변'
+            is_selected={isNearbySelected}
+            onClick={toggleNearby}
+          />
+          <FilterChip
+            label='이번 달 축제'
+            is_selected={isThisMonthSelected}
+            onClick={toggleThisMonth}
+          />
+          <FilterChip
+            label='필터'
+            is_selected={Object.values(filterValues).some(
+              value => value !== null,
+            )}
+            downChevron
+            onClick={onFilterClick}
+          />
         </div>
       </div>
 
-      <DrawerContent>
-        <div className='p-4'>
-          <p>필터 옵션이 여기에 표시됩니다.</p>
-        </div>
-      </DrawerContent>
-    </Drawer>
+      <div className='flex flex-col gap-5'>
+        {isLoading ? (
+          <div className='py-8 text-center'>
+            <p className='text-[14px] text-[#868c98]'>검색 중...</p>
+          </div>
+        ) : error ? (
+          <div className='py-8 text-center'>
+            <p className='text-[14px] text-[#868c98]'>
+              검색 결과를 불러올 수 없습니다.
+            </p>
+          </div>
+        ) : !results || results.length === 0 ? (
+          <>
+            <div className='flex flex-col items-center pt-20 pb-10'>
+              <div className='mb-4 flex h-16 w-16 items-center justify-center'>
+                <Icon
+                  icon='lucide:search'
+                  className='h-12 w-12 text-[#c1c7d0]'
+                />
+              </div>
+              <p className='mb-2 text-[18px] leading-[26px] font-bold tracking-[-0.18px] text-[#090a0c]'>
+                '{searchQuery}' 검색 결과가 없습니다.
+              </p>
+              <p className='text-[14px] leading-[20px] font-medium tracking-[-0.14px] text-[#868c98]'>
+                검색어를 변경해 다시 시도해 보세요.
+              </p>
+            </div>
+
+            <div className='border-t border-[#f1f2f4] pt-8'>
+              <TrendingSearches onSearch={onSearch} />
+            </div>
+          </>
+        ) : (
+          results.map((festival, index) => (
+            <div key={festival.id}>
+              <Link href={`/festival/${festival.id}`} className='block'>
+                <FestivalListView
+                  image={festival.thumbnail || ''}
+                  theme={festival.theme || ''}
+                  title={festival.title || ''}
+                  loc={festival.address || ''}
+                  start_date={festival.startDate || ''}
+                  end_date={festival.endDate || ''}
+                  is_marked={false}
+                />
+              </Link>
+
+              {index < results.length - 1 && (
+                <div className='mt-5 h-px bg-[#f1f2f4]' />
+              )}
+            </div>
+          ))
+        )}
+      </div>
+    </div>
   );
 }

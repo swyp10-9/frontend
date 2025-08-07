@@ -1,22 +1,72 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { searchFestivals } from '@/apis/SWYP10BackendAPI';
+import FilterModal, {
+  FilterConfig,
+  FilterModalRef,
+  FilterValues,
+} from '@/components/filter-modal';
 import { QUERY_OPTIONS } from '@/constants/queryOptions';
 
 import { SearchInput } from './SearchInput';
 import { SearchResults } from './SearchResults';
 import { TrendingSearches } from './TrendingSearches';
 
+// 필터 설정
+const filterConfigs: FilterConfig[] = [
+  {
+    key: 'region',
+    label: '지역',
+    list: [
+      { type: 'seoul', label: '서울' },
+      { type: 'gyeonggi', label: '경기' },
+      { type: 'gangwon', label: '강원' },
+      { type: 'chungcheong', label: '충청' },
+      { type: 'jeolla', label: '전라' },
+      { type: 'gyeongsang', label: '경상' },
+      { type: 'jeju', label: '제주' },
+    ],
+    showAllOption: true,
+  },
+  {
+    key: 'companion',
+    label: '누구랑',
+    list: [
+      { type: 'family', label: '가족' },
+      { type: 'couple', label: '커플' },
+      { type: 'parents', label: '부모님' },
+      { type: 'pet', label: '반려견' },
+      { type: 'friend', label: '친구' },
+    ],
+    showAllOption: true,
+  },
+  {
+    key: 'theme',
+    label: '테마',
+    list: [
+      { type: 'culture', label: '문화/예술' },
+      { type: 'food', label: '음식/미식' },
+      { type: 'music', label: '음악/공연' },
+      { type: 'nature', label: '자연/체험' },
+      { type: 'tradition', label: '전통/역사' },
+    ],
+    showAllOption: true,
+  },
+];
+
 // 검색 기능을 담당하는 클라이언트 컴포넌트
 export function SearchPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchValue, setSearchValue] = useState('');
+  const [filterValues, setFilterValues] = useState<FilterValues>({});
+  const [showFilters, setShowFilters] = useState(false);
+  const filterModalRef = useRef<FilterModalRef>(null);
 
   const queryParam = searchParams.get('q');
 
@@ -25,6 +75,7 @@ export function SearchPageClient() {
     size: 20,
     searchParam: queryParam,
     offset: 0,
+    ...filterValues,
   };
 
   const {
@@ -62,6 +113,15 @@ export function SearchPageClient() {
     router.replace('/search');
   };
 
+  const handleFilterApply = (values: FilterValues) => {
+    setFilterValues(values);
+    setShowFilters(false);
+  };
+
+  const handleFilterReset = () => {
+    setFilterValues({});
+  };
+
   const isSearching = Boolean(queryParam?.trim());
   const hasSearchResults =
     searchData?.data?.content && searchData.data.content.length > 0;
@@ -95,11 +155,24 @@ export function SearchPageClient() {
             searchQuery={queryParam || ''}
             totalCount={searchData?.data?.totalElements}
             onSearch={handleSearch}
+            filterValues={filterValues}
+            onFilterClick={() => setShowFilters(true)}
           />
         ) : (
           <TrendingSearches onSearch={handleSearch} />
         )}
       </div>
+
+      <FilterModal
+        ref={filterModalRef}
+        title='필터'
+        configs={filterConfigs}
+        initialValues={filterValues}
+        onApply={handleFilterApply}
+        onReset={handleFilterReset}
+        open={showFilters}
+        onOpenChange={setShowFilters}
+      />
     </div>
   );
 }
