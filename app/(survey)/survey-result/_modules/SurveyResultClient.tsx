@@ -1,8 +1,15 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { getFestivalsForPersonalTest } from '@/apis/SWYP10BackendAPI';
+import type {
+  FestivalSummaryResponse,
+  GetFestivalsForPersonalTestPersonalityType,
+} from '@/apis/SWYP10BackendAPI.schemas';
 import adventurerImage from '@/assets/images/festival-recommendation/adventurer.png';
 import curatorImage from '@/assets/images/festival-recommendation/curator.png';
 import energizerImage from '@/assets/images/festival-recommendation/energizer.png';
@@ -12,11 +19,11 @@ import HorizontalFestivalList from '@/components/HorizontalFestivalList';
 
 // 결과별 이미지 매핑
 const resultImages = {
-  energizer: energizerImage,
-  curator: curatorImage,
-  adventurer: adventurerImage,
-  socializer: socializerImage,
-  healer: healerImage,
+  ENERGIZER: energizerImage,
+  CURATOR: curatorImage,
+  EXPLORER: adventurerImage,
+  SOCIALIZER: socializerImage,
+  HEALER: healerImage,
 };
 
 // 결과 데이터 타입
@@ -30,40 +37,40 @@ interface SurveyResult {
 
 // 결과 데이터
 const surveyResults: Record<string, SurveyResult> = {
-  energizer: {
-    type: 'energizer',
+  ENERGIZER: {
+    type: 'ENERGIZER',
     title: '축제 에너자이저',
     description: '축제장이 당신을 기다려요!',
     traits: ['활기찬', '사교적인', '적극적인'],
     longDescription:
       '활기차고 사교적인 당신은 축제의 중심에서 빛나는 존재입니다. 큰 무대, 많은 사람들, 뜨거운 열기 속에서 진짜 행복을 느끼죠. 당신이 있는 곳이 바로 파티가 시작되는 곳!',
   },
-  curator: {
-    type: 'curator',
+  CURATOR: {
+    type: 'CURATOR',
     title: '축제 큐레이터',
     description: '완벽한 축제 경험을 설계하는 당신',
     traits: ['계획적인', '꼼꼼한', '완벽주의'],
     longDescription:
       '꼼꼼하고 계획적인 당신은 완벽한 축제 경험을 설계하는 큐레이터입니다. 모든 세부사항을 놓치지 않고, 의미 있는 문화 경험을 추구하죠. 당신의 축제는 예술 작품처럼 완벽합니다!',
   },
-  adventurer: {
-    type: 'adventurer',
+  EXPLORER: {
+    type: 'EXPLORER',
     title: '문화 탐험가',
     description: '깊이 있는 문화가 당신을 부릅니다',
     traits: ['탐험적인', '호기심 많은', '깊이 있는'],
     longDescription:
       '호기심 많고 탐험적인 당신은 문화의 깊이를 탐구하는 모험가입니다. 전통과 역사의 의미를 찾아 떠나는 여행에서 진정한 보물을 발견하죠. 당신의 축제는 문화의 진수를 담고 있습니다!',
   },
-  socializer: {
-    type: 'socializer',
+  SOCIALIZER: {
+    type: 'SOCIALIZER',
     title: '축제 소셜라이저',
     description: '친구들과의 즐거운 시간이 최고!',
     traits: ['사교적인', '친근한', '협력적인'],
     longDescription:
       '사교적이고 친근한 당신은 사람들과의 연결을 중시하는 소셜라이저입니다. 친구들과 함께하는 즐거운 시간, 공유하는 순간들이 가장 소중하죠. 당신의 축제는 따뜻한 인연으로 가득합니다!',
   },
-  healer: {
-    type: 'healer',
+  HEALER: {
+    type: 'HEALER',
     title: '축제 힐러',
     description: '자연스럽고 여유로운 힐링이 필요해요',
     traits: ['평화로운', '여유로운', '힐링하는'],
@@ -77,6 +84,10 @@ export function SurveyResultClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const [festivals, setFestivals] = useState<FestivalSummaryResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const handleBackToHome = () => {
     router.push('/');
   };
@@ -86,41 +97,12 @@ export function SurveyResultClient() {
   };
 
   const handleShareResult = () => {
-    // TODO: 결과 공유 기능 구현
     console.log('결과 공유하기');
   };
 
   const handleFestivalClick = (festival: { id: string }) => {
     router.push(`/festival/${festival.id}`);
   };
-
-  // 추천 축제 데이터 (임시 데이터)
-  const recommendedFestivals = [
-    {
-      id: '1',
-      image: 'https://picsum.photos/140/140?random=1',
-      theme: '문화/예술',
-      title: '대구치맥페스티벌',
-      location: '대구',
-      isMarked: true,
-    },
-    {
-      id: '2',
-      image: 'https://picsum.photos/140/140?random=2',
-      theme: '문화/예술',
-      title: '문화 축제 샘플',
-      location: '대구',
-      isMarked: false,
-    },
-    {
-      id: '3',
-      image: 'https://picsum.photos/140/140?random=3',
-      theme: '음악',
-      title: '음악 페스티벌',
-      location: '서울',
-      isMarked: false,
-    },
-  ];
 
   // URL 파라미터에서 결과 타입을 가져와서 해당 결과 반환
   const getResultFromType = () => {
@@ -130,14 +112,63 @@ export function SurveyResultClient() {
       return surveyResults[type];
     }
 
-    // 기본값으로 healer 반환
-    return surveyResults['healer'];
+    // 기본값으로 HEALER 반환
+    return surveyResults['HEALER'];
+  };
+
+  // 맞춤 축제 데이터 가져오기
+  const fetchPersonalizedFestivals = async (
+    personalityType: GetFestivalsForPersonalTestPersonalityType,
+  ) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await getFestivalsForPersonalTest({
+        personalityType,
+        size: 10,
+      });
+
+      if (response.success && response.data?.content) {
+        setFestivals(response.data.content);
+      } else {
+        setError('축제 데이터를 불러올 수 없습니다.');
+      }
+    } catch (err) {
+      console.error('Failed to fetch personalized festivals:', err);
+      setError('축제 데이터를 불러오는 중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const result = getResultFromType();
+    if (result.type) {
+      fetchPersonalizedFestivals(
+        result.type as GetFestivalsForPersonalTestPersonalityType,
+      );
+    }
+  }, [searchParams]);
+
+  // API 응답을 HorizontalFestivalList용 형태로 변환
+  const transformFestivalsData = (apiData: FestivalSummaryResponse[]) => {
+    return apiData.map(festival => ({
+      id: String(festival.id || ''),
+      image: festival.thumbnail || 'https://picsum.photos/140/140',
+      theme: festival.theme || '기타',
+      title: festival.title || '축제명',
+      location: festival.address || '위치 정보 없음',
+      isMarked: festival.bookmarked || false,
+    }));
   };
 
   const result = getResultFromType();
   const resultKey = result.type;
   const resultImage =
-    resultImages[resultKey as keyof typeof resultImages] || resultImages.healer;
+    resultImages[resultKey as keyof typeof resultImages] || resultImages.HEALER;
+
+  const recommendedFestivals = transformFestivalsData(festivals);
 
   return (
     <div className='relative min-h-screen w-full bg-[#ffffff] pb-[100px]'>
@@ -193,10 +224,43 @@ export function SurveyResultClient() {
 
         {/* Recommended Festivals Section */}
         <div className='w-full'>
-          <HorizontalFestivalList
-            festivals={recommendedFestivals}
-            onFestivalClick={handleFestivalClick}
-          />
+          {loading ? (
+            <div className='flex flex-col gap-4'>
+              <h2 className='text-lg font-bold text-[#090a0c]'>
+                나의 맞춤 축제
+              </h2>
+              <div className='flex items-center justify-center py-8'>
+                <div className='text-sm text-gray-500'>
+                  축제를 불러오는 중...
+                </div>
+              </div>
+            </div>
+          ) : error ? (
+            <div className='flex flex-col gap-4'>
+              <h2 className='text-lg font-bold text-[#090a0c]'>
+                나의 맞춤 축제
+              </h2>
+              <div className='flex items-center justify-center py-8'>
+                <div className='text-sm text-red-500'>{error}</div>
+              </div>
+            </div>
+          ) : recommendedFestivals.length === 0 ? (
+            <div className='flex flex-col gap-4'>
+              <h2 className='text-lg font-bold text-[#090a0c]'>
+                나의 맞춤 축제
+              </h2>
+              <div className='flex items-center justify-center py-8'>
+                <div className='text-sm text-gray-500'>
+                  현재 추천할 수 있는 축제가 없습니다.
+                </div>
+              </div>
+            </div>
+          ) : (
+            <HorizontalFestivalList
+              festivals={recommendedFestivals}
+              onFestivalClick={handleFestivalClick}
+            />
+          )}
         </div>
       </div>
 
