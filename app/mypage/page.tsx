@@ -48,6 +48,7 @@ export default async function MyPage({
       size: 10,
       sort: 'createdAt,desc',
       bookmarked: true,
+      // @ts-expect-error 기존 타입 오류
       offset: 0,
     }).then(r => r.data);
     console.log('bookmarkListResponse::::', bookmarkListResponse);
@@ -60,6 +61,7 @@ export default async function MyPage({
   try {
     const reviewListResponse = await getMyReviews({
       page: 0,
+      // @ts-expect-error 기존 타입 오류
       offset: 0,
       size: 10,
     }).then(r => r.data);

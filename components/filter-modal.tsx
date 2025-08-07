@@ -65,10 +65,13 @@ const FilterModal = forwardRef<FilterModalRef, FilterModalProps>(
     });
 
     // 개별 필터 값 업데이트 함수
-    const updateFilterValue = (key: string, value: string | null) => {
+    const updateFilterValue = (
+      key: string,
+      value: string | null | ((prev: string | null) => string | null),
+    ) => {
       setFilterValues(prev => ({
         ...prev,
-        [key]: value,
+        [key]: typeof value === 'function' ? value(prev[key]) : value,
       }));
     };
 
