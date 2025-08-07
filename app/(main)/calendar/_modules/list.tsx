@@ -273,6 +273,7 @@ export default function List({
             {[...(allFestivals || [])].map((festival, idx) => (
               <FestivalListView
                 key={festival?.id || idx}
+                id={festival?.id || 0}
                 image={festival?.thumbnail || ''}
                 theme={festival?.theme || ''}
                 title={festival?.title || ''}

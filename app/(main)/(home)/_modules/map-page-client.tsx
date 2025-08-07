@@ -4,8 +4,12 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { FilterChip } from '@/components/filter-chip';
+import { FilterChip, SelectedChip } from '@/components/filter-chip';
 import { Drawer, DrawerTrigger } from '@/components/shadcn/drawer';
+import { periodList } from '@/constants/periodList';
+import { statusList } from '@/constants/statusList';
+import themeList from '@/constants/themeList';
+import { withWhomList } from '@/constants/withWhomList';
 
 import MapBottomFilter from './map-bottom-filter';
 import NaverMap, { getCurrentLocation } from './naver-map';
@@ -24,6 +28,42 @@ interface Festival {
   map_y: number;
   isDetailed?: boolean;
 }
+
+// value를 label로 매핑하는 유틸리티 함수
+const getLabelFromValue = (key: string, value: string): string => {
+  switch (key) {
+    case 'theme': {
+      const themeItem = themeList.find(
+        (item: { type: string; label: string }) => item.type === value,
+      );
+
+      return themeItem?.label || value;
+    }
+    case 'withWhom': {
+      const withWhomItem = withWhomList.find(
+        (item: { type: string; label: string }) => item.type === value,
+      );
+
+      return withWhomItem?.label || value;
+    }
+    case 'period': {
+      const periodItem = periodList.find(
+        (item: { type: string; label: string }) => item.type === value,
+      );
+
+      return periodItem?.label || value;
+    }
+    case 'status': {
+      const statusItem = statusList.find(
+        (item: { type: string; label: string }) => item.type === value,
+      );
+
+      return statusItem?.label || value;
+    }
+    default:
+      return value;
+  }
+};
 
 export default function MapPageClient({
   initialParams,
@@ -177,6 +217,24 @@ export default function MapPageClient({
           <DrawerTrigger>
             <FilterChip label='필터' is_selected={false} downChevron />
           </DrawerTrigger>
+          {[
+            { key: 'theme', value: initialParams.theme },
+            { key: 'withWhom', value: initialParams.withWhom },
+            { key: 'period', value: initialParams.period },
+            { key: 'status', value: initialParams.status },
+          ]
+            .filter(param => param.value)
+            .map(param => (
+              <SelectedChip
+                key={param.key}
+                label={getLabelFromValue(param.key, param.value)}
+                onClick={() => {
+                  const params = new URLSearchParams(searchParams);
+                  params.delete(param.key);
+                  router.replace(`?${params.toString()}`);
+                }}
+              />
+            ))}
         </div>
         <NaverMap
           initialCenter={getMapStateFromURL().center || undefined}

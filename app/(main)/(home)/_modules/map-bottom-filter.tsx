@@ -7,6 +7,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/Button';
 import BottomSheet, { BottomSheetRef } from '@/components/bottom-sheet';
 import FilterSection from '@/components/filter-section';
+import { periodList } from '@/constants/periodList';
+import { statusList } from '@/constants/statusList';
 import themeList from '@/constants/themeList';
 import { withWhomList } from '@/constants/withWhomList';
 
@@ -124,20 +126,13 @@ export default function MapBottomFilter({
         <div className='my-4 flex w-full max-w-[600px] flex-col justify-center gap-5'>
           <FilterSection
             label={'축제 진행 여부'}
-            list={[
-              { type: 'ongoing', label: '진행 중' },
-              { type: 'upcoming', label: '예정' },
-            ]}
+            list={statusList}
             value={status}
             setValue={setStatus}
           />
           <FilterSection
             label={'기간'}
-            list={[
-              { type: 'this_week', label: '이번 주' },
-              { type: 'this_month', label: '이번 달' },
-              { type: 'next_month', label: '다음 달' },
-            ]}
+            list={periodList}
             value={period}
             setValue={setPeriod}
           />

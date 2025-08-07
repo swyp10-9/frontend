@@ -144,6 +144,7 @@ export function SearchResults({
             <div key={festival.id}>
               <Link href={`/festival/${festival.id}`} className='block'>
                 <FestivalListView
+                  id={festival.id || 0}
                   image={festival.thumbnail || ''}
                   theme={festival.theme || ''}
                   title={festival.title || ''}
