@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@/components/Button';
 import BottomSheet, { BottomSheetRef } from '@/components/bottom-sheet';
+import FilterSection from '@/components/filter-section';
 import themeList from '@/constants/themeList';
 import { withWhomList } from '@/constants/withWhomList';
 
@@ -155,62 +156,5 @@ export default function MapBottomFilter({
         </div>
       </div>
     </BottomSheet>
-  );
-}
-
-function FilterSection({
-  label,
-  list,
-  value,
-  setValue,
-}: {
-  label: string;
-  list: { type: string; label: string }[];
-  value: string | null;
-  setValue: React.Dispatch<React.SetStateAction<string | null>>;
-}) {
-  function FilterItem({
-    itemLabel,
-    onclick,
-    checked,
-  }: {
-    itemLabel: string;
-    onclick: () => void;
-    checked: boolean;
-  }) {
-    return (
-      <div
-        className={`flex h-[36px] w-[76px] items-center justify-center rounded-lg ${checked ? 'border border-gray-400 bg-gray-50' : 'border border-gray-100'} cursor-pointer`}
-        onClick={onclick}
-      >
-        {itemLabel}
-      </div>
-    );
-  }
-  return (
-    <div className='flex flex-col gap-2'>
-      <p className='ui-text-sub-head'>{label}</p>
-      <div className='flex flex-wrap gap-x-1 gap-y-2'>
-        {list.map(item => {
-          return (
-            <FilterItem
-              checked={value === item.type}
-              itemLabel={item.label}
-              key={item.type}
-              onclick={() => {
-                setValue(item.type);
-              }}
-            />
-          );
-        })}
-        <FilterItem
-          checked={value === null}
-          itemLabel={'전체'}
-          onclick={() => {
-            setValue(null);
-          }}
-        />
-      </div>
-    </div>
   );
 }

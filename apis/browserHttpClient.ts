@@ -12,8 +12,6 @@ export const attachAccessToken = async (config: InternalAxiosRequestConfig) => {
   console.log('accessToken found from cookie:', accessToken);
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
-  } else {
-    // throw new Error('Access token is not found');
   }
   return config;
 };
