@@ -14,7 +14,7 @@ export function transformApiDataToTrendingItems(
   return apiData.map((item, index) => ({
     id: index + 1,
     rank: index + 1,
-    keyword: item.keyword,
+    keyword: item.keyword ?? '',
     isRising: index < 3,
     count: item.count,
   }));

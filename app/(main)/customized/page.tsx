@@ -1,11 +1,18 @@
 'use client';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import introImage from '@/assets/images/festival-recommendation/intro.png';
 import { Button } from '@/components/Button';
 
 export default function CustomizedPage() {
+  const router = useRouter();
+
+  const handleStartTest = () => {
+    router.push('/survey');
+  };
+
   return (
     <div className='relative w-full bg-white'>
       <div className='flex flex-col items-center justify-center px-6 py-12'>
@@ -39,6 +46,7 @@ export default function CustomizedPage() {
               size='md'
               rounded='full'
               className='w-full'
+              onClick={handleStartTest}
             >
               테스트 시작하기
             </Button>
