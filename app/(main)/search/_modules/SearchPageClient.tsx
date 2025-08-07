@@ -6,7 +6,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { searchFestivals } from '@/apis/SWYP10BackendAPI';
-import type { FestivalSearchRequest } from '@/apis/SWYP10BackendAPI.schemas';
 import { QUERY_OPTIONS } from '@/constants/queryOptions';
 
 import { SearchInput } from './SearchInput';
@@ -21,19 +20,10 @@ export function SearchPageClient() {
 
   const queryParam = searchParams.get('q');
 
-  // 검색 요청 객체 생성
-  const searchRequest: FestivalSearchRequest = {
+  const searchRequest = {
     page: 0,
     size: 20,
-    sort: null,
-    startDate: null,
-    endDate: null,
-    mapX: null,
-    mapY: null,
-    radius: null,
-    regionCode: null,
-    theme: null,
-    searchParam: queryParam || null,
+    searchParam: queryParam,
     offset: 0,
   };
 
@@ -43,7 +33,7 @@ export function SearchPageClient() {
     error: searchError,
   } = useQuery({
     queryKey: ['searchFestivals', searchRequest],
-    queryFn: () => searchFestivals({ request: searchRequest }),
+    queryFn: () => searchFestivals(searchRequest),
     enabled: Boolean(queryParam?.trim()),
     staleTime: QUERY_OPTIONS.STALE_TIME,
     gcTime: QUERY_OPTIONS.GC_TIME,
@@ -71,13 +61,6 @@ export function SearchPageClient() {
     router.push('/search');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchValue.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchValue.trim())}`);
-    }
-  };
-
   const isSearching = Boolean(queryParam?.trim());
   const hasSearchResults =
     searchData?.data?.content && searchData.data.content.length > 0;
@@ -98,7 +81,7 @@ export function SearchPageClient() {
           value={searchValue}
           onChange={setSearchValue}
           onClear={handleClear}
-          onSubmit={handleSubmit}
+          onSearch={handleSearch}
         />
       </div>
 
