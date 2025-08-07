@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation';
+
 import {
   getCurrentUser,
   getMyPageFestivals,
@@ -9,6 +11,7 @@ import {
 } from '@/apis/SWYP10BackendAPI.schemas';
 import BackArrowNav from '@/components/nav/nav';
 import { Drawer } from '@/components/shadcn/drawer';
+import config from '@/config';
 
 import BookmarkList from './_modules/bookmark-list';
 import MyPageClient from './_modules/my-page-client';
@@ -39,6 +42,10 @@ export default async function MyPage({
     userInfo = userInfoResponse;
   } catch (error) {
     console.error('사용자 정보를 가져오는데 실패했습니다:', error);
+    await fetch(`${config.base_url}/api/auth/logout`, {
+      method: 'DELETE',
+    });
+    redirect('/login');
   }
 
   let bookmarkList: FestivalSummaryResponse[] = [];
