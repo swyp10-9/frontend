@@ -263,7 +263,7 @@ const resultImages = {
   energizer: energizerImage,
   curator: curatorImage,
   adventurer: adventurerImage,
-  socializer: socializerImage, // 소셜라이저는 에너자이저 이미지 사용
+  socializer: socializerImage,
   healer: healerImage,
 };
 
@@ -272,7 +272,8 @@ interface SurveyResult {
   type: string;
   title: string;
   description: string;
-  characteristics: string[];
+  traits: string[];
+  longDescription: string;
 }
 
 // 결과 데이터
@@ -281,56 +282,41 @@ const surveyResults: Record<string, SurveyResult> = {
     type: 'energizer',
     title: '축제 에너자이저',
     description: '축제장이 당신을 기다려요!',
-    characteristics: [
-      '활기차고 사교적인 당신은 축제의 중심에서 빛나는 존재입니다',
-      '큰 무대, 많은 사람들, 뜨거운 열기 속에서 진짜 행복을 느끼죠',
-      '당신이 있는 곳이 바로 파티가 시작되는 곳!',
-      '적극적이고 에너지 넘치는 축제를 선호해요',
-    ],
+    traits: ['활기찬', '사교적인', '적극적인'],
+    longDescription:
+      '활기차고 사교적인 당신은 축제의 중심에서 빛나는 존재입니다. 큰 무대, 많은 사람들, 뜨거운 열기 속에서 진짜 행복을 느끼죠. 당신이 있는 곳이 바로 파티가 시작되는 곳!',
   },
   curator: {
     type: 'curator',
     title: '축제 큐레이터',
     description: '완벽한 축제 경험을 설계하는 당신',
-    characteristics: [
-      '계획적이고 신중한 당신은 축제를 하나의 작품처럼 감상하고 기록합니다',
-      '매 순간을 의미 있게 만들고, 특별한 추억으로 간직하는 예술가적 감성의 소유자예요',
-      '창의적인 축제 경험을 추구해요',
-      '완벽한 축제를 설계하는 능력을 가지고 있어요',
-    ],
+    traits: ['계획적인', '꼼꼼한', '완벽주의'],
+    longDescription:
+      '꼼꼼하고 계획적인 당신은 완벽한 축제 경험을 설계하는 큐레이터입니다. 모든 세부사항을 놓치지 않고, 의미 있는 문화 경험을 추구하죠. 당신의 축제는 예술 작품처럼 완벽합니다!',
   },
   adventurer: {
     type: 'adventurer',
     title: '문화 탐험가',
     description: '깊이 있는 문화가 당신을 부릅니다',
-    characteristics: [
-      '우리의 소중한 전통과 문화를 사랑하는 당신은 축제를 통해 역사와 만나고, 조상들의 지혜를 느끼는 특별한 시간을 보내시는군요',
-      '진정한 가치를 아는 멋진 분이에요!',
-      '문화적이고 깊이 있는 학습을 추구해요',
-      '역사적 의미가 있는 축제를 선호해요',
-    ],
+    traits: ['탐험적인', '호기심 많은', '깊이 있는'],
+    longDescription:
+      '호기심 많고 탐험적인 당신은 문화의 깊이를 탐구하는 모험가입니다. 전통과 역사의 의미를 찾아 떠나는 여행에서 진정한 보물을 발견하죠. 당신의 축제는 문화의 진수를 담고 있습니다!',
   },
   socializer: {
     type: 'socializer',
     title: '축제 소셜라이저',
     description: '친구들과의 즐거운 시간이 최고!',
-    characteristics: [
-      '친구들과 함께할 때 가장 빛나는 당신!',
-      '축제는 소중한 사람들과의 추억을 만드는 무대이고, 함께 웃고 떠들며 보내는 시간이 어떤 공연보다 소중하다고 생각하시는군요',
-      '친구들과 즐기는 적극적인 축제를 선호해요',
-      '사람들과의 소통을 중요하게 생각해요',
-    ],
+    traits: ['사교적인', '친근한', '협력적인'],
+    longDescription:
+      '사교적이고 친근한 당신은 사람들과의 연결을 중시하는 소셜라이저입니다. 친구들과 함께하는 즐거운 시간, 공유하는 순간들이 가장 소중하죠. 당신의 축제는 따뜻한 인연으로 가득합니다!',
   },
   healer: {
     type: 'healer',
     title: '축제 힐러',
     description: '자연스럽고 여유로운 힐링이 필요해요',
-    characteristics: [
-      '바쁜 일상에서 벗어나 자연스럽고 평화로운 시간을 원하는 당신',
-      '축제를 통해 마음의 휴식을 찾고, 소소한 행복과 여유를 만끽하는 진정한 힐링 마스터입니다',
-      '자연스럽고 여유로운 분위기를 선호해요',
-      '수용적이고 편안한 축제를 찾아요',
-    ],
+    traits: ['평화로운', '여유로운', '힐링하는'],
+    longDescription:
+      '평화롭고 여유로운 당신은 자연과 조화를 이루는 힐러입니다. 조용하고 아늑한 분위기에서 진정한 휴식을 찾고, 마음의 평화를 추구하죠. 당신의 축제는 마음을 치유하는 힐링 공간입니다!',
   },
 };
 
@@ -338,15 +324,6 @@ const surveyResults: Record<string, SurveyResult> = {
 export function SurveyResultClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  const handleStartExploring = () => {
-    const data = searchParams.get('data');
-    if (data) {
-      router.push(`/customized?survey=${data}`);
-    } else {
-      router.push('/customized');
-    }
-  };
 
   const handleBackToHome = () => {
     router.push('/');
@@ -447,68 +424,53 @@ export function SurveyResultClient() {
       </div>
 
       {/* Content */}
-      <div className='flex flex-col items-center px-5 pb-20'>
-        {/* Result Image */}
-        <div className='mt-4 mb-8'>
-          <div className='relative h-[300px] w-[214px] overflow-hidden rounded-2xl'>
-            <Image
-              src={resultImage}
-              alt={result.title}
-              fill
-              className='object-cover'
-              priority
-            />
+      <div className='flex flex-col items-center gap-7 px-5 pb-20'>
+        {/* Result Header */}
+        <div className='flex flex-col items-center gap-3'>
+          <div className='flex w-full flex-col items-center gap-1 text-center'>
+            <p className='text-[16px] leading-[22px] font-medium tracking-[-0.16px] text-[#5e6573]'>
+              나에게 맞는 축제는
+            </p>
+            <h1 className='text-[24px] leading-[34px] font-bold tracking-[-0.24px] text-[#090a0c]'>
+              {result.title}
+            </h1>
           </div>
-        </div>
 
-        {/* Result Title */}
-        <div className='mb-4 text-center'>
-          <h1 className='text-[24px] leading-[32px] font-bold tracking-[-0.24px] text-[#090a0c]'>
-            {result.title}
-          </h1>
-        </div>
-
-        {/* Result Description */}
-        <div className='mb-8 text-center'>
-          <p className='text-[16px] leading-[24px] tracking-[-0.16px] text-[#5e6573]'>
-            {result.description}
-          </p>
-        </div>
-
-        {/* Characteristics */}
-        <div className='mb-8 w-full'>
-          <h2 className='mb-4 text-[18px] leading-[26px] font-bold tracking-[-0.18px] text-[#090a0c]'>
-            당신의 특징
-          </h2>
-          <div className='space-y-3'>
-            {result.characteristics.map((characteristic, index) => (
+          {/* Character Traits */}
+          <div className='flex flex-row items-center justify-center gap-[5px]'>
+            {result.traits.map((trait, index) => (
               <div
                 key={index}
-                className='flex items-start gap-3 rounded-lg bg-[#f8f9fa] p-4'
+                className='flex flex-row items-center justify-center gap-0.5 rounded-[100px] bg-[#f1f2f4] px-2 py-1'
               >
-                <div className='mt-1 size-2 rounded-full bg-[#ff8757]' />
-                <p className='text-[14px] leading-[20px] tracking-[-0.14px] text-[#26282e]'>
-                  {characteristic}
-                </p>
+                <span className='text-center text-[14px] leading-[20px] font-semibold tracking-[-0.14px] whitespace-pre text-[#26282e]'>
+                  {trait}
+                </span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className='flex w-full flex-col gap-3'>
-          <button
-            onClick={handleStartExploring}
-            className='w-full rounded-lg bg-[#26282e] py-4 text-center text-[16px] leading-[22px] font-bold tracking-[-0.16px] text-[#ffffff]'
-          >
-            맞춤 축제 탐험하기
-          </button>
-          <button
-            onClick={handleBackToHome}
-            className='w-full rounded-lg border border-[#d5d7db] bg-[#ffffff] py-4 text-center text-[16px] leading-[22px] font-bold tracking-[-0.16px] text-[#26282e]'
-          >
-            홈으로 돌아가기
-          </button>
+        {/* Result Image */}
+        <div className='h-[300px] w-[214px] bg-cover bg-center bg-no-repeat'>
+          <Image
+            src={resultImage}
+            alt={result.title}
+            width={214}
+            height={300}
+            className='h-full w-full object-cover'
+            priority
+          />
+        </div>
+
+        {/* Result Description */}
+        <div className='flex w-full flex-col items-start gap-2 text-center'>
+          <h2 className='w-full text-[16px] leading-[22px] font-bold tracking-[-0.16px] text-[#090a0c]'>
+            {result.description}
+          </h2>
+          <p className='w-full text-[14px] leading-[20px] font-medium tracking-[-0.14px] text-[#26282e]'>
+            {result.longDescription}
+          </p>
         </div>
       </div>
     </div>
