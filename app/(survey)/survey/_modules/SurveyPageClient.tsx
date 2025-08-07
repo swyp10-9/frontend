@@ -412,10 +412,10 @@ export function SurveyPageClient() {
   const handleNext = () => {
     if (hasSelection) {
       if (isLastStep) {
-        // 설문 완료 후 결과 계산
+        // 설문 완료 후 분석중 페이지로 이동
         console.log('설문 완료:', selectedOptions);
         const resultType = calculateResult(selectedOptions);
-        router.push(`/survey-result?type=${resultType}`);
+        router.push(`/survey-analyzing?type=${resultType}`);
       } else {
         setCurrentStep(prev => prev + 1);
       }
@@ -449,17 +449,17 @@ export function SurveyPageClient() {
       }
     });
 
-    // 결과 결정 로직 (survey-result와 동일)
+    // 결과 결정 로직 (API 타입에 맞게 수정)
     if (scores.활동적 >= 8 && scores.사교적 >= 6) {
-      return 'energizer';
+      return 'ENERGIZER';
     } else if (scores.전통적 >= 3 && scores.조용한 >= 4) {
-      return 'adventurer';
+      return 'EXPLORER';
     } else if (scores.조용한 >= 8 && scores.계획적 >= 2) {
-      return 'curator';
+      return 'CURATOR';
     } else if (scores.사교적 >= 5) {
-      return 'socializer';
+      return 'SOCIALIZER';
     } else {
-      return 'healer'; // 기본값
+      return 'HEALER'; // 기본값
     }
   };
 
