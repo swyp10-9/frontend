@@ -6,6 +6,12 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { searchFestivals } from '@/apis/SWYP10BackendAPI';
+import {
+  GetFestivalsForCalendarParams,
+  GetFestivalsForCalendarRegion,
+  GetFestivalsForCalendarTheme,
+  SearchFestivalsTheme,
+} from '@/apis/SWYP10BackendAPI.schemas';
 import FilterModal, {
   FilterConfig,
   FilterModalRef,
@@ -59,24 +65,81 @@ const filterConfigs: FilterConfig[] = [
   },
 ];
 
+// 지역 코드 매핑 (실제 지역 코드에 맞게 조정 필요)
+const regionCodeMap: Record<string, number> = {
+  seoul: 1,
+  gyeonggi: 31,
+  gangwon: 32,
+  chungcheong: 33,
+  jeolla: 35,
+  gyeongsang: 36,
+  jeju: 39,
+};
+
+// 테마 매핑
+const themeMap: Record<string, SearchFestivalsTheme> = {
+  culture: SearchFestivalsTheme.CULTURE_ART,
+  food: SearchFestivalsTheme.FOOD,
+  music: SearchFestivalsTheme.MUSIC,
+  nature: SearchFestivalsTheme.NATURE,
+  tradition: SearchFestivalsTheme.TRADITION,
+};
+
 // 검색 기능을 담당하는 클라이언트 컴포넌트
 export function SearchPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchValue, setSearchValue] = useState('');
-  const [filterValues, setFilterValues] = useState<FilterValues>({});
   const [showFilters, setShowFilters] = useState(false);
   const filterModalRef = useRef<FilterModalRef>(null);
 
   const queryParam = searchParams.get('q');
 
-  const searchRequest = {
-    page: 0,
-    size: 20,
-    searchParam: queryParam,
-    offset: 0,
-    ...filterValues,
+  // URL 파라미터에서 필터 값 초기화
+  const [filterValues, setFilterValues] = useState<FilterValues>(() => {
+    const initialValues: FilterValues = {};
+    const region = searchParams.get('region');
+    const companion = searchParams.get('companion');
+    const theme = searchParams.get('theme');
+
+    if (region) initialValues.region = region;
+    if (companion) initialValues.companion = companion;
+    if (theme) initialValues.theme = theme;
+
+    return initialValues;
+  });
+
+  // 필터 값을 API 파라미터로 변환
+  const getApiParams = () => {
+    const baseParams: GetFestivalsForCalendarParams & {
+      searchParam: string | null;
+    } = {
+      page: 0,
+      size: 20,
+      searchParam: queryParam,
+    };
+
+    // NOTE: Navigation 시 타입 안정성을 보장할 방법이 없어 임시로 강제 캐스팅 사용함 / 추후 Validation 도입
+    // 지역 코드 변환
+    if (filterValues.region && regionCodeMap[filterValues.region]) {
+      baseParams.region = regionCodeMap[
+        filterValues.region
+      ] as unknown as GetFestivalsForCalendarRegion;
+    }
+
+    // 테마 변환
+    if (filterValues.theme && themeMap[filterValues.theme]) {
+      baseParams.theme = themeMap[
+        filterValues.theme
+      ] as unknown as GetFestivalsForCalendarTheme;
+    }
+
+    // companion은 API에서 지원하지 않으므로 무시
+
+    return baseParams;
   };
+
+  const searchRequest = getApiParams();
 
   const {
     data: searchData,
@@ -98,6 +161,20 @@ export function SearchPageClient() {
     }
   }, [queryParam]);
 
+  // URL 파라미터 변화에 따른 필터 값 업데이트
+  useEffect(() => {
+    const newFilterValues: FilterValues = {};
+    const region = searchParams.get('region');
+    const companion = searchParams.get('companion');
+    const theme = searchParams.get('theme');
+
+    if (region) newFilterValues.region = region;
+    if (companion) newFilterValues.companion = companion;
+    if (theme) newFilterValues.theme = theme;
+
+    setFilterValues(newFilterValues);
+  }, [searchParams]);
+
   const handleSearch = (keyword: string) => {
     setSearchValue(keyword);
     if (keyword.trim()) {
@@ -116,10 +193,37 @@ export function SearchPageClient() {
   const handleFilterApply = (values: FilterValues) => {
     setFilterValues(values);
     setShowFilters(false);
+
+    // URL 파라미터 업데이트
+    const params = new URLSearchParams(searchParams.toString());
+
+    // 기존 필터 파라미터 제거
+    params.delete('region');
+    params.delete('companion');
+    params.delete('theme');
+
+    // 새로운 필터 값 추가 (null이 아닌 경우만)
+    Object.entries(values).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        params.set(key, value);
+      }
+    });
+
+    const newUrl = `/search?${params.toString()}`;
+    router.replace(newUrl);
   };
 
   const handleFilterReset = () => {
     setFilterValues({});
+
+    // URL에서 필터 파라미터 제거
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('region');
+    params.delete('companion');
+    params.delete('theme');
+
+    const newUrl = `/search?${params.toString()}`;
+    router.replace(newUrl);
   };
 
   const isSearching = Boolean(queryParam?.trim());
