@@ -3,16 +3,36 @@
 import { useState } from 'react';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
+import { createFestivalReview } from '@/apis/SWYP10BackendAPI';
+import { Button } from '@/components/Button';
 import BackArrowNav from '@/components/nav/nav';
 
-export default function WriteClient() {
+export default function WriteClient({ festivalId }: { festivalId: number }) {
+  const router = useRouter();
   const [content, setContent] = useState('');
+
+  const handleSave = async () => {
+    try {
+      await createFestivalReview(festivalId, { content }).then(() => {
+        router.replace('/mypage');
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className='flex w-full items-center justify-center'>
       <div className='flex w-full max-w-[600px] flex-col gap-6 px-5'>
-        <BackArrowNav />
+        <BackArrowNav
+          rightExpand={
+            <Button size='sm' onClick={handleSave}>
+              저장
+            </Button>
+          }
+        />
         <p className='ui-text-head-2'>축제는 어떠셨나요?</p>
         <div className='flex items-center gap-4'>
           <Image
