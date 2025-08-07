@@ -1182,6 +1182,14 @@ export type GetFestivalsForCalendarParams = {
    * @maximum 100
    */
   size?: number;
+  /**
+   * 유저가 선택한 날짜가 없을 경우 범위 조회 시작 날짜, API 서버 쪽은 추후 반영 예정
+   */
+  startDate?: string;
+  /**
+   * 유저가 선택한 날짜가 없을 경우 범위 조회 종료 날짜
+   */
+  endDate?: string;
 };
 
 export type GetFestivalsForCalendarRegion =

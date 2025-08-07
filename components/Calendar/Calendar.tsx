@@ -3,8 +3,10 @@
 import React, { useEffect, useState } from 'react';
 
 import { Icon } from '@iconify/react';
+import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
+import { getFestivalsCalendarDailyCount } from '@/apis/SWYP10BackendAPI';
 import { FestivalCalendarDailyCountResponse } from '@/apis/SWYP10BackendAPI.schemas';
 
 // 이벤트 데이터 타입
@@ -35,8 +37,22 @@ export interface CalendarProps {
   onDateSelect?: (date: string) => void;
   showNavigation?: boolean;
   showHolidays?: boolean;
-  dailyCountList?: FestivalCalendarDailyCountResponse['dailyCounts'];
 }
+
+const fetchDailyCount = async ({
+  startDate,
+  endDate,
+}: {
+  startDate: string;
+  endDate: string;
+}) => {
+  return await getFestivalsCalendarDailyCount({
+    startDate,
+    endDate,
+  })
+    .then(r => r?.data)
+    .then(r => r?.dailyCounts || []);
+};
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -46,11 +62,14 @@ const Calendar = ({
   onDateSelect,
   showNavigation = true,
   showHolidays = true,
-  dailyCountList = [],
 }: CalendarProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const [dailyCountData, setDailyCountData] = useState<
+    FestivalCalendarDailyCountResponse['dailyCounts']
+  >([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   function initDateFnc() {
     const date = initialDate ? initialDate : new Date();
@@ -101,8 +120,41 @@ const Calendar = ({
     {} as Record<string, EventData[]>,
   );
 
-  // dailyCountList를 날짜별로 매핑
-  const dailyCountMap: Record<string, number> = dailyCountList.reduce(
+  // URL 파라미터에서 startDate, endDate 가져오기
+  const startDate = searchParams.get('startDate');
+  const endDate = searchParams.get('endDate');
+
+  // fetchDailyCount 함수를 사용하여 데이터 가져오기
+  const loadDailyCounts = async (start: string, end: string) => {
+    if (!start || !end) {
+      setDailyCountData([]);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const data = await fetchDailyCount({ startDate: start, endDate: end });
+      setDailyCountData(data);
+    } catch (error) {
+      console.error('Failed to fetch daily counts:', error);
+      setDailyCountData([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // URL 파라미터 변경 시 데이터 로드
+  useEffect(() => {
+    if (startDate && endDate) {
+      loadDailyCounts(startDate, endDate);
+    } else {
+      // startDate나 endDate가 없으면 빈 배열로 설정
+      setDailyCountData([]);
+    }
+  }, [startDate, endDate]);
+
+  // dailyCountList를 날짜별로 매핑 (dailyCountData 사용)
+  const dailyCountMap: Record<string, number> = dailyCountData.reduce(
     (acc, item) => {
       acc[item.date] = item.count;
       return acc;
@@ -252,6 +304,13 @@ const Calendar = ({
     setCurrentDate(newDate);
     setSelectedDate(null);
     updateURLQuery(newDate);
+
+    // 월 변경 후 새로운 날짜 범위로 데이터 로드
+    const newStartDate = searchParams.get('startDate');
+    const newEndDate = searchParams.get('endDate');
+    if (newStartDate && newEndDate) {
+      loadDailyCounts(newStartDate, newEndDate);
+    }
   };
 
   const handleDateClick = (dayData: DayData) => {
@@ -320,6 +379,17 @@ const Calendar = ({
         )}
       </div>
 
+      {isLoading && (
+        <div className='mb-4 flex items-center justify-center'>
+          <Image
+            src={'/image/loading_gray.gif'}
+            alt='loading...'
+            width={40}
+            height={40}
+          />
+        </div>
+      )}
+
       <div className='grid grid-cols-7 gap-0 bg-gray-50'>
         {DAYS.map(day => (
           <div
@@ -356,7 +426,7 @@ const Calendar = ({
                   <div
                     className={`text-xs font-medium ${isPrevMonth || isNextMonth ? 'text-gray-400' : 'text-gray-600'}`}
                   >
-                    {dayData.totalCount}개
+                    {isLoading ? '...' : `${dayData.totalCount}개`}
                   </div>
                   {dayData.events && dayData.events.length > 0 && (
                     <div className='hidden'>

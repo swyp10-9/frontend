@@ -65,7 +65,7 @@ const fetchFestivalsInBounds = async (
       lngTopLeft: bounds.nw.lng,
       latBottomRight: bounds.se.lat,
       lngBottomRight: bounds.se.lng,
-      offset: 0,
+      // offset: 0,
     });
 
     //
@@ -90,7 +90,7 @@ const fetchFestivalsInBounds = async (
 
     return {
       festivals,
-      total: response.data.totalElements,
+      total: response?.data?.totalElements || 0,
     };
   } catch (error) {
     console.error('축제 데이터 로드 실패:', error);
