@@ -21,7 +21,8 @@ const instance = axios.create({
   baseURL: config.api.baseURL,
   headers: {
     'Content-Type': 'application/json',
-    origin: config.base_url,
+    'Access-Control-Allow-Origin': '*',
+    // origin: config.base_url,
   },
 });
 
