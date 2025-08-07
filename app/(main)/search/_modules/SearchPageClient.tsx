@@ -50,15 +50,16 @@ export function SearchPageClient() {
   const handleSearch = (keyword: string) => {
     setSearchValue(keyword);
     if (keyword.trim()) {
-      router.push(`/search?q=${encodeURIComponent(keyword.trim())}`);
+      // NOTE: push를 하면 매번 RSC를 거쳐서 반응성이 떨어짐
+      router.replace(`/search?q=${encodeURIComponent(keyword.trim())}`);
     } else {
-      router.push('/search');
+      router.replace('/search');
     }
   };
 
   const handleClear = () => {
     setSearchValue('');
-    router.push('/search');
+    router.replace('/search');
   };
 
   const isSearching = Boolean(queryParam?.trim());

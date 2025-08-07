@@ -47,16 +47,6 @@ export function SearchResults({
     );
   }
 
-  if (!results || results.length === 0) {
-    return (
-      <div className='py-8 text-center'>
-        <p className="font-['Pretendard'] text-[14px] text-[#868c98]">
-          '{searchQuery}'에 대한 검색 결과가 없습니다.
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className='flex flex-col gap-5'>
       <div>
@@ -88,100 +78,108 @@ export function SearchResults({
       </div>
 
       <div className='flex flex-col gap-5'>
-        {results.map((festival, index) => {
-          const themeInfo = festival.theme
-            ? themeConfig[festival.theme as keyof typeof themeConfig]
-            : null;
+        {!results || results.length === 0 ? (
+          <div className='py-8 text-center'>
+            <p className="font-['Pretendard'] text-[14px] text-[#868c98]">
+              '{searchQuery}'에 대한 검색 결과가 없습니다.
+            </p>
+          </div>
+        ) : (
+          results.map((festival, index) => {
+            const themeInfo = festival.theme
+              ? themeConfig[festival.theme as keyof typeof themeConfig]
+              : null;
 
-          return (
-            <div key={festival.id}>
-              <Link href={`/festival/${festival.id}`} className='block'>
-                <div className='flex flex-row items-center gap-4'>
-                  <div
-                    className='size-[108px] shrink-0 rounded bg-cover bg-center bg-no-repeat'
-                    style={{
-                      backgroundImage: festival.thumbnail
-                        ? `url('${festival.thumbnail}')`
-                        : 'url(\'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23f1f2f4" viewBox="0 0 24 24"><rect width="24" height="24" rx="4"/></svg>\')',
-                    }}
-                  />
+            return (
+              <div key={festival.id}>
+                <Link href={`/festival/${festival.id}`} className='block'>
+                  <div className='flex flex-row items-center gap-4'>
+                    <div
+                      className='size-[108px] shrink-0 rounded bg-cover bg-center bg-no-repeat'
+                      style={{
+                        backgroundImage: festival.thumbnail
+                          ? `url('${festival.thumbnail}')`
+                          : 'url(\'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23f1f2f4" viewBox="0 0 24 24"><rect width="24" height="24" rx="4"/></svg>\')',
+                      }}
+                    />
 
-                  <div className='flex w-[196px] flex-col items-start gap-3 overflow-hidden'>
-                    <div className='flex h-12 w-full flex-col items-start gap-1'>
-                      <div className='flex w-full flex-row items-start justify-between'>
-                        <div className='flex items-center'>
-                          {themeInfo && (
-                            <div
-                              className='rounded px-1 py-0.5'
-                              style={{ backgroundColor: themeInfo.bg }}
-                            >
-                              <span
-                                className="font-['Pretendard'] text-[12px] leading-[18px] font-semibold tracking-[-0.12px]"
-                                style={{ color: themeInfo.color }}
+                    <div className='flex w-[196px] flex-col items-start gap-3 overflow-hidden'>
+                      <div className='flex h-12 w-full flex-col items-start gap-1'>
+                        <div className='flex w-full flex-row items-start justify-between'>
+                          <div className='flex items-center'>
+                            {themeInfo && (
+                              <div
+                                className='rounded px-1 py-0.5'
+                                style={{ backgroundColor: themeInfo.bg }}
                               >
-                                {themeInfo.text}
-                              </span>
-                            </div>
-                          )}
+                                <span
+                                  className="font-['Pretendard'] text-[12px] leading-[18px] font-semibold tracking-[-0.12px]"
+                                  style={{ color: themeInfo.color }}
+                                >
+                                  {themeInfo.text}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className='flex flex-row items-center gap-2'>
+                            <Icon
+                              icon='lucide:bookmark'
+                              className='h-5 w-5 text-[#868c98]'
+                            />
+                            <Icon
+                              icon='lucide:share'
+                              className='h-5 w-5 text-[#868c98]'
+                            />
+                          </div>
                         </div>
 
-                        <div className='flex flex-row items-center gap-2'>
-                          <Icon
-                            icon='lucide:bookmark'
-                            className='h-5 w-5 text-[#868c98]'
-                          />
-                          <Icon
-                            icon='lucide:share'
-                            className='h-5 w-5 text-[#868c98]'
-                          />
-                        </div>
+                        <h3 className="w-full font-['Pretendard'] text-[16px] leading-[22px] font-bold tracking-[-0.16px] text-[#090a0c]">
+                          {festival.title}
+                        </h3>
                       </div>
 
-                      <h3 className="w-full font-['Pretendard'] text-[16px] leading-[22px] font-bold tracking-[-0.16px] text-[#090a0c]">
-                        {festival.title}
-                      </h3>
-                    </div>
-
-                    <div className='flex w-44 flex-col items-start gap-1'>
-                      <div className='flex w-full flex-row items-start gap-0.5'>
-                        <div className='flex items-center p-[2px]'>
-                          <Icon
-                            icon='lucide:map-pin'
-                            className='h-4 w-4 text-[#868c98]'
-                          />
+                      <div className='flex w-44 flex-col items-start gap-1'>
+                        <div className='flex w-full flex-row items-start gap-0.5'>
+                          <div className='flex items-center p-[2px]'>
+                            <Icon
+                              icon='lucide:map-pin'
+                              className='h-4 w-4 text-[#868c98]'
+                            />
+                          </div>
+                          <div className='flex w-[152px] flex-row items-center gap-1'>
+                            <span className="font-['Pretendard'] text-[14px] leading-[20px] font-medium tracking-[-0.14px] text-[#5e6573]">
+                              {festival.address}
+                            </span>
+                            <span className="font-['Pretendard'] text-[12px] leading-[18px] font-semibold tracking-[-0.12px] text-[#26282e] underline">
+                              지도보기
+                            </span>
+                          </div>
                         </div>
-                        <div className='flex w-[152px] flex-row items-center gap-1'>
+
+                        <div className='flex w-full flex-row items-center gap-0.5'>
+                          <div className='flex items-center p-[2px]'>
+                            <Icon
+                              icon='lucide:calendar'
+                              className='h-4 w-4 text-[#868c98]'
+                            />
+                          </div>
                           <span className="font-['Pretendard'] text-[14px] leading-[20px] font-medium tracking-[-0.14px] text-[#5e6573]">
-                            {festival.address}
-                          </span>
-                          <span className="font-['Pretendard'] text-[12px] leading-[18px] font-semibold tracking-[-0.12px] text-[#26282e] underline">
-                            지도보기
+                            {festival.startDate} ~ {festival.endDate}
                           </span>
                         </div>
-                      </div>
-
-                      <div className='flex w-full flex-row items-center gap-0.5'>
-                        <div className='flex items-center p-[2px]'>
-                          <Icon
-                            icon='lucide:calendar'
-                            className='h-4 w-4 text-[#868c98]'
-                          />
-                        </div>
-                        <span className="font-['Pretendard'] text-[14px] leading-[20px] font-medium tracking-[-0.14px] text-[#5e6573]">
-                          {festival.startDate} ~ {festival.endDate}
-                        </span>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
 
-              {index < results.length - 1 && (
-                <div className='mt-5 h-px bg-[#f1f2f4]' />
-              )}
-            </div>
-          );
-        })}
+                {index < results.length - 1 && (
+                  <div className='mt-5 h-px bg-[#f1f2f4]' />
+                )}
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
+'use client';
+
 import { Suspense } from 'react';
 
-import { SearchPageClient } from './_modules/SearchPageClient';
+import dynamic from 'next/dynamic';
 
 // 로딩 상태를 표시하는 컴포넌트
 function SearchPageLoading() {
@@ -21,6 +23,15 @@ function SearchPageLoading() {
     </div>
   );
 }
+
+// NOTE: SSR 비활성화
+const SearchPageClient = dynamic(
+  () => import('./_modules/SearchPageClient').then(mod => mod.SearchPageClient),
+  {
+    ssr: false,
+    // NOTE: loading 옵션 있지만 useSearchParams 사용 때문에 Suspense 필요
+  },
+);
 
 // 메인 페이지 컴포넌트
 export default function SearchPage() {
