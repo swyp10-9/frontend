@@ -3,16 +3,18 @@
 import { useState } from 'react';
 
 import { Icon } from '@iconify/react';
+import { useRouter } from 'next/navigation';
 
-import { dialogClear, dialogOpen } from '@/components/Dialog';
+import { updateMyInfo } from '@/apis/SWYP10BackendAPI';
 import BackArrowNav from '@/components/nav/nav';
 
 import SaveButton from './save-button';
 
 export default function EditClient() {
+  const router = useRouter();
   const [nickname, setNickname] = useState('');
 
-  const handleSave = () => {
+  const handleSave = async () => {
     try {
       if (!nickname?.trim()) {
         // 닉네임이 비어있으면 저장하지 않음
@@ -20,31 +22,15 @@ export default function EditClient() {
         return;
       }
 
-      dialogOpen({
-        title: '닉네임 변경',
-        type: 'alert',
-        onClose: () => {
-          console.log('취소됨');
-        },
-        onApply: () => {
-          try {
-            console.log('저장 완료:', nickname);
-            // 여기에 실제 저장 로직 추가
-            // alert('닉네임이 성공적으로 변경되었습니다.');
-            dialogOpen({
-              title: '확인',
-              onApply: () => {
-                dialogClear();
-              },
-            });
-          } catch (error) {
-            console.error('Failed to save nickname:', error);
-            alert('저장 중 오류가 발생했습니다.');
-          }
-        },
-      });
+      try {
+        await updateMyInfo({ nickname }).then(() => {
+          router.replace('/mypage');
+        });
+      } catch (error) {
+        console.error(error);
+      }
     } catch (error) {
-      console.error('Failed to open save dialog:', error);
+      console.error('error:', error);
     }
   };
 
