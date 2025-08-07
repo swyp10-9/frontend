@@ -50,11 +50,8 @@
 import type {
   FestivalCalendarDailyCountRequest,
   FestivalCalendarDailyCountResponse,
-  FestivalCalendarRequest,
   FestivalDetailResponse,
   FestivalListResponse,
-  FestivalMapRequest,
-  FestivalMyPageRequest,
   FestivalRestaurantListResponse,
   FestivalReviewCreateRequest,
   FestivalReviewListResponse,
@@ -62,12 +59,15 @@ import type {
   GetFestivalRestaurantsParams,
   GetFestivalReviewsParams,
   GetFestivalTravelCoursesParams,
+  GetFestivalsForCalendarParams,
+  GetFestivalsForMapParams,
   GetFestivalsForPersonalTestParams,
+  GetMyPageFestivalsParams,
+  GetMyReviewsParams,
   GetTopKeywordsParams,
   MyInfoResponse,
   MyReviewListResponse,
   OauthLoginParams,
-  PageRequest,
   RunFestivalSyncJob200,
   SearchFestivalsParams,
   SearchKeywordListResponse,
@@ -90,7 +90,7 @@ export const runFestivalSyncJob = () => {
  */
 export const getFestivalReviews = (
   festivalId: number,
-  params: GetFestivalReviewsParams,
+  params?: GetFestivalReviewsParams,
 ) => {
   return httpClient<FestivalReviewListResponse>({
     url: `/api/v1/festivals/${festivalId}/reviews`,
@@ -142,17 +142,10 @@ export const refreshToken = () => {
  * @summary OAuth 인가 코드 로그인
  */
 export const oauthLogin = (provider: string, params: OauthLoginParams) => {
-  if (!process.env.NEXT_PUBLIC_WEB_URL) {
-    throw new Error('NEXT_PUBLIC_WEB_URL is not set');
-  }
-
   return httpClient<TokenResponse>({
     url: `/api/v1/auth/oauth/login/${provider}`,
     method: 'POST',
     params,
-    headers: {
-      Origin: process.env.NEXT_PUBLIC_WEB_URL, // 브라우저를 거쳤으면 기본 탑재되었을 헤더
-    },
   });
 };
 
@@ -184,7 +177,7 @@ export const getTopKeywords = (params?: GetTopKeywordsParams) => {
  * 사용자 리뷰 작성 목록 조회 (페이징 지원)
  * @summary 리뷰 목록 조회
  */
-export const getMyReviews = (params: PageRequest) => {
+export const getMyReviews = (params?: GetMyReviewsParams) => {
   return httpClient<MyReviewListResponse>({
     url: `/api/v1/mypage/reviews`,
     method: 'GET',
@@ -209,7 +202,7 @@ export const getFestivalDetail = (festivalId: number) => {
  */
 export const getFestivalTravelCourses = (
   festivalId: number,
-  params: GetFestivalTravelCoursesParams,
+  params?: GetFestivalTravelCoursesParams,
 ) => {
   return httpClient<FestivalTravelCourseListResponse>({
     url: `/api/v1/festivals/${festivalId}/travel-courses`,
@@ -224,7 +217,7 @@ export const getFestivalTravelCourses = (
  */
 export const getFestivalRestaurants = (
   festivalId: number,
-  params: GetFestivalRestaurantsParams,
+  params?: GetFestivalRestaurantsParams,
 ) => {
   return httpClient<FestivalRestaurantListResponse>({
     url: `/api/v1/festivals/${festivalId}/restaurants`,
@@ -237,7 +230,7 @@ export const getFestivalRestaurants = (
  * 축제 리스트 조회 - 검색 페이지
  * @summary 축제 리스트 조회 - 검색 페이지
  */
-export const searchFestivals = (params: SearchFestivalsParams) => {
+export const searchFestivals = (params?: SearchFestivalsParams) => {
   return httpClient<FestivalListResponse>({
     url: `/api/v1/festivals/search`,
     method: 'GET',
@@ -250,7 +243,7 @@ export const searchFestivals = (params: SearchFestivalsParams) => {
  * @summary 축제 리스트 조회 - 맞춤 축제 페이지
  */
 export const getFestivalsForPersonalTest = (
-  params: GetFestivalsForPersonalTestParams,
+  params?: GetFestivalsForPersonalTestParams,
 ) => {
   return httpClient<FestivalListResponse>({
     url: `/api/v1/festivals/personal-test`,
@@ -263,7 +256,7 @@ export const getFestivalsForPersonalTest = (
  * 축제 리스트 조회 - 마이페이지
  * @summary 축제 리스트 조회 - 마이페이지
  */
-export const getMyPageFestivals = (params: FestivalMyPageRequest) => {
+export const getMyPageFestivals = (params?: GetMyPageFestivalsParams) => {
   return httpClient<FestivalListResponse>({
     url: `/api/v1/festivals/mypage`,
     method: 'GET',
@@ -275,11 +268,11 @@ export const getMyPageFestivals = (params: FestivalMyPageRequest) => {
  * 축제 리스트 조회 - 지도 페이지
  * @summary 축제 리스트 조회 - 지도 페이지
  */
-export const getFestivalsForMap = (params: FestivalMapRequest) => {
+export const getFestivalsForMap = (params?: GetFestivalsForMapParams) => {
   return httpClient<FestivalListResponse>({
     url: `/api/v1/festivals/map`,
     method: 'GET',
-    params: { ...params },
+    params,
   });
 };
 
@@ -287,11 +280,13 @@ export const getFestivalsForMap = (params: FestivalMapRequest) => {
  * 축제 리스트 조회 - 달력 페이지
  * @summary 축제 리스트 조회 - 달력 페이지
  */
-export const getFestivalsForCalendar = (params: FestivalCalendarRequest) => {
+export const getFestivalsForCalendar = (
+  params?: GetFestivalsForCalendarParams,
+) => {
   return httpClient<FestivalListResponse>({
     url: `/api/v1/festivals/calendar`,
     method: 'GET',
-    params: { ...params }, // TODO: request 속성 사용하지 않음
+    params,
   });
 };
 
