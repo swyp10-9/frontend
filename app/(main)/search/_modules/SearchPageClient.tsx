@@ -94,6 +94,7 @@ export function SearchPageClient() {
             error={searchError}
             searchQuery={queryParam || ''}
             totalCount={searchData?.data?.totalElements}
+            onSearch={handleSearch}
           />
         ) : (
           <TrendingSearches onSearch={handleSearch} />

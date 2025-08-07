@@ -12,12 +12,15 @@ import {
   DrawerTrigger,
 } from '@/components/shadcn/drawer';
 
+import { TrendingSearches } from './TrendingSearches';
+
 interface SearchResultsProps {
   results: FestivalSummaryResponse[];
   isLoading: boolean;
   error: unknown;
   searchQuery: string;
   totalCount?: number;
+  onSearch: (keyword: string) => void;
 }
 
 const themeConfig = {
@@ -35,6 +38,7 @@ export function SearchResults({
   error,
   searchQuery,
   totalCount,
+  onSearch,
 }: SearchResultsProps) {
   const searchParams = useSearchParams();
 
@@ -121,11 +125,26 @@ export function SearchResults({
               </p>
             </div>
           ) : !results || results.length === 0 ? (
-            <div className='py-8 text-center'>
-              <p className="font-['Pretendard'] text-[14px] text-[#868c98]">
-                '{searchQuery}'에 대한 검색 결과가 없습니다.
-              </p>
-            </div>
+            <>
+              <div className='flex flex-col items-center pt-20 pb-10'>
+                <div className='mb-4 flex h-16 w-16 items-center justify-center'>
+                  <Icon
+                    icon='lucide:search'
+                    className='h-12 w-12 text-[#c1c7d0]'
+                  />
+                </div>
+                <p className="mb-2 font-['Pretendard'] text-[18px] leading-[26px] font-bold tracking-[-0.18px] text-[#090a0c]">
+                  '{searchQuery}' 검색 결과가 없습니다.
+                </p>
+                <p className="font-['Pretendard'] text-[14px] leading-[20px] font-medium tracking-[-0.14px] text-[#868c98]">
+                  검색어를 변경해 다시 시도해 보세요.
+                </p>
+              </div>
+
+              <div className='border-t border-[#f1f2f4] pt-8'>
+                <TrendingSearches onSearch={onSearch} />
+              </div>
+            </>
           ) : (
             results.map((festival, index) => {
               const themeInfo = festival.theme
