@@ -210,7 +210,7 @@ export function SearchResults({
                               <span className='text-[14px] leading-[20px] font-medium tracking-[-0.14px] text-[#5e6573]'>
                                 {festival.address}
                               </span>
-                              <span className='text-[12px] leading-[18px] font-semibold tracking-[-0.12px] text-[#26282e] underline'>
+                              <span className='text-[12px] leading-[18px] font-semibold tracking-[-0.12px] text-nowrap text-[#26282e] underline'>
                                 지도보기
                               </span>
                             </div>
