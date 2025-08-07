@@ -34,10 +34,10 @@ export default function RootLayout({
       <ReactQueryClientProvider>
         <DialogProvider>
           <html lang='ko'>
-            <meta
+            {/* <meta
               http-equiv='Content-Security-Policy'
               content='upgrade-insecure-requests'
-            />
+            /> */}
             <body
               cz-shortcut-listen='true'
               className='flex items-center justify-center overscroll-none'
