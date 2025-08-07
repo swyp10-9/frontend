@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react';
+
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 import type { FestivalSummaryResponse } from '@/apis/SWYP10BackendAPI.schemas';
 import { FilterChip } from '@/components/filter-chip';
@@ -34,30 +36,50 @@ export function SearchResults({
   searchQuery,
   totalCount,
 }: SearchResultsProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
-  const isNearbySelected = searchParams.get('nearby') === 'true';
-  const isThisMonthSelected = searchParams.get('thisMonth') === 'true';
+  const [isNearbySelected, setIsNearbySelected] = useState(
+    searchParams.get('nearby') === 'true',
+  );
+  const [isThisMonthSelected, setIsThisMonthSelected] = useState(
+    searchParams.get('thisMonth') === 'true',
+  );
+
+  // 브라우저 히스토리만 업데이트 (RSC 요청 방지)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+
+      if (isNearbySelected) {
+        params.set('nearby', 'true');
+      } else {
+        params.delete('nearby');
+      }
+
+      if (isThisMonthSelected) {
+        params.set('thisMonth', 'true');
+      } else {
+        params.delete('thisMonth');
+      }
+
+      const newUrl = `/search?${params.toString()}`;
+      const currentUrl = `${window.location.pathname}?${new URLSearchParams(window.location.search).toString()}`;
+
+      if (newUrl !== currentUrl) {
+        // RSC 요청을 피하기 위해 history API 직접 사용
+        window.history.replaceState(null, '', newUrl);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [isNearbySelected, isThisMonthSelected, searchParams]);
 
   const toggleNearby = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (isNearbySelected) {
-      params.delete('nearby');
-    } else {
-      params.set('nearby', 'true');
-    }
-    router.replace(`/search?${params.toString()}`);
+    setIsNearbySelected(prev => !prev);
   };
 
   const toggleThisMonth = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (isThisMonthSelected) {
-      params.delete('thisMonth');
-    } else {
-      params.set('thisMonth', 'true');
-    }
-    router.replace(`/search?${params.toString()}`);
+    setIsThisMonthSelected(prev => !prev);
   };
 
   return (
