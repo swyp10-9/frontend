@@ -62,7 +62,7 @@ const fetchFestivals = async ({
       withWhom: withWhom || FestivalCalendarRequestWithWhom.ALL,
       theme: theme || FestivalCalendarRequestTheme.ALL,
       date: selected || '',
-      offset: (pageParam || 0) * 10,
+      // offset: (pageParam || 0) * 10,
       startDate: calendarStartDate || '',
       endDate: calendarEndDate || '',
     }).then(r => r.data);
