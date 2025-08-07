@@ -294,7 +294,7 @@ export const getFestivalsCalendarDailyCount = (
   params: FestivalCalendarDailyCountRequest,
 ) => {
   return httpClient<FestivalCalendarDailyCountResponse>({
-    url: 'api/v1/festivals/calendar/daily-count',
+    url: '/api/v1/festivals/calendar/daily-count',
     method: 'GET',
     params: { ...params },
   });
