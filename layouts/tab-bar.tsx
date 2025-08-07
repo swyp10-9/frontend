@@ -65,7 +65,7 @@ export default function TabBar() {
             이달의 축제
           </span>
         </Link>
-        <Link
+        {/* <Link
           href='/search'
           className={`${LinkClassName} ${pathname === '/search' ? '' : ''}`}
         >
@@ -84,7 +84,7 @@ export default function TabBar() {
           >
             검색
           </span>
-        </Link>
+        </Link> */}
         <Link
           href='/customized'
           className={`${LinkClassName} ${pathname === '/customized' ? '' : ''}`}
