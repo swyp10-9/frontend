@@ -27,25 +27,9 @@ export function SearchResults({
   searchQuery,
   totalCount,
 }: SearchResultsProps) {
-  if (isLoading) {
-    return (
-      <div className='py-8 text-center'>
-        <p className="font-['Pretendard'] text-[14px] text-[#868c98]">
-          검색 중...
-        </p>
-      </div>
-    );
-  }
+  // 로딩 상태와 에러 상태에서도 UI 구조는 유지
 
-  if (error) {
-    return (
-      <div className='py-8 text-center'>
-        <p className="font-['Pretendard'] text-[14px] text-[#868c98]">
-          검색 결과를 불러올 수 없습니다.
-        </p>
-      </div>
-    );
-  }
+  // 에러 상태에서도 UI 구조는 유지
 
   return (
     <div className='flex flex-col gap-5'>
@@ -78,7 +62,19 @@ export function SearchResults({
       </div>
 
       <div className='flex flex-col gap-5'>
-        {!results || results.length === 0 ? (
+        {isLoading ? (
+          <div className='py-8 text-center'>
+            <p className="font-['Pretendard'] text-[14px] text-[#868c98]">
+              검색 중...
+            </p>
+          </div>
+        ) : error ? (
+          <div className='py-8 text-center'>
+            <p className="font-['Pretendard'] text-[14px] text-[#868c98]">
+              검색 결과를 불러올 수 없습니다.
+            </p>
+          </div>
+        ) : !results || results.length === 0 ? (
           <div className='py-8 text-center'>
             <p className="font-['Pretendard'] text-[14px] text-[#868c98]">
               '{searchQuery}'에 대한 검색 결과가 없습니다.
