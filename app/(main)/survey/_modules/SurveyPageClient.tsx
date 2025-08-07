@@ -25,23 +25,28 @@ const surveyQuestions: Question[] = [
     options: [
       {
         id: '1-1',
-        title: '음악 축제',
-        subtitle: '라이브 공연과 음악을 즐기고 싶어요',
+        title: '활기차고 사교적인 축제',
+        subtitle: '에너지 넘치는 분위기와 많은 사람들과 함께',
       },
       {
         id: '1-2',
-        title: '음식 축제',
-        subtitle: '다양한 맛집과 음식을 체험하고 싶어요',
+        title: '계획적이고 신중한 축제',
+        subtitle: '완벽한 경험을 설계하고 기록하는',
       },
       {
         id: '1-3',
-        title: '문화 축제',
-        subtitle: '전통 문화와 예술을 감상하고 싶어요',
+        title: '문화적이고 깊이 있는 축제',
+        subtitle: '전통과 역사를 배우고 감상하는',
       },
       {
         id: '1-4',
-        title: '자연 축제',
-        subtitle: '자연과 함께하는 힐링 축제를 원해요',
+        title: '친구들과 즐기는 축제',
+        subtitle: '소중한 사람들과 추억을 만드는',
+      },
+      {
+        id: '1-5',
+        title: '자연스럽고 여유로운 축제',
+        subtitle: '힐링과 휴식을 찾는 평화로운',
       },
     ],
   },
@@ -241,7 +246,8 @@ export function SurveyPageClient() {
       if (isLastStep) {
         // 설문 완료 후 결과 페이지로 이동
         console.log('설문 완료:', selectedOptions);
-        router.push('/customized');
+        const resultData = encodeURIComponent(JSON.stringify(selectedOptions));
+        router.push(`/survey-result?data=${resultData}`);
       } else {
         setCurrentStep(prev => prev + 1);
       }
@@ -356,9 +362,7 @@ export function SurveyPageClient() {
             }`}
           >
             <div className='relative shrink-0 text-center text-[16px] leading-[0] font-bold tracking-[-0.16px] text-nowrap not-italic'>
-              <p className='leading-[22px]'>
-                {isLastStep ? '완료' : '다음 질문'}
-              </p>
+              <p className='leading-[22px]'>다음 질문</p>
             </div>
           </button>
         </div>
