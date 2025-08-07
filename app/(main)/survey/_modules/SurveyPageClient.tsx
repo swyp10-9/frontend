@@ -410,13 +410,54 @@ export function SurveyPageClient() {
   const handleNext = () => {
     if (hasSelection) {
       if (isLastStep) {
-        // 설문 완료 후 결과 페이지로 이동
+        // 설문 완료 후 결과 계산
         console.log('설문 완료:', selectedOptions);
-        const resultData = encodeURIComponent(JSON.stringify(selectedOptions));
-        router.push(`/survey-result?data=${resultData}`);
+        const resultType = calculateResult(selectedOptions);
+        router.push(`/survey-result?type=${resultType}`);
       } else {
         setCurrentStep(prev => prev + 1);
       }
+    }
+  };
+
+  // 결과 계산 함수
+  const calculateResult = (surveyData: Record<number, string>): string => {
+    const scores = {
+      활동적: 0,
+      사교적: 0,
+      전통적: 0,
+      현대적: 0,
+      조용한: 0,
+      계획적: 0,
+    };
+
+    // 각 질문의 선택된 답변에 따른 점수 누적
+    Object.entries(surveyData).forEach(([questionId, answerId]) => {
+      const questionNum = parseInt(questionId);
+      const question = surveyQuestions.find(q => q.id === questionNum);
+      if (question) {
+        const selectedOption = question.options.find(
+          opt => opt.id === answerId,
+        );
+        if (selectedOption) {
+          Object.entries(selectedOption.scores).forEach(([trait, score]) => {
+            scores[trait as keyof typeof scores] += score as number;
+          });
+        }
+      }
+    });
+
+    // 결과 결정 로직 (survey-result와 동일)
+    if (scores.활동적 >= 8 && scores.사교적 >= 6) {
+      return 'energizer';
+    } else if (scores.전통적 >= 3 && scores.조용한 >= 4) {
+      return 'adventurer';
+    } else if (scores.조용한 >= 8 && scores.계획적 >= 2) {
+      return 'curator';
+    } else if (scores.사교적 >= 5) {
+      return 'socializer';
+    } else {
+      return 'healer'; // 기본값
     }
   };
 
