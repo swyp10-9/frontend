@@ -356,7 +356,7 @@ const Calendar = ({
   };
 
   return (
-    <div className='mx-auto w-full max-w-4xl bg-gray-50 p-5 font-sans'>
+    <div className='mx-auto w-full max-w-4xl bg-white p-5 font-sans'>
       <div className='mb-4 flex items-center justify-center gap-5'>
         {showNavigation && (
           <Icon
@@ -390,7 +390,7 @@ const Calendar = ({
         </div>
       )}
 
-      <div className='grid grid-cols-7 gap-0 bg-gray-50'>
+      <div className='grid grid-cols-7 gap-0 bg-white'>
         {DAYS.map(day => (
           <div
             key={day}
@@ -401,7 +401,7 @@ const Calendar = ({
         ))}
       </div>
 
-      <div className='grid grid-cols-7 gap-0 bg-gray-50'>
+      <div className='grid grid-cols-7 gap-0 bg-white'>
         {days.map((dayData, idx) => {
           // 이전달 또는 다음달의 날짜인지 확인
           const isPrevMonth =
