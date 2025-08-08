@@ -133,7 +133,7 @@ interface DialogComponentProps {
   onClose: () => void;
 }
 
-function DialogComponent({ dialog, isTopMost, onClose }: DialogComponentProps) {
+function DialogComponent({ dialog, onClose }: DialogComponentProps) {
   const handleClose = () => {
     try {
       if (dialog.onClose) {
