@@ -133,10 +133,14 @@ interface DialogComponentProps {
   onClose: () => void;
 }
 
-function DialogComponent({ dialog, isTopMost, onClose }: DialogComponentProps) {
+function DialogComponent({ dialog, onClose }: DialogComponentProps) {
   const handleClose = () => {
     try {
-      dialog.onClose?.();
+      if (dialog.onClose) {
+        dialog.onClose();
+      } else {
+        onClose();
+      }
     } catch (error) {
       console.error('Dialog onClose error:', error);
     }
