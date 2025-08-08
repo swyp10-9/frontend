@@ -5,10 +5,12 @@ import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { addBookmark, cancelBookmark } from '@/apis/SWYP10BackendAPI';
+import { useAuth } from '@/hooks/useAuth';
 
-import { dialogOpen } from './Dialog';
+import { dialogClose, dialogOpen } from './Dialog';
 import ThemeTag from './theme-tag';
 
 interface FestivalListViewProps {
@@ -25,8 +27,38 @@ interface FestivalListViewProps {
 export default function FestivalListView(props: FestivalListViewProps) {
   const { image, theme, title, loc, start_date, end_date, is_marked, id } =
     props;
+  const router = useRouter();
+  const { isLoggedIn, isLoading } = useAuth();
 
   const [isMarked, setIsMarked] = useState(is_marked);
+
+  async function handleBookmark(type: 'add' | 'cancel') {
+    if (type === 'add') {
+      try {
+        await addBookmark(id).then(() => {
+          dialogOpen({
+            title: '북마크에 추가되었습니다.',
+            type: 'alert',
+          });
+        });
+        setIsMarked(true);
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      try {
+        await cancelBookmark(id).then(() => {
+          dialogOpen({
+            title: '북마크에서 제거되었습니다.',
+            type: 'alert',
+          });
+        });
+        setIsMarked(false);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
 
   return (
     <Link href={`/festival/${id}`} className='block w-full'>
@@ -50,17 +82,8 @@ export default function FestivalListView(props: FestivalListViewProps) {
                   onClick={async e => {
                     e.preventDefault();
                     e.stopPropagation();
-                    try {
-                      await cancelBookmark(id).then(() => {
-                        dialogOpen({
-                          title: '북마크에서 제거되었습니다.',
-                          type: 'alert',
-                        });
-                      });
-                      setIsMarked(false);
-                    } catch (error) {
-                      console.error(error);
-                    }
+                    if (isLoading) return;
+                    await handleBookmark('cancel');
                   }}
                 />
               ) : (
@@ -71,16 +94,18 @@ export default function FestivalListView(props: FestivalListViewProps) {
                   onClick={async e => {
                     e.preventDefault();
                     e.stopPropagation();
-                    try {
-                      await addBookmark(id).then(() => {
-                        dialogOpen({
-                          title: '북마크에 추가되었습니다.',
-                          type: 'alert',
-                        });
+                    if (isLoading) return;
+                    if (!isLoggedIn) {
+                      dialogOpen({
+                        title: '로그인이 필요한 기능입니다.',
+                        type: 'confirm',
+                        onApply: () => {
+                          dialogClose();
+                          router.push('/login');
+                        },
                       });
-                      setIsMarked(true);
-                    } catch (error) {
-                      console.error(error);
+                    } else {
+                      await handleBookmark('add');
                     }
                   }}
                 />
