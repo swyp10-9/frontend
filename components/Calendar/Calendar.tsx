@@ -350,7 +350,7 @@ const Calendar = ({
   const days = getCalendarDays();
 
   const selectedStyle = {
-    border: '2px solid black',
+    border: '1px solid #ff8757',
     padding: '1px',
     borderRadius: '10px',
   };
