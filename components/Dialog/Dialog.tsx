@@ -233,7 +233,9 @@ const CustomDialog = React.forwardRef<
           {(title || description) && (
             <DialogHeader className='mb-4'>
               {title && (
-                <DialogTitle className='text-center'>{title}</DialogTitle>
+                <DialogTitle className='text-center whitespace-pre-line'>
+                  {title}
+                </DialogTitle>
               )}
               {/* 현재 기획에서 사용하지 않음 */}
               {/* {description && (
