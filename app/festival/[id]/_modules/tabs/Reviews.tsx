@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/Button';
+import { dialogClose, dialogOpen } from '@/components/Dialog';
+import { useAuth } from '@/hooks/useAuth';
 
 interface ReviewsProps {
   id: string;
@@ -10,6 +12,7 @@ interface ReviewsProps {
 
 export default function Reviews({ id }: ReviewsProps) {
   const router = useRouter();
+  const { isLoggedIn, isLoading } = useAuth();
 
   return (
     <div className='space-y-4'>
@@ -20,7 +23,19 @@ export default function Reviews({ id }: ReviewsProps) {
             variant='ghost'
             size='sm'
             onClick={() => {
-              router.push(`/festival/${id}/write-review`);
+              if (isLoading) return;
+              if (!isLoggedIn) {
+                dialogOpen({
+                  title: '리뷰 작성을 원하시면 로그인이 필요합니다.',
+                  type: 'confirm',
+                  onApply: () => {
+                    dialogClose();
+                    router.push('/login');
+                  },
+                  applyText: '로그인하기',
+                  closeText: '로그인없이 볼게요',
+                });
+              } else router.push(`/festival/${id}/write-review`);
             }}
           >
             <p className='ui-text-sub-head-3'>리뷰쓰기</p>
