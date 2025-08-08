@@ -1,10 +1,13 @@
+import Image from 'next/image';
+
 import LoginButton from './login-button';
 
 export default function Login() {
   return (
     <div className='relative flex h-screen w-full flex-col items-center justify-center gap-10'>
       <div className='flex flex-col items-center justify-center gap-3'>
-        <p className='ui-text-head-2'>축지법</p>
+        {/* <p className='ui-text-head-2'>축지법</p> */}
+        <Image src='/image/image-logo.png' alt='logo' width={82} height={82} />
         <p className='text-center ui-text-body-2'>
           간편하게 로그인하고 <br /> 다양한 축제를 둘러보세요.
         </p>
