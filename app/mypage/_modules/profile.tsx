@@ -30,7 +30,7 @@ export default function Profile({ userInfo }: ProfileProps) {
             fontSize={20}
             className='cursor-pointer text-gray-300'
             onClick={() => {
-              router.push('/mypage/edit');
+              router.push(`/mypage/edit?nickname=${userInfo?.nickname}`);
             }}
           />
         </div>

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { Icon } from '@iconify/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { updateMyInfo } from '@/apis/SWYP10BackendAPI';
 import BackArrowNav from '@/components/nav/nav';
@@ -12,7 +12,8 @@ import SaveButton from './save-button';
 
 export default function EditClient() {
   const router = useRouter();
-  const [nickname, setNickname] = useState('');
+  const searchParams = useSearchParams();
+  const [nickname, setNickname] = useState(searchParams.get('nickname') || '');
 
   const handleSave = async () => {
     try {
