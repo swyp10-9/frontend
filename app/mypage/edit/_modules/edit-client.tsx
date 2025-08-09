@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { Icon } from '@iconify/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import { updateMyInfo } from '@/apis/SWYP10BackendAPI';
 import BackArrowNav from '@/components/nav/nav';
@@ -12,16 +12,7 @@ import SaveButton from './save-button';
 
 export default function EditClient() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [nickname, setNickname] = useState('');
-
-  // searchParams가 준비된 후에 nickname 설정
-  useEffect(() => {
-    if (searchParams && typeof window !== 'undefined') {
-      const nicknameFromParams = String(searchParams.get('nickname') || '');
-      setNickname(nicknameFromParams);
-    }
-  }, [searchParams]);
+  const [nickname, setNickname] = useState(''); // TODO: 초기값 설정
 
   const handleSave = async () => {
     try {
