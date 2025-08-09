@@ -18,7 +18,7 @@ export default function WriteClient() {
   const handleSave = async () => {
     try {
       await createFestivalReview(festivalId, { content }).then(() => {
-        router.replace('/mypage');
+        router.back();
       });
     } catch (error) {
       console.error(error);
@@ -30,7 +30,7 @@ export default function WriteClient() {
       <div className='flex w-full max-w-[600px] flex-col gap-6 px-5'>
         <BackArrowNav
           rightExpand={
-            <Button size='sm' onClick={handleSave}>
+            <Button disabled={!content} size='sm' onClick={handleSave}>
               저장
             </Button>
           }
