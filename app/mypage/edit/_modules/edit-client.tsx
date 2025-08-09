@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Icon } from '@iconify/react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -13,7 +13,15 @@ import SaveButton from './save-button';
 export default function EditClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [nickname, setNickname] = useState(searchParams.get('nickname') || '');
+  const [nickname, setNickname] = useState('');
+
+  // searchParams가 준비된 후에 nickname 설정
+  useEffect(() => {
+    if (searchParams) {
+      const nicknameFromParams = String(searchParams.get('nickname') || '');
+      setNickname(nicknameFromParams);
+    }
+  }, [searchParams]);
 
   const handleSave = async () => {
     try {
