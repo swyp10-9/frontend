@@ -62,11 +62,11 @@ export default function FestivalListView(props: FestivalListViewProps) {
 
   return (
     <Link href={`/festival/${id}`} className='block w-full'>
-      <div className='flex h-[108px] w-full gap-4'>
+      <div className='flex w-full gap-4'>
         <Image
           src={image || '/image/logo.png'}
           alt='festival'
-          className='aspect-square rounded-sm object-cover'
+          className='aspect-square h-[108px] w-[108px] rounded-sm object-cover'
           width={108}
           height={108}
         />
