@@ -3,14 +3,16 @@
 import { useState } from 'react';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 import { createFestivalReview } from '@/apis/SWYP10BackendAPI';
 import { Button } from '@/components/Button';
 import BackArrowNav from '@/components/nav/nav';
 
-export default function WriteClient({ festivalId }: { festivalId: number }) {
+export default function WriteClient() {
   const router = useRouter();
+  const params = useParams();
+  const festivalId = Number(params?.id) || 0;
   const [content, setContent] = useState('');
 
   const handleSave = async () => {
