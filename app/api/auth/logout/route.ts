@@ -12,6 +12,8 @@ export async function DELETE() {
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24 * 30,
     });
+
+    return NextResponse.json({ message: '로그아웃되었습니다.' });
   } catch (error) {
     return NextResponse.json({ error });
   }

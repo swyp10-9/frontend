@@ -3,7 +3,7 @@ import themeList from '@/constants/themeList';
 export default function ThemeTag({ type }: { type: string }) {
   const theme = themeList.find(theme => theme.type === type);
 
-  if (!theme) return null;
+  if (!theme) return <div />;
 
   return (
     <div

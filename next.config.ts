@@ -19,6 +19,14 @@ const nextConfig: NextConfig = {
         protocol: 'http',
         hostname: '175.45.195.169:8080/',
       },
+      {
+        protocol: 'http',
+        hostname: 'tong.visitkorea.or.kr',
+      },
+      {
+        protocol: 'https',
+        hostname: 'chukjibeob.store',
+      },
     ],
   },
   // NOTE: SVGR 설정 - @see https://react-svgr.com/docs/next/

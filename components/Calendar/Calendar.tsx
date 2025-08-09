@@ -72,7 +72,10 @@ const Calendar = ({
   const [isLoading, setIsLoading] = useState(false);
 
   function initDateFnc() {
-    const date = initialDate ? initialDate : new Date();
+    const date = initialDate;
+    if (!date) {
+      return '';
+    }
     const year = date
       .toLocaleDateString('ko-KR', { year: 'numeric' })
       .replace('년', '');
@@ -94,10 +97,10 @@ const Calendar = ({
       return new Date(urlSelected);
     }
 
-    const urlStartDate = searchParams.get('startDate');
-    if (urlStartDate) {
-      return new Date(urlStartDate);
-    }
+    // const urlStartDate = searchParams.get('startDate');
+    // if (urlStartDate) {
+    //   return new Date(urlStartDate);
+    // }
 
     return initialDate || new Date();
   };

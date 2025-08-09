@@ -12,7 +12,7 @@ import SaveButton from './save-button';
 
 export default function EditClient() {
   const router = useRouter();
-  const [nickname, setNickname] = useState('');
+  const [nickname, setNickname] = useState(''); // TODO: 초기값 설정
 
   const handleSave = async () => {
     try {
