@@ -17,7 +17,7 @@ export default function EditClient() {
 
   // searchParams가 준비된 후에 nickname 설정
   useEffect(() => {
-    if (searchParams) {
+    if (searchParams && typeof window !== 'undefined') {
       const nicknameFromParams = String(searchParams.get('nickname') || '');
       setNickname(nicknameFromParams);
     }
