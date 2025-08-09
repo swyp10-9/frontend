@@ -97,10 +97,43 @@ const Calendar = ({
       return new Date(urlSelected);
     }
 
-    // const urlStartDate = searchParams.get('startDate');
-    // if (urlStartDate) {
-    //   return new Date(urlStartDate);
-    // }
+    // startDate와 endDate가 있으면 달력 범위를 기반으로 현재 월 결정
+    const urlStartDate = searchParams.get('startDate');
+    const urlEndDate = searchParams.get('endDate');
+
+    if (urlStartDate && urlEndDate) {
+      const startDate = new Date(urlStartDate);
+      const endDate = new Date(urlEndDate);
+
+      // 달력 범위에서 현재 월을 결정하는 로직
+      // startDate와 endDate 사이의 모든 날짜를 확인하여
+      // 가장 많은 날짜가 속한 월을 현재 월로 결정
+      const monthCounts = new Map<string, number>();
+
+      const currentDate = new Date(startDate);
+      while (currentDate <= endDate) {
+        const monthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
+        monthCounts.set(monthKey, (monthCounts.get(monthKey) || 0) + 1);
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      // 가장 많은 날짜가 속한 월 찾기
+      let maxCount = 0;
+      let targetMonthKey = '';
+
+      monthCounts.forEach((count, monthKey) => {
+        if (count > maxCount) {
+          maxCount = count;
+          targetMonthKey = monthKey;
+        }
+      });
+
+      if (targetMonthKey) {
+        const [targetYear, targetMonth] = targetMonthKey.split('-').map(Number);
+
+        return new Date(targetYear, targetMonth, 1);
+      }
+    }
 
     return initialDate || new Date();
   };
