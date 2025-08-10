@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { addBookmark, cancelBookmark } from '@/apis/SWYP10BackendAPI';
 import { useAuth } from '@/hooks/useAuth';
 
+import { showCustomToast } from './CustomToast';
 import { dialogClose, dialogOpen } from './Dialog';
 import ThemeTag from './theme-tag';
 
@@ -36,9 +37,9 @@ export default function FestivalListView(props: FestivalListViewProps) {
     if (type === 'add') {
       try {
         await addBookmark(id).then(() => {
-          dialogOpen({
-            title: '북마크에 추가되었습니다.',
-            type: 'alert',
+          showCustomToast({
+            message: '북마크에 추가되었습니다.',
+            type: 'success',
           });
         });
         setIsMarked(true);
@@ -48,9 +49,9 @@ export default function FestivalListView(props: FestivalListViewProps) {
     } else {
       try {
         await cancelBookmark(id).then(() => {
-          dialogOpen({
-            title: '북마크에서 제거되었습니다.',
-            type: 'alert',
+          showCustomToast({
+            message: '북마크에서 제거되었습니다.',
+            type: 'success',
           });
         });
         setIsMarked(false);
