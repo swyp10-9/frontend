@@ -167,7 +167,7 @@ export default function FestivalListView(props: FestivalListViewProps) {
               fontSize={20}
             />
             <p className='mr-1 ml-0.5 ui-text-body-2'>{loc}</p>
-            <p className='ui-text-body-2 underline'>지도보기</p>
+            {/* <p className='ui-text-body-2 underline'>지도보기</p> */}
           </div>
           <div className='flex items-center gap-2'>
             <Icon
