@@ -1,76 +1,21 @@
-import { Icon } from '@iconify/react';
+'use client';
 
-interface Restaurant {
-  id: number;
-  name: string;
-  address: string;
-  imageUrl: string;
+import { use } from 'react';
+
+import { Icon } from '@iconify/react';
+import { useQuery } from '@tanstack/react-query';
+
+import { festivalRestaurants } from '@/apis/queries';
+
+interface Props {
+  params: Promise<{ id: string }>;
 }
 
-const mockRestaurants: Restaurant[] = [
-  {
-    id: 1,
-    name: '수원왕갈비',
-    address: '대구광역시 달서구 공원순환로 36 (두류동) 두류공원',
-    imageUrl: 'https://picsum.photos/118/118?random=1',
-  },
-  {
-    id: 2,
-    name: '두류파크 맛집',
-    address: '대구광역시 달서구 두류동 123-45',
-    imageUrl: 'https://picsum.photos/118/118?random=2',
-  },
-  {
-    id: 3,
-    name: '달서구 전통맛집',
-    address: '대구광역시 달서구 성서동 456-78',
-    imageUrl: 'https://picsum.photos/118/118?random=3',
-  },
-  {
-    id: 4,
-    name: '대구명물 치킨',
-    address: '대구광역시 달서구 이곡동 789-12',
-    imageUrl: 'https://picsum.photos/118/118?random=4',
-  },
-  {
-    id: 5,
-    name: '할매순대국',
-    address: '대구광역시 달서구 월성동 234-56',
-    imageUrl: 'https://picsum.photos/118/118?random=5',
-  },
-  {
-    id: 6,
-    name: '청춘떡볶이',
-    address: '대구광역시 달서구 감삼동 345-67',
-    imageUrl: 'https://picsum.photos/118/118?random=6',
-  },
-  {
-    id: 7,
-    name: '옛날국밥',
-    address: '대구광역시 달서구 상인동 456-78',
-    imageUrl: 'https://picsum.photos/118/118?random=7',
-  },
-  {
-    id: 8,
-    name: '진미곱창',
-    address: '대구광역시 달서구 용산동 567-89',
-    imageUrl: 'https://picsum.photos/118/118?random=8',
-  },
-  {
-    id: 9,
-    name: '바다횟집',
-    address: '대구광역시 달서구 본리동 678-90',
-    imageUrl: 'https://picsum.photos/118/118?random=9',
-  },
-  {
-    id: 10,
-    name: '맛있는 피자',
-    address: '대구광역시 달서구 송현동 789-01',
-    imageUrl: 'https://picsum.photos/118/118?random=10',
-  },
-];
-
-function RestaurantItem({ restaurant }: { restaurant: Restaurant }) {
+function RestaurantItem({
+  restaurant,
+}: {
+  restaurant: { name: string; address: string; imageUrl: string };
+}) {
   return (
     <div className='flex flex-row items-center justify-start gap-3 bg-white'>
       <div className='flex flex-1 flex-col items-start justify-start gap-2 px-2 py-0'>
@@ -98,21 +43,45 @@ function RestaurantItem({ restaurant }: { restaurant: Restaurant }) {
         </div>
       </div>
 
-      <div
-        className='h-[118px] w-[118px] shrink-0 rounded bg-gray-300 bg-cover bg-center'
-        style={{ backgroundImage: `url('${restaurant.imageUrl}')` }}
-      />
+      <div className='h-[118px] w-[118px] shrink-0 rounded bg-gray-300'>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={restaurant.imageUrl}
+          alt={restaurant.name}
+          className='h-full w-full rounded object-cover'
+        />
+      </div>
     </div>
   );
 }
 
-export default function RestaurantList() {
+export default function RestaurantList({ params }: Props) {
+  const { id } = use(params);
+  const festivalId = Number(id);
+
+  const { data } = useQuery(festivalRestaurants(festivalId));
+  const items = (data?.data?.content ?? []).map(r => ({
+    name: r?.name ?? '가게명',
+    address: r?.address ?? '주소 정보 없음',
+    imageUrl: r?.imageUrl ?? 'https://picsum.photos/118/118?random=1',
+  }));
+
+  if (items.length === 0) {
+    return (
+      <div className='flex h-40 items-center justify-center rounded bg-[#f8f9fb]'>
+        <p className='ui-text-body-2 ui-text-color-sub'>
+          주변 맛집 정보가 없어요
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className='flex flex-col items-start justify-start gap-5'>
-      {mockRestaurants.map((restaurant, index) => (
-        <div key={restaurant.id}>
+      {items.map((restaurant, index) => (
+        <div key={`${restaurant.name}-${index}`}>
           <RestaurantItem restaurant={restaurant} />
-          {index < mockRestaurants.length - 1 && (
+          {index < items.length - 1 && (
             <div className='relative mt-5 h-0 w-full'>
               <div className='absolute top-0 right-0 left-0 h-[1px] bg-[#f1f2f4]' />
             </div>
