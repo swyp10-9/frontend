@@ -207,6 +207,8 @@ export function SearchResults({
                   start_date={festival.startDate || ''}
                   end_date={festival.endDate || ''}
                   is_marked={false}
+                  map_x={festival.map_x || ''}
+                  map_y={festival.map_y || ''}
                 />
               </Link>
 

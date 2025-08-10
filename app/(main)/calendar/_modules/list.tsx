@@ -281,6 +281,8 @@ export default function List({
                 start_date={festival?.startDate || ''}
                 end_date={festival?.endDate || ''}
                 is_marked={festival?.bookmarked || false}
+                map_x={festival?.map_x || ''}
+                map_y={festival?.map_y || ''}
               />
             ))}
             {/* 무한 스크롤 감지용 요소 */}

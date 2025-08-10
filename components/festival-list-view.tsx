@@ -23,6 +23,8 @@ interface FestivalListViewProps {
   end_date: string;
   is_marked: boolean;
   id: number;
+  map_x: string;
+  map_y: string;
 }
 
 interface ApiError {
@@ -34,8 +36,18 @@ interface ApiError {
 }
 
 export default function FestivalListView(props: FestivalListViewProps) {
-  const { image, theme, title, loc, start_date, end_date, is_marked, id } =
-    props;
+  const {
+    image,
+    theme,
+    title,
+    loc,
+    start_date,
+    end_date,
+    is_marked,
+    id,
+    map_x,
+    map_y,
+  } = props;
   const router = useRouter();
   const { isLoggedIn, isLoading } = useAuth();
 
@@ -167,7 +179,27 @@ export default function FestivalListView(props: FestivalListViewProps) {
               fontSize={20}
             />
             <p className='mr-1 ml-0.5 ui-text-body-2'>{loc}</p>
-            {/* <p className='ui-text-body-2 underline'>지도보기</p> */}
+            <p
+              className='ui-text-body-2 underline'
+              onClick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                const mapX = map_x ? String(map_x) : '';
+                const mapY = map_y ? String(map_y) : '';
+                const params = new URLSearchParams();
+                if (mapX && mapY) {
+                  params.set('mapX', mapX);
+                  params.set('mapY', mapY);
+                  params.set('zoom', '13'); // 상세 보기 적당 줌
+                }
+                if (id) params.set('focusId', String(id));
+                router.push(
+                  `/${params.toString() ? `?${params.toString()}` : ''}`,
+                );
+              }}
+            >
+              지도보기
+            </p>
           </div>
           <div className='flex items-center gap-2'>
             <Icon

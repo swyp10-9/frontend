@@ -537,6 +537,17 @@ export interface FestivalSummaryResponse {
    * @nullable
    */
   endDate: string | null;
+
+  /**
+   * 경도
+   * @nullable
+   */
+  map_x?: string | null;
+  /**
+   * 위도
+   * @nullable
+   */
+  map_y?: string | null;
 }
 
 /**
