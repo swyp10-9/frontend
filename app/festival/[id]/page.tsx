@@ -114,6 +114,19 @@ export default function FestivalDetail({ params }: FestivalDetailProps) {
           location={detail?.address ?? ''}
           isBookmarked={detail?.bookmarked}
           onClickBookmark={detail?.bookmarked ? removeBookmark : addBookmark}
+          onClickMap={() => {
+            // 좌표는 상세 스키마에서 mapx/mapy가 string일 수 있음
+            const mapX = detail?.mapx ? String(detail.mapx) : '';
+            const mapY = detail?.mapy ? String(detail.mapy) : '';
+            const params = new URLSearchParams();
+            if (mapX && mapY) {
+              params.set('mapX', mapX);
+              params.set('mapY', mapY);
+              params.set('zoom', '13'); // 상세 보기 적당 줌
+            }
+            if (detail?.id) params.set('focusId', String(detail.id));
+            router.push(`/${params.toString() ? `?${params.toString()}` : ''}`);
+          }}
         />
 
         <FestivalTabs selectedTab={selectedTab} onTabChange={handleTabChange} />

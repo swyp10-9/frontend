@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import type { FestivalSummaryResponse } from '@/apis/SWYP10BackendAPI.schemas';
 import FestivalListView from '@/components/festival-list-view';
-import { FilterChip } from '@/components/filter-chip';
+import { FilterChip, SelectedChip } from '@/components/filter-chip';
 import { FilterValues } from '@/components/filter-modal';
 
 import { TrendingSearches } from './TrendingSearches';
@@ -33,6 +33,7 @@ export function SearchResults({
   onFilterClick,
 }: SearchResultsProps) {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const [isNearbySelected, setIsNearbySelected] = useState(
     searchParams.get('nearby') === 'true',
@@ -78,6 +79,47 @@ export function SearchResults({
     setIsThisMonthSelected(prev => !prev);
   };
 
+  // 필터 값 → 라벨 매핑
+  const getLabelFromValue = (key: string, value: string): string => {
+    const regionLabelMap: Record<string, string> = {
+      seoul: '서울',
+      gyeonggi: '경기',
+      gangwon: '강원',
+      chungcheong: '충청',
+      jeolla: '전라',
+      gyeongsang: '경상',
+      jeju: '제주',
+    };
+    const companionLabelMap: Record<string, string> = {
+      family: '가족',
+      couple: '커플',
+      parents: '부모님',
+      pet: '반려견',
+      friend: '친구',
+    };
+    const themeLabelMap: Record<string, string> = {
+      culture: '문화/예술',
+      food: '음식/미식',
+      music: '음악/공연',
+      nature: '자연/체험',
+      tradition: '전통/역사',
+    };
+
+    if (key === 'region') return regionLabelMap[value] || value;
+    if (key === 'companion') return companionLabelMap[value] || value;
+    if (key === 'theme') return themeLabelMap[value] || value;
+    return value;
+  };
+
+  const selectedFilterParams: Array<{
+    key: 'region' | 'companion' | 'theme';
+    value: string | null;
+  }> = [
+    { key: 'region', value: searchParams.get('region') },
+    { key: 'companion', value: searchParams.get('companion') },
+    { key: 'theme', value: searchParams.get('theme') },
+  ];
+
   return (
     <div className='flex flex-col gap-5'>
       <div>
@@ -104,6 +146,19 @@ export function SearchResults({
             downChevron
             onClick={onFilterClick}
           />
+          {selectedFilterParams
+            .filter(param => Boolean(param.value))
+            .map(param => (
+              <SelectedChip
+                key={param.key}
+                label={getLabelFromValue(param.key, param.value as string)}
+                onClick={() => {
+                  const params = new URLSearchParams(searchParams.toString());
+                  params.delete(param.key);
+                  router.replace(`/search?${params.toString()}`);
+                }}
+              />
+            ))}
         </div>
       </div>
 

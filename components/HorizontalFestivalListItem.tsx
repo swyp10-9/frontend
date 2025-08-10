@@ -19,7 +19,7 @@ export default function HorizontalFestivalListItem(
 
   return (
     <div
-      className='flex w-[140px] cursor-pointer flex-col gap-2'
+      className='flex w-[140px] shrink-0 cursor-pointer flex-col gap-2'
       onClick={onClick}
     >
       <div className='relative h-[140px] w-[140px]'>

@@ -117,6 +117,8 @@ interface NaverMapProps {
   onMarkerClick?: (festival: Festival, isDetailed: boolean) => void;
   className?: string;
   style?: React.CSSProperties;
+  /** 특정 축제 포커싱용 ID (해당 마커를 상세 마커로 표시) */
+  focusFestivalId?: number;
   queryParams?: {
     status?: string;
     period?: string;
@@ -136,6 +138,7 @@ export default function NaverMap({
   onMarkerClick,
   className = '',
   style = {},
+  focusFestivalId,
   queryParams,
 }: NaverMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -244,7 +247,15 @@ export default function NaverMap({
       setIsLoadingFestivals(true);
       try {
         const response = await fetchFestivalsInBounds(bounds, queryParams);
-        setFestivals(response.festivals);
+        // 포커스 ID가 있으면 해당 축제를 상세 마커로 표시
+        const festivalsWithFocus =
+          typeof focusFestivalId === 'number'
+            ? response.festivals.map(f => ({
+                ...f,
+                isDetailed: f.id === focusFestivalId,
+              }))
+            : response.festivals;
+        setFestivals(festivalsWithFocus);
         console.log('축제 데이터 로드:', response.festivals.length);
       } catch (error) {
         console.error('축제 데이터 로드 실패:', error);
@@ -252,7 +263,7 @@ export default function NaverMap({
         setIsLoadingFestivals(false);
       }
     },
-    [isLoadingFestivals, queryParams],
+    [isLoadingFestivals, queryParams, focusFestivalId],
   );
 
   const handleZoomChange = useCallback(() => {
@@ -418,8 +429,21 @@ export default function NaverMap({
     const initializeMap = async () => {
       if (!mapRef.current) return;
 
-      // 항상 현재 위치 사용 (initialCenter 무시)
-      const [lat, lng] = await getCurrentLocation();
+      // 초기 중심: props.initialCenter 우선, 없으면 현재 위치
+      let lat: number;
+      let lng: number;
+      if (
+        initialCenter &&
+        typeof initialCenter.lat === 'number' &&
+        typeof initialCenter.lng === 'number'
+      ) {
+        lat = initialCenter.lat;
+        lng = initialCenter.lng;
+      } else {
+        const current = await getCurrentLocation();
+        lat = current[0];
+        lng = current[1];
+      }
 
       const mapOptions: naver.maps.MapOptions = {
         center: new window.naver.maps.LatLng(lat, lng),
@@ -503,6 +527,7 @@ export default function NaverMap({
     onMapReady,
     onMarkerClick,
     initialZoom,
+    initialCenter,
   ]);
 
   useEffect(() => {

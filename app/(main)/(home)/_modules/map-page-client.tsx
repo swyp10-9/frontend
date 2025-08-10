@@ -74,6 +74,10 @@ export default function MapPageClient({
     withWhom: string;
     theme: string;
     isNearBy: string;
+    mapX?: string;
+    mapY?: string;
+    focusId?: string;
+    zoom?: string;
   };
 }) {
   const router = useRouter();
@@ -199,7 +203,21 @@ export default function MapPageClient({
             ))}
         </div>
         <NaverMap
-          // initialCenter와 initialZoom을 제거하여 항상 현재 위치로 초기화
+          // 상세 페이지에서 넘어온 좌표/줌/포커스 ID 반영
+          initialCenter={
+            initialParams.mapY && initialParams.mapX
+              ? {
+                  lat: parseFloat(initialParams.mapY),
+                  lng: parseFloat(initialParams.mapX),
+                }
+              : undefined
+          }
+          initialZoom={
+            initialParams.zoom ? parseInt(initialParams.zoom) : undefined
+          }
+          focusFestivalId={
+            initialParams.focusId ? parseInt(initialParams.focusId) : undefined
+          }
           onZoomChange={handleZoomChange}
           onMarkerClick={handleMarkerClick}
           queryParams={{
