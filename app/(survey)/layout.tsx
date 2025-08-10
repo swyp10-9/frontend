@@ -9,8 +9,8 @@ export default function MainLayout({
 }) {
   const router = useRouter();
 
-  const handleBack = () => {
-    router.back();
+  const handleGoHome = () => {
+    router.push('/');
   };
 
   return (
@@ -18,9 +18,10 @@ export default function MainLayout({
       <div className='sticky top-0 z-10 flex w-full flex-col bg-transparent pb-2'>
         <div className='-mx-2 box-border flex w-full flex-row items-center justify-start py-0'>
           <button
-            onClick={handleBack}
+            onClick={handleGoHome}
             className='relative flex size-8 shrink-0 items-center justify-center'
           >
+            {/* TODO: 아이콘 추출 */}
             <svg
               width='7'
               height='13'
