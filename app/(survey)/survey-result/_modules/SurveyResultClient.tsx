@@ -16,6 +16,7 @@ import energizerImage from '@/assets/images/festival-recommendation/energizer.pn
 import healerImage from '@/assets/images/festival-recommendation/healer.png';
 import socializerImage from '@/assets/images/festival-recommendation/socializer.png';
 import HorizontalFestivalList from '@/components/HorizontalFestivalList';
+import { useShareThisPage } from '@/hooks/useShareThisPage';
 
 // 결과별 이미지 매핑
 const resultImages = {
@@ -87,17 +88,10 @@ export function SurveyResultClient() {
   const [festivals, setFestivals] = useState<FestivalSummaryResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const handleBackToHome = () => {
-    router.push('/');
-  };
+  const { share } = useShareThisPage();
 
   const handleRetakeTest = () => {
     router.push('/survey');
-  };
-
-  const handleShareResult = () => {
-    console.log('결과 공유하기');
   };
 
   const handleFestivalClick = (festival: { id: string }) => {
@@ -274,7 +268,7 @@ export function SurveyResultClient() {
             다시 테스트하기
           </button>
           <button
-            onClick={handleShareResult}
+            onClick={share}
             className='h-12 flex-1 rounded-lg bg-[#090a0c] text-sm font-medium text-white'
           >
             결과 공유

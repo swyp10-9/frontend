@@ -1,5 +1,8 @@
+'use client';
+
 import { Icon } from '@iconify/react';
 
+import { useShareThisPage } from '@/hooks/useShareThisPage';
 import { cn } from '@/lib/utils';
 
 interface FestivalHeaderProps {
@@ -23,6 +26,8 @@ export default function FestivalHeader({
   isBookmarked = false,
   onClickBookmark,
 }: FestivalHeaderProps) {
+  const { share } = useShareThisPage();
+
   return (
     <div className='px-4 py-6'>
       <div className='flex w-full items-start justify-between'>
@@ -49,6 +54,7 @@ export default function FestivalHeader({
             icon='lucide:share'
             className='cursor-pointer text-gray-300'
             fontSize={24}
+            onClick={share}
           />
         </div>
       </div>
