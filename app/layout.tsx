@@ -1,6 +1,7 @@
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import { Toaster } from 'sonner';
 
 import { DialogProvider } from '@/components/Dialog';
 import { MSWClientSideProvider } from '@/configs/msw/MSWClientSideProvider';
@@ -40,10 +41,11 @@ export default function RootLayout({
             /> */}
             <body
               cz-shortcut-listen='true'
-              className='flex items-center justify-center overscroll-none'
+              className='flex items-center justify-center overscroll-none border border-blue-500'
             >
               {children}
             </body>
+            <Toaster position='bottom-center' offset={100} />
           </html>
         </DialogProvider>
         <ReactQueryDevtools />
