@@ -4,30 +4,27 @@ import FestivalImageSlider from '../FestivalImageSlider';
 
 interface FestivalInfoProps {
   festivalImages: string[];
+  overview: string | null | undefined;
+  phone: string | null | undefined;
+  fee: string | null | undefined;
+  homepage: string | null | undefined;
 }
 
-export default function FestivalInfo({ festivalImages }: FestivalInfoProps) {
+export default function FestivalInfo({
+  festivalImages,
+  overview,
+  phone,
+  fee,
+  homepage,
+}: FestivalInfoProps) {
   return (
     <div className='space-y-6'>
       <div className='flex flex-col gap-3'>
         <h3 className='ui-text-sub-head text-black'>축제 소개</h3>
         <FestivalImageSlider images={festivalImages} />
-        <div className='h-[336px] overflow-hidden'>
-          <p className='ui-text-body-2-long ui-text-color-sub'>
-            대구치맥페스티벌은 대구를 대표하는 여름 문화관광축제로, '치킨'과
-            '맥주'를 결합한 국내 최대 규모의 식음 축제이다. 2013년 처음 개최된
-            이후 누적 관람객 100만 명 이상을 유치하며, 지역 경제 활성화는 물론
-            대구의 글로벌 브랜드 가치 제고에도 크게 기여해왔다. 단순한 식음
-            축제를 넘어 공연, 전시, 체험, 기업 홍보, 글로벌 교류 등 다양한
-            프로그램을 통해 관람객에게 풍성한 즐길 거리를 제공하고 있으며 2025년
-            대구치맥페스티벌은 7월 2일부터 6일까지 닷새간 두류공원 일원에서
-            개최된다. 메인 행사장인 2.28 자유광장은 물놀이와 일렉트로닉 음악이
-            결합된 워터 콘서트 테마로 꾸며지며, 360도 중앙 무대도 새롭게
-            도입된다. 그리고 '대프리카 워터피아', '블러드 호러 클럽' 등 다양한
-            테마 공간이 조성되며, 유명 아티스트와 협업한 조형물 및 포토존을 통해
-            축제 분위기를 한층 더할 예정이다.
-          </p>
-        </div>
+        <p className='ui-text-body-2-long ui-text-color-sub'>
+          {overview ?? '소개 정보가 없습니다.'}
+        </p>
       </div>
 
       <div className='flex flex-col gap-3'>
@@ -65,7 +62,7 @@ export default function FestivalInfo({ festivalImages }: FestivalInfoProps) {
               fontSize={20}
             />
             <span className='ui-text-body-2 ui-text-color-sub'>
-              123-234-5678
+              {phone ?? '연락처 정보 없음'}
             </span>
           </div>
           <div className='flex w-full items-start gap-2'>
@@ -75,18 +72,18 @@ export default function FestivalInfo({ festivalImages }: FestivalInfoProps) {
               fontSize={20}
             />
             <span className='ui-text-body-2 ui-text-color-sub'>
-              무료, 일부 구간 유료(사전예약존 85,000원)
+              {fee ?? '요금 정보 없음'}
             </span>
           </div>
-          <div className='flex h-10 w-full items-start gap-2'>
+          <div className='flex w-full items-start gap-2'>
             <Icon
               icon='gravity-ui:link'
               className='text-gray-300'
               fontSize={20}
             />
             <div className='w-[296px]'>
-              <p className='ui-text-body-2 leading-[20px] ui-text-color-sub'>
-                https://www.instagram.com/daegu_chimac_festival/
+              <p className='ui-text-body-2 leading-[20px] break-all ui-text-color-sub'>
+                {homepage ?? '홈페이지 정보 없음'}
               </p>
             </div>
           </div>

@@ -1,8 +1,11 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useMemo, useState } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
+
+import { festivalDetail } from '@/apis/queries';
 
 import FestivalHeader from './_modules/FestivalHeader';
 import FestivalTabs from './_modules/FestivalTabs';
@@ -37,6 +40,10 @@ export default function FestivalDetail({ params }: FestivalDetailProps) {
   const resolvedParams = use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const festivalId = useMemo(
+    () => Number(resolvedParams.id),
+    [resolvedParams.id],
+  );
 
   const getInitialTab = (): TabType => {
     const tabFromUrl = searchParams.get('tab');
@@ -61,30 +68,47 @@ export default function FestivalDetail({ params }: FestivalDetailProps) {
     router.replace(`/festival/${resolvedParams.id}?${urlParams.toString()}`);
   };
 
-  const festivalImages = [
-    'https://picsum.photos/300/300?random=1',
-    'https://picsum.photos/300/300?random=2',
-    'https://picsum.photos/300/300?random=3',
-    'https://picsum.photos/300/300?random=4',
-  ];
+  const { data } = useQuery(festivalDetail(festivalId));
+
+  const detail = data?.data;
+
+  const festivalImages = useMemo(
+    () =>
+      (detail?.images ?? [])
+        .map(img => img?.originimgurl)
+        .filter((url): url is string => Boolean(url))
+        .slice(0, 10),
+    [detail?.images],
+  );
+
+  const mainImageSrc =
+    detail?.thumbnail ??
+    festivalImages[0] ??
+    'https://picsum.photos/800/400?random=5';
+  const mainImageAlt = detail?.title ?? 'festival main image';
+
+  const formatDate = (date?: string | null) =>
+    date ? date.replaceAll('-', '.') : '';
+
+  const homepage = useMemo(
+    () => detail?.info?.eventhomepage ?? detail?.content?.homepage ?? null,
+    [detail?.info?.eventhomepage, detail?.content?.homepage],
+  );
 
   return (
     // FIXME: 화면 크기 설정은 layout 수준에서 설정 필요, 모바일 뷰 재현을 위해 360px 사용
     <div className='relative min-h-screen w-screen max-w-[360px] bg-white'>
       {/* Main Content */}
       <div>
-        <MainImage
-          src='https://picsum.photos/800/400?random=5'
-          alt='대구치맥페스티벌'
-        />
+        <MainImage src={mainImageSrc} alt={mainImageAlt} />
 
         <FestivalHeader
-          theme='문화/예술'
-          title='대구치맥페스티벌'
-          subtitle='2025 대구치맥페스티벌, 치맥 센세이션'
-          startDate='2025.07.10'
-          endDate='2025.07.15'
-          location='대구광역시 달서구 공원순환로 36 (두류동) 두류공원'
+          theme={detail?.theme ?? ''}
+          title={detail?.title ?? ''}
+          subtitle={detail?.content?.title ?? ''}
+          startDate={formatDate(detail?.startDate)}
+          endDate={formatDate(detail?.endDate)}
+          location={detail?.address ?? ''}
         />
 
         <FestivalTabs selectedTab={selectedTab} onTabChange={handleTabChange} />
@@ -92,7 +116,13 @@ export default function FestivalDetail({ params }: FestivalDetailProps) {
         {/* Tab Content */}
         <div className='px-4 py-6'>
           {selectedTab === 'festival-info' && (
-            <FestivalInfo festivalImages={festivalImages} />
+            <FestivalInfo
+              festivalImages={festivalImages}
+              overview={detail?.content?.overview}
+              phone={detail?.info?.sponsor1tel}
+              fee={detail?.info?.usetimefestival}
+              homepage={homepage}
+            />
           )}
           {selectedTab === 'travel-course' && <TravelCourse />}
           {selectedTab === 'restaurants' && <RestaurantList />}
