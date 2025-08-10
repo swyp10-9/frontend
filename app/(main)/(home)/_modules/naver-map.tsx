@@ -82,9 +82,7 @@ const fetchFestivalsInBounds = async (
       start_date: festival.startDate,
       end_date: festival.endDate,
       is_marked: festival.bookmarked,
-      // @ts-expect-error 잘못된 타입 사용
       map_x: festival.map_x,
-      // @ts-expect-error 잘못된 타입 사용
       map_y: festival.map_y,
     }));
 

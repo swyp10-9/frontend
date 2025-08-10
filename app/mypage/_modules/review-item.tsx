@@ -1,7 +1,4 @@
-import { Icon } from '@iconify/react';
 import Image from 'next/image';
-
-import { DrawerTrigger } from '@/components/shadcn/drawer';
 
 interface ReviewItemProps {
   image: string;
@@ -32,7 +29,7 @@ export default function ReviewItem({
             <p className='ui-text-caption text-gray-400'>{date}</p>
           </div>
         </div>
-        <DrawerTrigger>
+        {/* <DrawerTrigger>
           <Icon
             icon='ic:round-more-horiz'
             fontSize={20}
@@ -41,7 +38,7 @@ export default function ReviewItem({
               console.log('click');
             }}
           />
-        </DrawerTrigger>
+        </DrawerTrigger> */}
       </div>
       <p className='ui-text-body-2 text-gray-700'>{content}</p>
     </div>
