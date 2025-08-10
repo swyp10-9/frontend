@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
+import { AxiosError, HttpStatusCode } from 'axios';
 
 import { showCustomToast } from '@/components/CustomToast';
 
@@ -17,6 +17,38 @@ export const useAddBookmark = (festivalId: number) => {
         message: '북마크에 추가되었습니다.',
         type: 'success',
       });
+    },
+    onError: async error => {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === HttpStatusCode.Forbidden) {
+          showCustomToast({
+            message: '로그인이 필요합니다.',
+            type: 'info',
+            loginButton: true,
+          });
+          return;
+        }
+
+        showCustomToast({
+          message: `오류가 발생했습니다 (${error.response?.data.message})`,
+          type: 'error',
+        });
+      }
+    },
+  });
+};
+
+export const useRemoveBookmark = (festivalId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => api.cancelBookmark(festivalId),
+    onSuccess: async () => {
+      showCustomToast({
+        message: '북마크에서 제거되었습니다.',
+        type: 'success',
+      });
+      queryClient.invalidateQueries(festivalDetail(festivalId));
     },
     onError: async error => {
       if (error instanceof AxiosError) {

@@ -5,7 +5,7 @@ import { use, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { useAddBookmark } from '@/apis/mutations/festival';
+import { useAddBookmark, useRemoveBookmark } from '@/apis/mutations/festival';
 import { festivalDetail } from '@/apis/queries';
 
 import FestivalHeader from './_modules/FestivalHeader';
@@ -72,8 +72,8 @@ export default function FestivalDetail({ params }: FestivalDetailProps) {
   const { data } = useQuery(festivalDetail(festivalId));
 
   const detail = data?.data;
-  const addBookmark = useAddBookmark(festivalId);
-  const [bookmarked, setBookmarked] = useState(false);
+  const { mutateAsync: addBookmark } = useAddBookmark(festivalId);
+  const { mutateAsync: removeBookmark } = useRemoveBookmark(festivalId);
 
   const festivalImages = useMemo(
     () =>
@@ -112,13 +112,8 @@ export default function FestivalDetail({ params }: FestivalDetailProps) {
           startDate={formatDate(detail?.startDate)}
           endDate={formatDate(detail?.endDate)}
           location={detail?.address ?? ''}
-          isBookmarked={bookmarked}
-          onClickBookmark={() => {
-            if (bookmarked) return;
-            addBookmark.mutate(undefined, {
-              onSuccess: () => setBookmarked(true),
-            });
-          }}
+          isBookmarked={detail?.bookmarked}
+          onClickBookmark={detail?.bookmarked ? removeBookmark : addBookmark}
         />
 
         <FestivalTabs selectedTab={selectedTab} onTabChange={handleTabChange} />
@@ -132,6 +127,9 @@ export default function FestivalDetail({ params }: FestivalDetailProps) {
               phone={detail?.info?.sponsor1tel}
               fee={detail?.info?.usetimefestival}
               homepage={homepage}
+              eventPlace={detail?.info?.eventplace}
+              discountInfo={detail?.info?.discountinfofestival}
+              spendTime={detail?.info?.spendtimefestival}
             />
           )}
           {selectedTab === 'travel-course' && <TravelCourse params={params} />}

@@ -254,6 +254,7 @@ export interface FestivalDetailResponse {
   images?: ImageResponse[] | null;
   content?: ContentResponse;
   info?: InfoResponse;
+  bookmarked?: boolean;
 }
 
 /**
