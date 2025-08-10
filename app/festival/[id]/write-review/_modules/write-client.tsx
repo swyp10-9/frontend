@@ -7,6 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 
 import { createFestivalReview } from '@/apis/SWYP10BackendAPI';
 import { Button } from '@/components/Button';
+import { showCustomToast } from '@/components/CustomToast';
 import BackArrowNav from '@/components/nav/nav';
 
 export default function WriteClient() {
@@ -18,10 +19,18 @@ export default function WriteClient() {
   const handleSave = async () => {
     try {
       await createFestivalReview(festivalId, { content }).then(() => {
+        showCustomToast({
+          message: '리뷰가 저장되었습니다.',
+          type: 'success',
+        });
         router.back();
       });
     } catch (error) {
       console.error(error);
+      showCustomToast({
+        message: '리뷰 저장에 실패했습니다.',
+        type: 'error',
+      });
     }
   };
 
