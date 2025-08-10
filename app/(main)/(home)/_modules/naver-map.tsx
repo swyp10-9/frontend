@@ -113,7 +113,6 @@ interface NaverMapProps {
     nw: { lat: number; lng: number };
     se: { lat: number; lng: number };
   }) => void;
-  onCenterChange?: (center: { lat: number; lng: number }) => void;
   onZoomChange?: (zoom: number) => void;
   onMarkerClick?: (festival: Festival, isDetailed: boolean) => void;
   className?: string;
@@ -133,7 +132,6 @@ export default function NaverMap({
   onVisibilityChange,
   onMapReady,
   onBoundsChange,
-  onCenterChange,
   onZoomChange,
   onMarkerClick,
   className = '',
@@ -420,17 +418,8 @@ export default function NaverMap({
     const initializeMap = async () => {
       if (!mapRef.current) return;
 
-      // 위치 정보 가져오기 (URL 쿼리 우선, 없으면 현재 위치)
-      let lat: number, lng: number;
-
-      if (initialCenter) {
-        // URL 쿼리에서 가져온 초기 위치 사용
-        lat = initialCenter.lat;
-        lng = initialCenter.lng;
-      } else {
-        // 현재 위치 가져오기
-        [lat, lng] = await getCurrentLocation();
-      }
+      // 항상 현재 위치 사용 (initialCenter 무시)
+      const [lat, lng] = await getCurrentLocation();
 
       const mapOptions: naver.maps.MapOptions = {
         center: new window.naver.maps.LatLng(lat, lng),
@@ -454,14 +443,6 @@ export default function NaverMap({
 
       window.naver.maps.Event.addListener(map, 'zoom_changed', () => {
         handleZoomChange();
-      });
-
-      window.naver.maps.Event.addListener(map, 'center_changed', () => {
-        const center = map?.getCenter();
-        onCenterChange?.({
-          lat: center.y,
-          lng: center.x,
-        });
       });
 
       setTimeout(() => {
@@ -521,7 +502,6 @@ export default function NaverMap({
     handleZoomChange,
     onMapReady,
     onMarkerClick,
-    initialCenter,
     initialZoom,
   ]);
 

@@ -80,31 +80,19 @@ export default function MapPageClient({
   const searchParams = useSearchParams();
 
   // debounce를 위한 ref
-  const centerDebounceRef = useRef<NodeJS.Timeout | null>(null);
   const zoomDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  // URL 쿼리에서 지도 상태 가져오기
-  const getMapStateFromURL = useCallback(() => {
-    const lat = searchParams.get('lat');
-    const lng = searchParams.get('lng');
+  // URL 쿼리에서 zoom 상태 가져오기
+  const getZoomFromURL = useCallback(() => {
     const zoom = searchParams.get('zoom');
 
-    return {
-      center:
-        lat && lng ? { lat: parseFloat(lat), lng: parseFloat(lng) } : null,
-      zoom: zoom ? parseInt(zoom) : null,
-    };
+    return zoom ? parseInt(zoom) : null;
   }, [searchParams]);
 
-  // URL 쿼리에 지도 상태 업데이트 (debounce 적용)
-  const updateURLWithMapState = useCallback(
-    (center?: { lat: number; lng: number }, zoom?: number) => {
+  // URL 쿼리에 zoom 상태 업데이트 (debounce 적용)
+  const updateURLWithZoom = useCallback(
+    (zoom?: number) => {
       const params = new URLSearchParams(searchParams);
-
-      if (center) {
-        params.set('lat', center.lat.toString());
-        params.set('lng', center.lng.toString());
-      }
 
       if (zoom !== undefined) {
         params.set('zoom', zoom.toString());
@@ -124,21 +112,6 @@ export default function MapPageClient({
     [searchParams, router, initialParams],
   );
 
-  // center 변경 시 debounce 적용
-  const handleCenterChange = useCallback(
-    (center: { lat: number; lng: number }) => {
-      // 이전 타이머가 있다면 취소
-      if (centerDebounceRef.current) {
-        clearTimeout(centerDebounceRef.current);
-      }
-      // 0.7초 후에 URL 업데이트
-      centerDebounceRef.current = setTimeout(() => {
-        updateURLWithMapState(center);
-      }, 700);
-    },
-    [updateURLWithMapState],
-  );
-
   // zoom 변경 시 debounce 적용
   const handleZoomChange = useCallback(
     (zoom: number) => {
@@ -151,29 +124,20 @@ export default function MapPageClient({
 
       // 0.7초 후에 URL 업데이트
       zoomDebounceRef.current = setTimeout(() => {
-        updateURLWithMapState(undefined, zoom);
+        updateURLWithZoom(zoom);
       }, 700);
     },
-    [updateURLWithMapState],
+    [updateURLWithZoom],
   );
 
   // cleanup 함수
   useEffect(() => {
     return () => {
-      if (centerDebounceRef.current) {
-        clearTimeout(centerDebounceRef.current);
-      }
       if (zoomDebounceRef.current) {
         clearTimeout(zoomDebounceRef.current);
       }
     };
   }, []);
-
-  // URL 쿼리 변경 감지 (외부에서 URL이 변경된 경우)
-  useEffect(() => {
-    const mapState = getMapStateFromURL();
-    console.log('URL 쿼리 변경 감지:', mapState);
-  }, [searchParams, getMapStateFromURL]);
 
   const handleMarkerClick = (festival: Festival, isDetailed: boolean) => {
     console.log('부모 컴포넌트에서 마커 클릭 감지:', { festival, isDetailed });
@@ -208,8 +172,6 @@ export default function MapPageClient({
                 const [nearLat, nearLng]: [number, number] =
                   (await getCurrentLocation()) as [number, number];
                 params.set('isNearBy', 'true');
-                params.set('lat', `${nearLat}`);
-                params.set('lng', `${nearLng}`);
                 router.replace(`?${params.toString()}`);
               }
             }}
@@ -237,21 +199,7 @@ export default function MapPageClient({
             ))}
         </div>
         <NaverMap
-          initialCenter={getMapStateFromURL().center || undefined}
-          initialZoom={getMapStateFromURL().zoom || undefined}
-          // onMapReady={map => {
-          //   // console.log('map:::', map);
-          // }}
-          // onSizeChange={size => {
-          //   // console.log('size:::', size);
-          // }}
-          // onVisibilityChange={isVisible => {
-          //   // console.log('isVisible:::', isVisible);
-          // }}
-          // onBoundsChange={bounds => {
-          //   // console.log('bounds:::', bounds);
-          // }}
-          onCenterChange={handleCenterChange}
+          // initialCenter와 initialZoom을 제거하여 항상 현재 위치로 초기화
           onZoomChange={handleZoomChange}
           onMarkerClick={handleMarkerClick}
           queryParams={{
