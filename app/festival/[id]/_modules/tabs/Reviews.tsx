@@ -94,8 +94,9 @@ export default function Reviews({ id }: ReviewsProps) {
           </h3>
           <div className='flex items-center gap-1'>
             <Button
-              variant='ghost'
+              variant='primary'
               size='sm'
+              rounded='full'
               onClick={() => {
                 if (isLoading) return;
                 if (!isLoggedIn) {
@@ -112,6 +113,7 @@ export default function Reviews({ id }: ReviewsProps) {
                 } else router.push(`/festival/${id}/write-review`);
               }}
             >
+              <Icon icon='ic:baseline-edit' fontSize={20} />
               <p className='ui-text-sub-head-3'>리뷰쓰기</p>
             </Button>
           </div>
