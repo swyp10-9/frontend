@@ -1,5 +1,7 @@
 'use client';
 
+import { useCallback, useEffect, useRef } from 'react';
+
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { FilterChip, SelectedChip } from '@/components/filter-chip';
@@ -10,7 +12,7 @@ import themeList from '@/constants/themeList';
 import { withWhomList } from '@/constants/withWhomList';
 
 import MapBottomFilter from './map-bottom-filter';
-import NaverMap from './naver-map';
+import NaverMap, { getCurrentLocation } from './naver-map';
 
 // 축제 데이터 타입 (naver-map.tsx와 동일)
 interface Festival {
@@ -72,10 +74,74 @@ export default function MapPageClient({
     withWhom: string;
     theme: string;
     isNearBy: string;
+    mapX?: string;
+    mapY?: string;
+    focusId?: string;
+    zoom?: string;
   };
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // debounce를 위한 ref
+  const zoomDebounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  // URL 쿼리에서 zoom 상태 가져오기
+  const getZoomFromURL = useCallback(() => {
+    const zoom = searchParams.get('zoom');
+
+    return zoom ? parseInt(zoom) : null;
+  }, [searchParams]);
+
+  // URL 쿼리에 zoom 상태 업데이트 (debounce 적용)
+  const updateURLWithZoom = useCallback(
+    (zoom?: number) => {
+      const params = new URLSearchParams(searchParams);
+
+      if (zoom !== undefined) {
+        params.set('zoom', zoom.toString());
+      }
+
+      // 기존 파라미터들 유지
+      if (initialParams.status) params.set('status', initialParams.status);
+      if (initialParams.period) params.set('period', initialParams.period);
+      if (initialParams.withWhom)
+        params.set('withWhom', initialParams.withWhom);
+      if (initialParams.theme) params.set('theme', initialParams.theme);
+      if (initialParams.isNearBy)
+        params.set('isNearBy', initialParams.isNearBy);
+
+      router.replace(`?${params.toString()}`);
+    },
+    [searchParams, router, initialParams],
+  );
+
+  // zoom 변경 시 debounce 적용
+  const handleZoomChange = useCallback(
+    (zoom: number) => {
+      console.log('zoom changed:::', zoom);
+
+      // 이전 타이머가 있다면 취소
+      if (zoomDebounceRef.current) {
+        clearTimeout(zoomDebounceRef.current);
+      }
+
+      // 0.7초 후에 URL 업데이트
+      zoomDebounceRef.current = setTimeout(() => {
+        updateURLWithZoom(zoom);
+      }, 700);
+    },
+    [updateURLWithZoom],
+  );
+
+  // cleanup 함수
+  useEffect(() => {
+    return () => {
+      if (zoomDebounceRef.current) {
+        clearTimeout(zoomDebounceRef.current);
+      }
+    };
+  }, []);
 
   const handleMarkerClick = (festival: Festival, isDetailed: boolean) => {
     console.log('부모 컴포넌트에서 마커 클릭 감지:', { festival, isDetailed });
@@ -107,8 +173,8 @@ export default function MapPageClient({
                 params.delete(`isNearBy`);
                 router.replace(`?${params.toString()}`);
               } else {
-                // const [nearLat, nearLng]: [number, number] =
-                //   (await getCurrentLocation()) as [number, number];
+                const [nearLat, nearLng]: [number, number] =
+                  (await getCurrentLocation()) as [number, number];
                 params.set('isNearBy', 'true');
                 router.replace(`?${params.toString()}`);
               }
@@ -137,7 +203,22 @@ export default function MapPageClient({
             ))}
         </div>
         <NaverMap
-          // initialCenter와 initialZoom을 제거하여 항상 현재 위치로 초기화
+          // 상세 페이지에서 넘어온 좌표/줌/포커스 ID 반영
+          initialCenter={
+            initialParams.mapY && initialParams.mapX
+              ? {
+                  lat: parseFloat(initialParams.mapY),
+                  lng: parseFloat(initialParams.mapX),
+                }
+              : undefined
+          }
+          initialZoom={
+            initialParams.zoom ? parseInt(initialParams.zoom) : undefined
+          }
+          focusFestivalId={
+            initialParams.focusId ? parseInt(initialParams.focusId) : undefined
+          }
+          onZoomChange={handleZoomChange}
           onMarkerClick={handleMarkerClick}
           queryParams={{
             status: initialParams.status,
