@@ -7,6 +7,10 @@ interface SearchParamsType {
   period: string;
   withWhom: string;
   theme: string;
+  mapX?: string;
+  mapY?: string;
+  focusId?: string;
+  zoom?: string;
 }
 
 export default async function Home({
@@ -18,7 +22,17 @@ export default async function Home({
 
   return (
     <MapPageClient
-      initialParams={{ status, period, withWhom, theme, isNearBy }}
+      initialParams={{
+        status,
+        period,
+        withWhom,
+        theme,
+        isNearBy,
+        mapX: (await searchParams).mapX,
+        mapY: (await searchParams).mapY,
+        focusId: (await searchParams).focusId,
+        zoom: (await searchParams).zoom,
+      }}
     />
   );
 }

@@ -14,6 +14,7 @@ interface FestivalHeaderProps {
   location: string;
   isBookmarked?: boolean;
   onClickBookmark?: () => void;
+  onClickMap?: () => void;
 }
 
 export default function FestivalHeader({
@@ -25,6 +26,7 @@ export default function FestivalHeader({
   location,
   isBookmarked = false,
   onClickBookmark,
+  onClickMap,
 }: FestivalHeaderProps) {
   const { share } = useShareThisPage();
 
@@ -74,9 +76,13 @@ export default function FestivalHeader({
           />
           <div className='flex w-[283px] flex-col gap-0.5'>
             <p className='ui-text-body-2 ui-text-color-info'>{location}</p>
-            <p className='ui-text-sub-head-3 ui-text-color-sub underline'>
+            <button
+              type='button'
+              className='text-left ui-text-sub-head-3 ui-text-color-sub underline'
+              onClick={onClickMap}
+            >
               지도보기
-            </p>
+            </button>
           </div>
         </div>
       </div>
