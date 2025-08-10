@@ -41,11 +41,11 @@ export default function RootLayout({
             /> */}
             <body
               cz-shortcut-listen='true'
-              className='flex items-center justify-center overscroll-none border border-blue-500'
+              className='flex items-center justify-center overscroll-none'
             >
               {children}
+              <Toaster position='bottom-center' offset={100} />
             </body>
-            <Toaster position='bottom-center' offset={100} />
           </html>
         </DialogProvider>
         <ReactQueryDevtools />
