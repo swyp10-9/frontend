@@ -8,6 +8,9 @@ interface FestivalInfoProps {
   phone: string | null | undefined;
   fee: string | null | undefined;
   homepage: string | null | undefined;
+  eventPlace: string | null | undefined;
+  discountInfo: string | null | undefined;
+  spendTime: string | null | undefined;
 }
 
 export default function FestivalInfo({
@@ -16,6 +19,9 @@ export default function FestivalInfo({
   phone,
   fee,
   homepage,
+  eventPlace,
+  discountInfo,
+  spendTime,
 }: FestivalInfoProps) {
   return (
     <div className='space-y-6'>
@@ -29,26 +35,21 @@ export default function FestivalInfo({
 
       <div className='flex flex-col gap-3'>
         <h3 className='ui-text-sub-head text-black'>행사내용</h3>
-        <div className='h-72 overflow-hidden'>
-          <div className='space-y-4 ui-text-body-2-long ui-text-color-sub'>
-            <p>
-              1. 관람행사
-              <br />- 치맥K-POP 콘서트, 치맥EDM Party, 치맥버스킹, 초청공연
-            </p>
+        <div className='space-y-4 ui-text-body-2-long ui-text-color-sub'>
+          <p>
+            1. 행사 장소
+            <br />- {eventPlace ?? '행사 장소 정보 없음'}
+          </p>
 
-            <p>
-              2. 참여행사
-              <br />- 치맥아이스펍, 치맥시민참여이벤트, 치킨신메뉴 경연대회,
-              수제맥주 경연대회
-            </p>
+          <p>
+            2. 할인 정보
+            <br />- {discountInfo ?? '할인 정보 없음'}
+          </p>
 
-            <p>
-              3. 체험행사
-              <br />- 사전예약 식음존, 비즈니스라운지, 대프리카워터피아,
-              치맥더클럽, 놀러와요EGG섬, 치맥여행자의거리, 치맥포토존,
-              치맥아이스펍, 치맥게임존
-            </p>
-          </div>
+          <p>
+            3. 소요 시간
+            <br />- {spendTime ?? '소요 시간 정보 없음'}
+          </p>
         </div>
       </div>
 
