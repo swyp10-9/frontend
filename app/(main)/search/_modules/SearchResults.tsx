@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
 import { Icon } from '@iconify/react';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import type { FestivalSummaryResponse } from '@/apis/SWYP10BackendAPI.schemas';
@@ -197,20 +196,20 @@ export function SearchResults({
         ) : (
           results.map((festival, index) => (
             <div key={festival.id}>
-              <Link href={`/festival/${festival.id}`} className='block'>
-                <FestivalListView
-                  id={festival.id || 0}
-                  image={festival.thumbnail || ''}
-                  theme={festival.theme || ''}
-                  title={festival.title || ''}
-                  loc={festival.address || ''}
-                  start_date={festival.startDate || ''}
-                  end_date={festival.endDate || ''}
-                  is_marked={false}
-                  map_x={festival.map_x || ''}
-                  map_y={festival.map_y || ''}
-                />
-              </Link>
+              {/* <Link href={`/festival/${festival.id}`} className='block'>
+              </Link> */}
+              <FestivalListView
+                id={festival.id || 0}
+                image={festival.thumbnail || ''}
+                theme={festival.theme || ''}
+                title={festival.title || ''}
+                loc={festival.address || ''}
+                start_date={festival.startDate || ''}
+                end_date={festival.endDate || ''}
+                is_marked={false}
+                map_x={festival.map_x || ''}
+                map_y={festival.map_y || ''}
+              />
 
               {index < results.length - 1 && (
                 <div className='mt-5 h-px bg-[#f1f2f4]' />
