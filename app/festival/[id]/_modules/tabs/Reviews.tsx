@@ -168,7 +168,7 @@ export default function Reviews({ id }: ReviewsProps) {
             {[...(allReviews || [])].map((review, index) => (
               <div
                 key={`${review.id}-${index}`}
-                className='flex w-full gap-3 border-b border-gray-100 py-5'
+                className='flex w-full flex-col gap-3 border-b border-gray-100 py-5'
               >
                 <div className='flex items-center justify-between'>
                   <div className='flex items-center gap-2'>
@@ -179,7 +179,7 @@ export default function Reviews({ id }: ReviewsProps) {
                       width={20}
                       height={20}
                     />
-                    <p className='ui-text-sub-head-2 text-gray-400'>
+                    <p className='w-full ui-text-sub-head-2 whitespace-nowrap text-gray-400'>
                       {review?.nickname || ''}
                     </p>
                   </div>
