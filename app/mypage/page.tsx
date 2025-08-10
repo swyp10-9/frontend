@@ -49,33 +49,37 @@ export default async function MyPage({
   }
 
   let bookmarkList: FestivalSummaryResponse[] = [];
-  try {
-    const bookmarkListResponse = await getMyPageFestivals({
-      page: 0,
-      size: 10,
-      sort: 'createdAt,desc',
-      bookmarked: true,
-      // @ts-expect-error 기존 타입 오류
-      offset: 0,
-    }).then(r => r.data);
-    console.log('bookmarkListResponse::::', bookmarkListResponse);
-    bookmarkList = bookmarkListResponse?.content || [];
-  } catch (error) {
-    console.error('error::::', error);
+  if (initialTab === 'bookmark') {
+    try {
+      const bookmarkListResponse = await getMyPageFestivals({
+        page: 0,
+        size: 10,
+        sort: 'createdAt,desc',
+        bookmarked: true,
+        // @ts-expect-error 기존 타입 오류
+        offset: 0,
+      }).then(r => r.data);
+      console.log('bookmarkListResponse::::', bookmarkListResponse);
+      bookmarkList = bookmarkListResponse?.content || [];
+    } catch (error) {
+      console.error('error::::', error);
+    }
   }
 
   let reviewList: MyReviewResponse[] = [];
-  try {
-    const reviewListResponse = await getMyReviews({
-      page: 0,
-      // @ts-expect-error 기존 타입 오류
-      offset: 0,
-      size: 10,
-    }).then(r => r.data);
-    console.log('reviewListResponse::::', reviewListResponse);
-    reviewList = reviewListResponse?.content || [];
-  } catch (error) {
-    console.error('error:::', error);
+  if (initialTab === 'visited') {
+    try {
+      const reviewListResponse = await getMyReviews({
+        page: 0,
+        // @ts-expect-error 기존 타입 오류
+        offset: 0,
+        size: 10,
+      }).then(r => r.data);
+      console.log('reviewListResponse::::', reviewListResponse);
+      reviewList = reviewListResponse?.content || [];
+    } catch (error) {
+      console.error('error:::', error);
+    }
   }
 
   return (
