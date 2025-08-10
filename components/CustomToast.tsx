@@ -14,9 +14,12 @@ interface CustomToastProps {
 }
 
 export const showCustomToast = ({ message, type }: CustomToastProps) => {
+  const bgColor = type === 'success' ? 'bg-gray-600' : 'bg-[#ee0000]';
   toast.custom(t => {
     return (
-      <div className='flex w-[320px] items-center justify-between rounded-sm bg-gray-600 px-4 py-3 text-white'>
+      <div
+        className={`flex w-[320px] items-center justify-between rounded-sm px-4 py-3 text-white ${bgColor}`}
+      >
         <div className='flex items-center gap-2'>
           {type === 'success' ? (
             <Icon icon='lets-icons:check-round-fill' fontSize={20} />
@@ -27,6 +30,7 @@ export const showCustomToast = ({ message, type }: CustomToastProps) => {
         </div>
         <Icon
           icon='material-symbols:close-rounded'
+          className='cursor-pointer'
           fontSize={20}
           onClick={() => toast.dismiss(t)}
         />

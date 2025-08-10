@@ -25,6 +25,14 @@ interface FestivalListViewProps {
   id: number;
 }
 
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
+
 export default function FestivalListView(props: FestivalListViewProps) {
   const { image, theme, title, loc, start_date, end_date, is_marked, id } =
     props;
@@ -45,6 +53,14 @@ export default function FestivalListView(props: FestivalListViewProps) {
         setIsMarked(true);
       } catch (error) {
         console.error(error);
+        const apiError = error as ApiError;
+        const message: string =
+          apiError?.response?.data?.message ||
+          '알 수 없는 오류가 발생했습니다.';
+        showCustomToast({
+          message,
+          type: 'error',
+        });
       }
     } else {
       try {
@@ -57,6 +73,14 @@ export default function FestivalListView(props: FestivalListViewProps) {
         setIsMarked(false);
       } catch (error) {
         console.error(error);
+        const apiError = error as ApiError;
+        const message: string =
+          apiError?.response?.data?.message ||
+          '알 수 없는 오류가 발생했습니다.';
+        showCustomToast({
+          message,
+          type: 'error',
+        });
       }
     }
   }
