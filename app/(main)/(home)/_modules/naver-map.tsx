@@ -338,7 +338,7 @@ export default function NaverMap({
         markerElement.innerHTML = `
           <a href="/festival/${festival.id}">
             <div class="box-border flex h-[64px] w-[224px] items-center gap-2 rounded-lg bg-white py-2 pr-3 pl-2" style="box-shadow: 0 0 5px 0 rgba(0,0,0,0.18);">
-            <img src="${festival?.image}" alt="${festival?.title || ''}" width="48" height="48" class="aspect-square rounded-sm object-cover" />
+            <img src="${festival?.image || '/image/logo.png'}" onError="this.src='/image/logo.png'" alt="${festival?.title || ''}" width="48" height="48" class="aspect-square rounded-sm object-cover" />
             <div class="flex w-full flex-col justify-center gap-1">
               <div class="flex w-full items-center justify-between">
                 <div class="flex h-[22px] w-[54px] items-center justify-center rounded-sm" style="background-color: ${theme.bgColor}; color: ${theme.color};">
