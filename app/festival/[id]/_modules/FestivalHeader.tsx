@@ -10,6 +10,7 @@ interface FestivalHeaderProps {
   endDate: string;
   location: string;
   isBookmarked?: boolean;
+  onClickBookmark?: () => void;
 }
 
 export default function FestivalHeader({
@@ -20,6 +21,7 @@ export default function FestivalHeader({
   endDate,
   location,
   isBookmarked = false,
+  onClickBookmark,
 }: FestivalHeaderProps) {
   return (
     <div className='px-4 py-6'>
@@ -41,6 +43,7 @@ export default function FestivalHeader({
               isBookmarked ? 'text-yellow' : 'text-gray-300',
             )}
             fontSize={24}
+            onClick={onClickBookmark}
           />
           <Icon
             icon='lucide:share'
