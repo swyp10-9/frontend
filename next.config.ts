@@ -27,6 +27,7 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'chukjibeob.store',
       },
+      { protocol: 'http', hostname: 'img1.kakaocdn.net' },
     ],
   },
   // NOTE: SVGR 설정 - @see https://react-svgr.com/docs/next/
