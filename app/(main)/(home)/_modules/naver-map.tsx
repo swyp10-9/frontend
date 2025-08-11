@@ -29,6 +29,7 @@ export default function NaverMap({
   style = {},
   focusFestivalId,
   queryParams,
+  onMapInstanceReady,
 }: NaverMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<naver.maps.Map | null>(null);
@@ -135,6 +136,9 @@ export default function NaverMap({
     const map = new window.naver.maps.Map(mapRef.current, mapOptions);
     mapInstanceRef.current = map;
 
+    // 지도 인스턴스가 준비되면 부모 컴포넌트에 전달
+    onMapInstanceReady?.(map);
+
     // 이벤트 리스너 등록
     window.naver.maps.Event.addListener(map, 'bounds_changed', () => {
       handleBoundsChange(map, onBoundsChange, loadFestivalsInBounds);
@@ -178,6 +182,7 @@ export default function NaverMap({
     handleCenterChange,
     updateMarkers,
     queryParams,
+    onMapInstanceReady,
   ]);
 
   // 리사이즈 및 인터섹션 옵저버 설정

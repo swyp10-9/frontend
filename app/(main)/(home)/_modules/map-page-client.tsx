@@ -71,6 +71,8 @@ export default function MapPageClient({
 
   // debounce를 위한 ref
   const zoomDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  // 지도 인스턴스를 저장할 ref
+  const mapInstanceRef = useRef<naver.maps.Map | null>(null);
 
   // searchParams에서 현재 필터 값들을 동적으로 가져오기
   const currentQueryParams = useMemo(
@@ -82,6 +84,41 @@ export default function MapPageClient({
     }),
     [searchParams, initialParams],
   );
+
+  // 지도 인스턴스가 준비되면 저장
+  const handleMapInstanceReady = useCallback((mapInstance: naver.maps.Map) => {
+    mapInstanceRef.current = mapInstance;
+  }, []);
+
+  // 현재 위치로 지도 중심 이동
+  const moveToCurrentLocation = useCallback(async () => {
+    if (!mapInstanceRef.current) return;
+
+    try {
+      const position = await new Promise<GeolocationPosition>(
+        (resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 60000,
+          });
+        },
+      );
+
+      const { latitude, longitude } = position.coords;
+      const newCenter = new window.naver.maps.LatLng(latitude, longitude);
+
+      mapInstanceRef.current.setCenter(newCenter);
+      mapInstanceRef.current.setZoom(15); // 적절한 줌 레벨로 설정
+
+      console.log('지도 중심을 현재 위치로 이동:', {
+        lat: latitude,
+        lng: longitude,
+      });
+    } catch (error) {
+      console.error('현재 위치를 가져올 수 없습니다:', error);
+    }
+  }, []);
 
   // URL 쿼리에 zoom 상태 업데이트 (debounce 적용)
   const updateURLWithZoom = useCallback(
@@ -157,12 +194,14 @@ export default function MapPageClient({
           <FilterChip
             label='내 주변'
             is_selected={initialParams?.isNearBy === 'true'}
-            onClick={() => {
+            onClick={async () => {
               const params = new URLSearchParams(searchParams);
               if (initialParams?.isNearBy === 'true') {
                 params.delete('isNearBy');
               } else {
                 params.set('isNearBy', 'true');
+                // 내 주변 필터 활성화 시 현재 위치로 이동
+                await moveToCurrentLocation();
               }
               router.replace(`?${params.toString()}`);
             }}
@@ -202,6 +241,7 @@ export default function MapPageClient({
           onZoomChange={handleZoomChange}
           onMarkerClick={handleMarkerClick}
           queryParams={currentQueryParams}
+          onMapInstanceReady={handleMapInstanceReady}
         />
         <MapBottomFilter initialParams={currentQueryParams} />
       </Drawer>

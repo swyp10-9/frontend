@@ -49,6 +49,7 @@ export interface NaverMapProps {
   style?: React.CSSProperties;
   focusFestivalId?: number;
   queryParams?: MapQueryParams;
+  onMapInstanceReady?: (mapInstance: naver.maps.Map) => void;
 }
 
 export interface MapConfig {
