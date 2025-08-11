@@ -34,5 +34,12 @@ const themeList = [
     bgColor: '#ece3ff',
     image: '/image/theme/tradition_history.png',
   },
+  {
+    type: 'ALL',
+    label: '전체',
+    color: '#ffffff',
+    bgColor: '#000000',
+    image: '/image/theme/culture_art.png',
+  },
 ];
 export default themeList;

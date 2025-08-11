@@ -27,8 +27,7 @@ export const createFestivalMarker = (
 ): naver.maps.Marker | null => {
   if (!window.naver?.maps) return null;
 
-  const theme = themeList.find(t => t.type === festival.theme);
-  if (!theme) return null;
+  const theme = themeList.find(t => t.type === festival.theme) || themeList[5];
 
   const position = new window.naver.maps.LatLng(festival.map_y, festival.map_x);
 
