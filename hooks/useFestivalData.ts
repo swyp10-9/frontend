@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 import { getFestivalsForMap } from '@/apis/SWYP10BackendAPI';
 import type {
@@ -68,61 +68,63 @@ export const useFestivalData = (focusFestivalId?: number) => {
   const lastBoundsRef = useRef<MapBounds | null>(null);
   const lastQueryParamsRef = useRef<MapQueryParams | undefined>(null);
 
-  const loadFestivalsInBounds = useCallback(
-    async (bounds: MapBounds, queryParams?: MapQueryParams) => {
-      if (isLoadingRef.current) return;
+  const memoFestivals = useMemo(() => festivals, [festivals]);
 
-      isLoadingRef.current = true;
-      setIsLoadingFestivals(true);
+  const loadFestivalsInBounds = async (
+    bounds: MapBounds,
+    queryParams?: MapQueryParams,
+  ) => {
+    if (isLoadingRef.current) return;
 
-      try {
-        const response = await fetchFestivalsInBounds(bounds, queryParams);
+    isLoadingRef.current = true;
+    setIsLoadingFestivals(true);
 
-        const festivalsWithFocus =
-          typeof focusFestivalId === 'number'
-            ? response.festivals.map(f => ({
+    try {
+      const response = await fetchFestivalsInBounds(bounds, queryParams);
+
+      const festivalsWithFocus =
+        typeof focusFestivalId === 'number'
+          ? response.festivals.map(f => ({
               ...f,
               isDetailed: f.id === focusFestivalId,
             }))
-            : response.festivals;
+          : response.festivals;
 
-        setFestivals(festivalsWithFocus);
-        console.log('축제 데이터 로드:', response.festivals.length);
+      setFestivals(() => festivalsWithFocus);
+      console.log('축제 데이터 로드:', response.festivals.length);
 
-        // 마지막으로 로드한 bounds와 queryParams 저장
-        lastBoundsRef.current = bounds;
-        lastQueryParamsRef.current = queryParams;
-      } catch (error) {
-        console.error('축제 데이터 로드 실패:', error);
-      } finally {
-        setIsLoadingFestivals(false);
-        isLoadingRef.current = false;
-      }
-    },
-    [focusFestivalId],
-  );
+      // 마지막으로 로드한 bounds와 queryParams 저장
+      lastBoundsRef.current = bounds;
+      lastQueryParamsRef.current = queryParams;
+    } catch (error) {
+      console.error('축제 데이터 로드 실패:', error);
+    } finally {
+      setIsLoadingFestivals(false);
+      isLoadingRef.current = false;
+    }
+  };
 
   // queryParams가 변경되면 마지막 bounds로 데이터를 다시 로드
-  const reloadWithCurrentQueryParams = useCallback(() => {
+  const reloadWithCurrentQueryParams = () => {
     if (lastBoundsRef.current && lastQueryParamsRef.current) {
       loadFestivalsInBounds(lastBoundsRef.current, lastQueryParamsRef.current);
     }
-  }, [loadFestivalsInBounds]);
+  };
 
-  const updateFestivalFocus = useCallback((festivalId: number) => {
+  const updateFestivalFocus = (festivalId: number) => {
     setFestivals(prevFestivals =>
       prevFestivals.map(f => ({
         ...f,
         isDetailed: f.id === festivalId,
       })),
     );
-  }, []);
+  };
 
   return {
-    festivals,
+    festivals: memoFestivals,
     isLoadingFestivals,
     loadFestivalsInBounds,
-    updateFestivalFocus,
     reloadWithCurrentQueryParams,
+    updateFestivalFocus,
   };
 };

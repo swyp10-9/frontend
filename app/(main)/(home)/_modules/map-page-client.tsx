@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -68,6 +68,9 @@ export default function MapPageClient({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const params = new URLSearchParams(searchParams.toString());
+
+  console.log('params:::', initialParams, params.toString());
 
   // debounce를 위한 ref
   const zoomDebounceRef = useRef<NodeJS.Timeout | null>(null);
@@ -77,21 +80,43 @@ export default function MapPageClient({
   // searchParams에서 현재 필터 값들을 동적으로 가져오기
   const currentQueryParams = useMemo(
     () => ({
-      status: searchParams.get('status') || initialParams.status,
-      period: searchParams.get('period') || initialParams.period,
-      withWhom: searchParams.get('withWhom') || initialParams.withWhom,
-      theme: searchParams.get('theme') || initialParams.theme,
+      status: params.get('status') || initialParams.status,
+      period: params.get('period') || initialParams.period,
+      withWhom: params.get('withWhom') || initialParams.withWhom,
+      theme: params.get('theme') || initialParams.theme,
     }),
     [searchParams, initialParams],
   );
 
-  // 지도 인스턴스가 준비되면 저장
-  const handleMapInstanceReady = useCallback((mapInstance: naver.maps.Map) => {
-    mapInstanceRef.current = mapInstance;
-  }, []);
+  console.log('currentQueryParams:::', currentQueryParams);
 
-  // 현재 위치로 지도 중심 이동
-  const moveToCurrentLocation = useCallback(async () => {
+  // 함수들을 useRef로 안정화하여 무한루프 방지
+  const handleMapInstanceReadyRef = useRef<
+    (mapInstance: naver.maps.Map) => void
+  >(() => {
+    //
+  });
+  const moveToCurrentLocationRef = useRef<() => Promise<void>>(async () => {
+    //
+  });
+  const updateURLWithZoomRef = useRef<(zoom?: number) => void>(() => {
+    //
+  });
+  const handleZoomChangeRef = useRef<(zoom: number) => void>(() => {
+    //
+  });
+  const handleMarkerClickRef = useRef<
+    (festival: Festival, isDetailed: boolean) => void
+  >(() => {
+    //
+  });
+
+  // 함수들을 ref에 할당
+  handleMapInstanceReadyRef.current = (mapInstance: naver.maps.Map) => {
+    mapInstanceRef.current = mapInstance;
+  };
+
+  moveToCurrentLocationRef.current = async () => {
     if (!mapInstanceRef.current) return;
 
     try {
@@ -118,65 +143,51 @@ export default function MapPageClient({
     } catch (error) {
       console.error('현재 위치를 가져올 수 없습니다:', error);
     }
-  }, []);
+  };
 
-  // URL 쿼리에 zoom 상태 업데이트 (debounce 적용)
-  const updateURLWithZoom = useCallback(
-    (zoom?: number) => {
-      const params = new URLSearchParams(searchParams);
+  updateURLWithZoomRef.current = (zoom?: number) => {
+    const params = new URLSearchParams(searchParams);
 
-      if (zoom !== undefined) {
-        params.set('zoom', zoom.toString());
-      }
+    if (zoom !== undefined) {
+      params.set('zoom', zoom.toString());
+    }
 
-      // 기존 파라미터들 유지
-      if (currentQueryParams.status)
-        params.set('status', currentQueryParams.status);
-      if (currentQueryParams.period)
-        params.set('period', currentQueryParams.period);
-      if (currentQueryParams.withWhom)
-        params.set('withWhom', currentQueryParams.withWhom);
-      if (currentQueryParams.theme)
-        params.set('theme', currentQueryParams.theme);
-      if (initialParams.isNearBy)
-        params.set('isNearBy', initialParams.isNearBy);
+    // 기존 파라미터들 유지
+    if (currentQueryParams.status)
+      params.set('status', currentQueryParams.status);
+    if (currentQueryParams.period)
+      params.set('period', currentQueryParams.period);
+    if (currentQueryParams.withWhom)
+      params.set('withWhom', currentQueryParams.withWhom);
+    if (currentQueryParams.theme) params.set('theme', currentQueryParams.theme);
+    if (initialParams.isNearBy) params.set('isNearBy', initialParams.isNearBy);
 
-      router.replace(`?${params.toString()}`);
-    },
-    [searchParams, router, currentQueryParams, initialParams.isNearBy],
-  );
+    router.replace(`?${params.toString()}`);
+  };
 
-  // zoom 변경 시 debounce 적용
-  const handleZoomChange = useCallback(
-    (zoom: number) => {
-      console.log('zoom changed:::', zoom);
+  handleZoomChangeRef.current = (zoom: number) => {
+    console.log('zoom changed:::', zoom);
 
-      // 이전 타이머가 있다면 취소
-      if (zoomDebounceRef.current) {
-        clearTimeout(zoomDebounceRef.current);
-      }
+    // 이전 타이머가 있다면 취소
+    if (zoomDebounceRef.current) {
+      clearTimeout(zoomDebounceRef.current);
+    }
 
-      // 0.7초 후에 URL 업데이트
-      zoomDebounceRef.current = setTimeout(() => {
-        updateURLWithZoom(zoom);
-      }, 700);
-    },
-    [updateURLWithZoom],
-  );
+    // 0.7초 후에 URL 업데이트
+    zoomDebounceRef.current = setTimeout(() => {
+      updateURLWithZoomRef.current?.(zoom);
+    }, 700);
+  };
 
-  // 마커 클릭 핸들러
-  const handleMarkerClick = useCallback(
-    (festival: Festival, isDetailed: boolean) => {
-      if (isDetailed) {
-        // 상세 마커 클릭 시 축제 상세 페이지로 이동
-        router.push(`/festival/${festival.id}`);
-      } else {
-        // 작은 마커 클릭 시 상세 마커로 전환
-        console.log('마커 클릭:', festival);
-      }
-    },
-    [router],
-  );
+  handleMarkerClickRef.current = (festival: Festival, isDetailed: boolean) => {
+    if (isDetailed) {
+      // 상세 마커 클릭 시 축제 상세 페이지로 이동
+      router.push(`/festival/${festival.id}`);
+    } else {
+      // 작은 마커 클릭 시 상세 마커로 전환
+      console.log('마커 클릭:', festival);
+    }
+  };
 
   const initLat = initialParams?.mapY
     ? parseFloat(initialParams.mapY)
@@ -201,7 +212,7 @@ export default function MapPageClient({
               } else {
                 params.set('isNearBy', 'true');
                 // 내 주변 필터 활성화 시 현재 위치로 이동
-                await moveToCurrentLocation();
+                await moveToCurrentLocationRef.current?.();
               }
               router.replace(`?${params.toString()}`);
             }}
@@ -238,10 +249,10 @@ export default function MapPageClient({
           focusFestivalId={
             initialParams.focusId ? parseInt(initialParams.focusId) : undefined
           }
-          onZoomChange={handleZoomChange}
-          onMarkerClick={handleMarkerClick}
+          onZoomChange={handleZoomChangeRef.current}
+          onMarkerClick={handleMarkerClickRef.current}
           queryParams={currentQueryParams}
-          onMapInstanceReady={handleMapInstanceReady}
+          onMapInstanceReady={handleMapInstanceReadyRef.current}
         />
         <MapBottomFilter initialParams={currentQueryParams} />
       </Drawer>

@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useRef } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -11,7 +11,7 @@ export const useMapEvents = () => {
   const boundsChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const centerChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const getCenterFromURL = useCallback(() => {
+  const getCenterFromURL = () => {
     const lat = searchParams.get('lat');
     const lng = searchParams.get('lng');
 
@@ -23,146 +23,137 @@ export const useMapEvents = () => {
     if (isNaN(latNum) || isNaN(lngNum)) return null;
 
     return { lat: latNum, lng: lngNum };
-  }, [searchParams]);
+  };
 
-  const updateURLWithCenter = useCallback(
-    (lat: number, lng: number) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('lat', lat.toFixed(6));
-      params.set('lng', lng.toFixed(6));
+  const updateURLWithCenter = (
+    lat: number,
+    lng: number,
+    queryParams: MapQueryParams,
+  ) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('lat', lat.toFixed(6));
+    params.set('lng', lng.toFixed(6));
+    if (queryParams.status) {
+      params.set('status', queryParams.status);
+    }
+    if (queryParams.period) {
+      params.set('period', queryParams.period);
+    }
+    if (queryParams.withWhom) {
+      params.set('withWhom', queryParams.withWhom);
+    }
+    if (queryParams.theme) {
+      params.set('theme', queryParams.theme);
+    }
 
-      const newUrl = `${window.location.pathname}?${params.toString()}`;
-      router.replace(newUrl, { scroll: false });
-    },
-    [searchParams, router],
-  );
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    router.replace(newUrl, { scroll: false });
+  };
 
-  const handleResize = useCallback(
-    (
-      entries: ResizeObserverEntry[],
-      onSizeChange?: (size: { width: number; height: number }) => void,
-      mapInstance?: naver.maps.Map | null,
-    ) => {
-      entries.forEach(entry => {
-        onSizeChange?.(entry.contentRect);
+  const handleResize = (
+    entries: ResizeObserverEntry[],
+    onSizeChange?: (size: { width: number; height: number }) => void,
+    mapInstance?: naver.maps.Map | null,
+  ) => {
+    entries.forEach(entry => {
+      onSizeChange?.(entry.contentRect);
 
-        if (mapInstance) {
-          console.log('지도 크기 변화 감지:', entry.contentRect);
-          mapInstance.refresh();
-        }
-      });
-    },
-    [],
-  );
-
-  const handleIntersection = useCallback(
-    (
-      entries: IntersectionObserverEntry[],
-      onVisibilityChange?: (isVisible: boolean) => void,
-      mapInstance?: naver.maps.Map | null,
-    ) => {
-      entries.forEach(entry => {
-        const isVisible = entry.isIntersecting;
-        onVisibilityChange?.(isVisible);
-
-        if (mapInstance) {
-          if (isVisible) {
-            console.log('지도가 화면에 나타남');
-            setTimeout(() => {
-              mapInstance?.refresh();
-            }, MAP_CONFIG.refreshDelay);
-          } else {
-            console.log('지도가 화면에서 사라짐');
-          }
-        }
-      });
-    },
-    [],
-  );
-
-  const handleBoundsChange = useCallback(
-    (
-      mapInstance: naver.maps.Map,
-      onLoadFestivals?: (
-        bounds: MapBounds,
-        queryParams: MapQueryParams,
-      ) => void,
-    ) => {
-      if (!mapInstance) return;
-
-      const bounds = mapInstance.getBounds();
-      if (!bounds) return;
-
-      const boundsData = {
-        sw: { lat: bounds.getMin().y, lng: bounds.getMin().x },
-        ne: { lat: bounds.getMax().y, lng: bounds.getMax().x },
-        nw: { lat: bounds.getMax().y, lng: bounds.getMin().x },
-        se: { lat: bounds.getMin().y, lng: bounds.getMax().x },
-      };
-
-      const queryParams = {
-        status: searchParams.get('status') || undefined,
-        period: searchParams.get('period') || undefined,
-        withWhom: searchParams.get('withWhom') || undefined,
-        theme: searchParams.get('theme') || undefined,
-        isNearBy: searchParams.get('isNearBy') || undefined,
-      };
-
-      if (boundsChangeTimeoutRef.current) {
-        clearTimeout(boundsChangeTimeoutRef.current);
+      if (mapInstance) {
+        console.log('지도 크기 변화 감지:', entry.contentRect);
+        mapInstance.refresh();
       }
+    });
+  };
 
-      boundsChangeTimeoutRef.current = setTimeout(() => {
-        console.log('지도 경계 변화:', boundsData);
-        onLoadFestivals?.(boundsData, queryParams);
-      }, MAP_CONFIG.boundsChangeDelay);
-    },
-    [],
-  );
+  const handleIntersection = (
+    entries: IntersectionObserverEntry[],
+    onVisibilityChange?: (isVisible: boolean) => void,
+    mapInstance?: naver.maps.Map | null,
+  ) => {
+    entries.forEach(entry => {
+      const isVisible = entry.isIntersecting;
+      onVisibilityChange?.(isVisible);
 
-  const handleZoomChange = useCallback(
-    (
-      mapInstance: naver.maps.Map,
-      onZoomChange?: (zoom: number) => void,
-      onUpdateMarkers?: () => void,
-    ) => {
-      if (!mapInstance) return;
-
-      const zoom = mapInstance.getZoom();
-      console.log('줌 레벨 변화:', zoom);
-
-      onZoomChange?.(zoom);
-      onUpdateMarkers?.();
-    },
-    [],
-  );
-
-  const handleCenterChange = useCallback(
-    (mapInstance: naver.maps.Map) => {
-      if (!mapInstance) return;
-
-      const center = mapInstance.getCenter();
-      if (!center) return;
-
-      if (centerChangeTimeoutRef.current) {
-        clearTimeout(centerChangeTimeoutRef.current);
+      if (mapInstance) {
+        if (isVisible) {
+          console.log('지도가 화면에 나타남');
+          setTimeout(() => {
+            mapInstance?.refresh();
+          }, MAP_CONFIG.refreshDelay);
+        } else {
+          console.log('지도가 화면에서 사라짐');
+        }
       }
+    });
+  };
 
-      centerChangeTimeoutRef.current = setTimeout(() => {
-        updateURLWithCenter(center.y, center.x);
-      }, MAP_CONFIG.centerChangeDelay);
-    },
-    [updateURLWithCenter],
-  );
+  const handleBoundsChange = (
+    mapInstance: naver.maps.Map,
+    queryParams: MapQueryParams,
+    onLoadFestivals?: (bounds: MapBounds, queryParams: MapQueryParams) => void,
+  ) => {
+    if (!mapInstance) return;
 
-  const cleanup = useCallback(() => {
+    const bounds = mapInstance.getBounds();
+    if (!bounds) return;
+
+    const boundsData = {
+      sw: { lat: bounds.getMin().y, lng: bounds.getMin().x },
+      ne: { lat: bounds.getMax().y, lng: bounds.getMax().x },
+      nw: { lat: bounds.getMax().y, lng: bounds.getMin().x },
+      se: { lat: bounds.getMin().y, lng: bounds.getMax().x },
+    };
+
+    if (boundsChangeTimeoutRef.current) {
+      clearTimeout(boundsChangeTimeoutRef.current);
+    }
+
+    boundsChangeTimeoutRef.current = setTimeout(() => {
+      console.log('지도 경계 변화:', boundsData);
+      onLoadFestivals?.(boundsData, queryParams);
+    }, MAP_CONFIG.boundsChangeDelay);
+  };
+
+  const handleZoomChange = (
+    mapInstance: naver.maps.Map,
+    onZoomChange?: (zoom: number) => void,
+    onUpdateMarkers?: () => void,
+  ) => {
+    if (!mapInstance) return;
+
+    const zoom = mapInstance.getZoom();
+    console.log('줌 레벨 변화:', zoom);
+
+    onZoomChange?.(zoom);
+    onUpdateMarkers?.();
+  };
+
+  const handleCenterChange = (
+    mapInstance: naver.maps.Map,
+    queryParams: MapQueryParams,
+  ) => {
+    if (!mapInstance) return;
+
+    const center = mapInstance.getCenter();
+    if (!center) return;
+
+    if (centerChangeTimeoutRef.current) {
+      clearTimeout(centerChangeTimeoutRef.current);
+    }
+
+    centerChangeTimeoutRef.current = setTimeout(() => {
+      updateURLWithCenter(center.y, center.x, queryParams);
+    }, MAP_CONFIG.centerChangeDelay);
+  };
+
+  const cleanup = () => {
     if (boundsChangeTimeoutRef.current) {
       clearTimeout(boundsChangeTimeoutRef.current);
     }
     if (centerChangeTimeoutRef.current) {
       clearTimeout(centerChangeTimeoutRef.current);
     }
-  }, []);
+  };
 
   return {
     getCenterFromURL,
