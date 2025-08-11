@@ -38,7 +38,7 @@ const themeList = [
     type: 'ALL',
     label: '전체',
     color: '#ffffff',
-    bgColor: '#000000',
+    bgColor: '#5e6573',
     image: '/image/theme/culture_art.png',
   },
 ];
