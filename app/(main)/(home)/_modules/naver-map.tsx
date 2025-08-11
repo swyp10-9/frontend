@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useRouter, useSearchParams } from 'next/navigation';
+
 import { getFestivalsForMap } from '@/apis/SWYP10BackendAPI';
 import type {
   FestivalMapRequestPeriod,
@@ -139,6 +141,8 @@ export default function NaverMap({
   focusFestivalId,
   queryParams,
 }: NaverMapProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<naver.maps.Map | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
@@ -150,6 +154,37 @@ export default function NaverMap({
   const [festivals, setFestivals] = useState<Festival[]>([]);
   const [isLoadingFestivals, setIsLoadingFestivals] = useState(false);
   const boundsChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const centerChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // URL에서 중심 좌표를 읽어오는 함수
+  const getCenterFromURL = useCallback(() => {
+    const lat = searchParams.get('lat');
+    const lng = searchParams.get('lng');
+
+    if (lat && lng) {
+      const latNum = parseFloat(lat);
+      const lngNum = parseFloat(lng);
+
+      if (!isNaN(latNum) && !isNaN(lngNum)) {
+        return { lat: latNum, lng: lngNum };
+      }
+    }
+
+    return null;
+  }, [searchParams]);
+
+  // URL에 중심 좌표를 업데이트하는 함수
+  const updateURLWithCenter = useCallback(
+    (lat: number, lng: number) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('lat', lat.toFixed(6));
+      params.set('lng', lng.toFixed(6));
+
+      const newUrl = `${window.location.pathname}?${params.toString()}`;
+      router.replace(newUrl, { scroll: false });
+    },
+    [searchParams, router],
+  );
 
   const handleResize = useCallback(
     (entries: ResizeObserverEntry[]) => {
@@ -407,6 +442,23 @@ export default function NaverMap({
     });
   }, [festivals, createMarker]);
 
+  const handleCenterChange = useCallback(() => {
+    if (!mapInstanceRef.current) return;
+
+    const center = mapInstanceRef.current.getCenter();
+    if (!center) return;
+
+    // 이전 타이머가 있다면 취소
+    if (centerChangeTimeoutRef.current) {
+      clearTimeout(centerChangeTimeoutRef.current);
+    }
+
+    // 500ms 후에 URL 업데이트 (지도 이동이 끝난 후)
+    centerChangeTimeoutRef.current = setTimeout(() => {
+      updateURLWithCenter(center.y, center.x);
+    }, 500);
+  }, [updateURLWithCenter]);
+
   useEffect(() => {
     if (!mapRef.current) return;
 
@@ -427,10 +479,15 @@ export default function NaverMap({
     const initializeMap = async () => {
       if (!mapRef.current) return;
 
-      // 초기 중심: props.initialCenter 우선, 없으면 현재 위치
+      // 초기 중심: URL > props.initialCenter > 현재 위치 순서로 우선순위 결정
       let lat: number;
       let lng: number;
-      if (
+
+      const urlCenter = getCenterFromURL();
+      if (urlCenter) {
+        lat = urlCenter.lat;
+        lng = urlCenter.lng;
+      } else if (
         initialCenter &&
         typeof initialCenter.lat === 'number' &&
         typeof initialCenter.lng === 'number'
@@ -465,6 +522,11 @@ export default function NaverMap({
 
       window.naver.maps.Event.addListener(map, 'zoom_changed', () => {
         handleZoomChange();
+      });
+
+      // 지도 중심 변화 감지
+      window.naver.maps.Event.addListener(map, 'center_changed', () => {
+        handleCenterChange();
       });
 
       setTimeout(() => {
@@ -505,11 +567,18 @@ export default function NaverMap({
           mapInstanceRef.current,
           'zoom_changed',
         );
+        window.naver.maps.Event.clearListeners(
+          mapInstanceRef.current,
+          'center_changed',
+        );
       }
 
       // 타이머 정리
       if (boundsChangeTimeoutRef.current) {
         clearTimeout(boundsChangeTimeoutRef.current);
+      }
+      if (centerChangeTimeoutRef.current) {
+        clearTimeout(centerChangeTimeoutRef.current);
       }
 
       markersRef.current.forEach(marker => {
@@ -522,10 +591,12 @@ export default function NaverMap({
     handleIntersection,
     handleBoundsChange,
     handleZoomChange,
+    handleCenterChange,
     onMapReady,
     onMarkerClick,
     initialZoom,
     initialCenter,
+    getCenterFromURL,
   ]);
 
   useEffect(() => {
