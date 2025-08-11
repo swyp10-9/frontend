@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -10,24 +10,10 @@ import { periodList } from '@/constants/periodList';
 import { statusList } from '@/constants/statusList';
 import themeList from '@/constants/themeList';
 import { withWhomList } from '@/constants/withWhomList';
+import type { Festival } from '@/types/map';
 
 import MapBottomFilter from './map-bottom-filter';
-import NaverMap, { getCurrentLocation } from './naver-map';
-
-// 축제 데이터 타입 (naver-map.tsx와 동일)
-interface Festival {
-  id: number;
-  title: string;
-  theme: string;
-  image: string;
-  loc: string;
-  start_date: string;
-  end_date: string;
-  is_marked: boolean;
-  map_x: number;
-  map_y: number;
-  isDetailed?: boolean;
-}
+import NaverMap from './naver-map';
 
 // value를 label로 매핑하는 유틸리티 함수
 const getLabelFromValue = (key: string, value: string): string => {
@@ -134,53 +120,38 @@ export default function MapPageClient({
     [updateURLWithZoom],
   );
 
-  // cleanup 함수
-  useEffect(() => {
-    return () => {
-      if (zoomDebounceRef.current) {
-        clearTimeout(zoomDebounceRef.current);
+  // 마커 클릭 핸들러
+  const handleMarkerClick = useCallback(
+    (festival: Festival, isDetailed: boolean) => {
+      if (isDetailed) {
+        // 상세 마커 클릭 시 축제 상세 페이지로 이동
+        router.push(`/festival/${festival.id}`);
+      } else {
+        // 작은 마커 클릭 시 상세 마커로 전환
+        console.log('마커 클릭:', festival);
       }
-    };
-  }, []);
-
-  const handleMarkerClick = (festival: Festival, isDetailed: boolean) => {
-    console.log('부모 컴포넌트에서 마커 클릭 감지:', { festival, isDetailed });
-
-    if (isDetailed) {
-      // 상세 마커 클릭 시 축제 상세페이지로 이동
-      console.log('축제 상세페이지로 이동:', festival.id);
-      // 여기에 실제 라우터 이동 로직 추가
-      // router.push(`/festival/${festival.id}`);
-    } else {
-      // 작은 마커 클릭 시 추가 로직 (필요시)
-      console.log('작은 마커 클릭됨:', festival.title);
-    }
-  };
+    },
+    [router],
+  );
 
   return (
     <div className='relative h-full w-full'>
       <Drawer>
-        <div
-          className='absolute top-[15px] left-[15px] flex items-center gap-2'
-          style={{ zIndex: 99999999 }}
-        >
+        <div className='absolute top-4 left-4 z-10 flex items-center gap-2'>
           <FilterChip
             label='내 주변'
             is_selected={initialParams?.isNearBy === 'true'}
-            onClick={async () => {
+            onClick={() => {
               const params = new URLSearchParams(searchParams);
               if (initialParams?.isNearBy === 'true') {
-                params.delete(`isNearBy`);
-                router.replace(`?${params.toString()}`);
+                params.delete('isNearBy');
               } else {
-                const [nearLat, nearLng]: [number, number] =
-                  (await getCurrentLocation()) as [number, number];
                 params.set('isNearBy', 'true');
-                router.replace(`?${params.toString()}`);
               }
+              router.replace(`?${params.toString()}`);
             }}
           />
-          <DrawerTrigger>
+          <DrawerTrigger asChild>
             <FilterChip label='필터' is_selected={false} downChevron />
           </DrawerTrigger>
           {[
@@ -189,7 +160,7 @@ export default function MapPageClient({
             { key: 'period', value: initialParams.period },
             { key: 'status', value: initialParams.status },
           ]
-            .filter(param => param.value)
+            .filter(param => param.value && param.value !== 'ALL')
             .map(param => (
               <SelectedChip
                 key={param.key}
@@ -202,6 +173,7 @@ export default function MapPageClient({
               />
             ))}
         </div>
+
         <NaverMap
           // 상세 페이지에서 넘어온 좌표/줌/포커스 ID 반영
           initialCenter={
