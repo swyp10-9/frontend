@@ -127,6 +127,15 @@ export default function MapPageClient({
     [router],
   );
 
+  const initLat = initialParams?.mapY
+    ? parseFloat(initialParams.mapY)
+    : undefined;
+  const initLng = initialParams.mapX
+    ? parseFloat(initialParams.mapX)
+    : undefined;
+  const initCenter =
+    initLat && initLng ? { lat: initLat, lng: initLng } : undefined;
+
   return (
     <div className='relative h-full w-full'>
       <Drawer>
@@ -169,14 +178,7 @@ export default function MapPageClient({
 
         <NaverMap
           // 상세 페이지에서 넘어온 좌표/줌/포커스 ID 반영
-          initialCenter={
-            initialParams.mapY && initialParams.mapX
-              ? {
-                  lat: parseFloat(initialParams.mapY),
-                  lng: parseFloat(initialParams.mapX),
-                }
-              : undefined
-          }
+          initialCenter={initCenter}
           initialZoom={
             initialParams.zoom ? parseInt(initialParams.zoom) : undefined
           }
