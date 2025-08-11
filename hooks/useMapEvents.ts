@@ -3,7 +3,7 @@ import { useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { MAP_CONFIG } from '@/constants/mapConfig';
-import type { MapBounds } from '@/types/map';
+import type { MapBounds, MapQueryParams } from '@/types/map';
 
 export const useMapEvents = () => {
   const router = useRouter();
@@ -11,6 +11,7 @@ export const useMapEvents = () => {
   const boundsChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const centerChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // URL에서 중심 좌표 가져오기
   const getCenterFromURL = useCallback(() => {
     const lat = searchParams.get('lat');
     const lng = searchParams.get('lng');
@@ -25,11 +26,19 @@ export const useMapEvents = () => {
     return { lat: latNum, lng: lngNum };
   }, [searchParams]);
 
+  // URL에 중심 좌표 업데이트
   const updateURLWithCenter = useCallback(
-    (lat: number, lng: number) => {
+    (lat: number, lng: number, queryParams: MapQueryParams) => {
       const params = new URLSearchParams(searchParams.toString());
       params.set('lat', lat.toFixed(6));
       params.set('lng', lng.toFixed(6));
+
+      // 기존 쿼리 파라미터들 유지
+      Object.entries(queryParams).forEach(([key, value]) => {
+        if (value) {
+          params.set(key, value);
+        }
+      });
 
       const newUrl = `${window.location.pathname}?${params.toString()}`;
       router.replace(newUrl, { scroll: false });
@@ -37,6 +46,7 @@ export const useMapEvents = () => {
     [searchParams, router],
   );
 
+  // 리사이즈 이벤트 핸들러
   const handleResize = useCallback(
     (
       entries: ResizeObserverEntry[],
@@ -55,6 +65,7 @@ export const useMapEvents = () => {
     [],
   );
 
+  // 인터섹션 이벤트 핸들러
   const handleIntersection = useCallback(
     (
       entries: IntersectionObserverEntry[],
@@ -80,11 +91,15 @@ export const useMapEvents = () => {
     [],
   );
 
+  // 경계 변화 이벤트 핸들러
   const handleBoundsChange = useCallback(
     (
       mapInstance: naver.maps.Map,
-      onBoundsChange?: (bounds: MapBounds) => void,
-      onLoadFestivals?: (bounds: MapBounds) => void,
+      queryParams: MapQueryParams,
+      onLoadFestivals?: (
+        bounds: MapBounds,
+        queryParams: MapQueryParams,
+      ) => void,
     ) => {
       if (!mapInstance) return;
 
@@ -98,20 +113,21 @@ export const useMapEvents = () => {
         se: { lat: bounds.getMin().y, lng: bounds.getMax().x },
       };
 
-      console.log('지도 경계 변화:', boundsData);
-      onBoundsChange?.(boundsData);
-
+      // 이전 타이머가 있다면 취소
       if (boundsChangeTimeoutRef.current) {
         clearTimeout(boundsChangeTimeoutRef.current);
       }
 
+      // MAP_CONFIG.boundsChangeDelay 후에 축제 데이터 로드
       boundsChangeTimeoutRef.current = setTimeout(() => {
-        onLoadFestivals?.(boundsData);
+        console.log('지도 경계 변화:', boundsData);
+        onLoadFestivals?.(boundsData, queryParams);
       }, MAP_CONFIG.boundsChangeDelay);
     },
     [],
   );
 
+  // 줌 변화 이벤트 핸들러
   const handleZoomChange = useCallback(
     (
       mapInstance: naver.maps.Map,
@@ -129,24 +145,28 @@ export const useMapEvents = () => {
     [],
   );
 
+  // 중심 변화 이벤트 핸들러
   const handleCenterChange = useCallback(
-    (mapInstance: naver.maps.Map) => {
+    (mapInstance: naver.maps.Map, queryParams: MapQueryParams) => {
       if (!mapInstance) return;
 
       const center = mapInstance.getCenter();
       if (!center) return;
 
+      // 이전 타이머가 있다면 취소
       if (centerChangeTimeoutRef.current) {
         clearTimeout(centerChangeTimeoutRef.current);
       }
 
+      // MAP_CONFIG.centerChangeDelay 후에 URL 업데이트
       centerChangeTimeoutRef.current = setTimeout(() => {
-        updateURLWithCenter(center.y, center.x);
+        updateURLWithCenter(center.y, center.x, queryParams);
       }, MAP_CONFIG.centerChangeDelay);
     },
     [updateURLWithCenter],
   );
 
+  // 정리 함수
   const cleanup = useCallback(() => {
     if (boundsChangeTimeoutRef.current) {
       clearTimeout(boundsChangeTimeoutRef.current);

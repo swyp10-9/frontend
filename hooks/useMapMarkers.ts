@@ -6,6 +6,7 @@ import type { Festival } from '@/types/map';
 export const useMapMarkers = () => {
   const markersRef = useRef<naver.maps.Marker[]>([]);
 
+  // 마커 생성 함수
   const createMarkers = useCallback(
     (
       festivals: Festival[],
@@ -15,11 +16,10 @@ export const useMapMarkers = () => {
     ) => {
       if (!mapInstance) return;
 
+      console.log('createMarkers 호출✅✅✅✅:', festivals);
+
       // 기존 마커 제거
-      markersRef.current.forEach(marker => {
-        marker.setMap(null);
-      });
-      markersRef.current = [];
+      clearMarkers();
 
       // 새 마커 생성
       festivals.forEach(festival => {
@@ -37,6 +37,7 @@ export const useMapMarkers = () => {
     [],
   );
 
+  // 마커 제거 함수
   const clearMarkers = useCallback(() => {
     markersRef.current.forEach(marker => {
       marker.setMap(null);

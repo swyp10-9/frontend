@@ -42,13 +42,13 @@ export interface NaverMapProps {
   onSizeChange?: (size: { width: number; height: number }) => void;
   onVisibilityChange?: (isVisible: boolean) => void;
   onMapReady?: (map: naver.maps.Map) => void;
-  onBoundsChange?: (bounds: MapBounds) => void;
   onZoomChange?: (zoom: number) => void;
   onMarkerClick?: (festival: Festival, isDetailed: boolean) => void;
   className?: string;
   style?: React.CSSProperties;
   focusFestivalId?: number;
   queryParams?: MapQueryParams;
+  onMapInstanceReady?: (mapInstance: naver.maps.Map) => void;
 }
 
 export interface MapConfig {

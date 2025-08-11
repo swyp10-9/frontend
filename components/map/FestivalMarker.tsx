@@ -2,6 +2,7 @@ import { MARKER_SIZES, ZOOM_THRESHOLD } from '@/constants/mapConfig';
 import themeList from '@/constants/themeList';
 import type { Festival } from '@/types/map';
 
+// 마커 아이콘 SVG 정의
 const MARKER_ICONS = {
   unMarked: `
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -18,6 +19,66 @@ const MARKER_ICONS = {
       <path d="M6.34998 12.0167L10.3167 8.33339L6.34998 4.65006" stroke="#868C98" stroke-width="1.13333" stroke-linecap="round"/>
     </svg>
   `,
+} as const;
+
+// 상세 마커 HTML 생성
+const createDetailedMarkerHTML = (
+  festival: Festival,
+  theme: { bgColor: string; color: string; label: string },
+): string => {
+  const defaultImage = '/image/logo.png';
+  const imageSrc = festival?.image || defaultImage;
+
+  return `
+    <a href="/festival/${festival.id}">
+      <div class="box-border flex h-[64px] w-[224px] items-center gap-2 rounded-lg bg-white py-2 pr-3 pl-2" style="box-shadow: 0 0 5px 0 rgba(0,0,0,0.18);">
+        <img src="${imageSrc}" onError="this.src='${defaultImage}'" alt="${festival?.title || ''}" width="48" height="48" class="aspect-square rounded-sm object-cover" />
+        <div class="flex w-full flex-col justify-center gap-1">
+          <div class="flex w-full items-center justify-between">
+            <div class="flex h-[22px] w-[54px] items-center justify-center rounded-sm" style="background-color: ${theme.bgColor}; color: ${theme.color};">
+              <p class="ui-text-sub-head-3">${theme?.label || ''}</p>
+            </div>
+            ${festival?.is_marked ? MARKER_ICONS.marked : MARKER_ICONS.unMarked}
+          </div>
+          <div class="flex items-center">
+            <p class="line-clamp-1 ui-text-sub-head max-w-[135px]">${festival?.title || ''}</p>
+            ${MARKER_ICONS.rightChevron}
+          </div>
+        </div>
+      </div>
+    </a>
+  `;
+};
+
+// 간단한 마커 HTML 생성
+const createSimpleMarkerHTML = (theme: {
+  image: string;
+  label: string;
+}): string => {
+  return `
+    <div style="
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    ">
+      <img src="${theme.image}" alt="${theme.label}" style="
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      " />
+    </div>
+  `;
+};
+
+// 마커 스타일 생성
+const createMarkerStyles = (): string => {
+  return `
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  `;
 };
 
 export const createFestivalMarker = (
@@ -27,73 +88,45 @@ export const createFestivalMarker = (
 ): naver.maps.Marker | null => {
   if (!window.naver?.maps) return null;
 
+  // 테마 정보 찾기
   const theme = themeList.find(t => t.type === festival.theme) || themeList[5];
 
+  // 마커 위치 설정
   const position = new window.naver.maps.LatLng(festival.map_y, festival.map_x);
 
+  // 상세 마커 여부 결정
   const isDetailed = currentZoom >= ZOOM_THRESHOLD || festival.isDetailed;
+
+  // 마커 요소 생성
   const markerElement = document.createElement('div');
-
   markerElement.className = 'festival-marker';
-  markerElement.style.cssText = `
-    position: relative;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  `;
+  markerElement.style.cssText = createMarkerStyles();
 
+  // 마커 타입에 따른 HTML 설정
   if (isDetailed) {
-    markerElement.innerHTML = `
-      <a href="/festival/${festival.id}">
-        <div class="box-border flex h-[64px] w-[224px] items-center gap-2 rounded-lg bg-white py-2 pr-3 pl-2" style="box-shadow: 0 0 5px 0 rgba(0,0,0,0.18);">
-          <img src="${festival?.image || '/image/logo.png'}" onError="this.src='/image/logo.png'" alt="${festival?.title || ''}" width="48" height="48" class="aspect-square rounded-sm object-cover" />
-          <div class="flex w-full flex-col justify-center gap-1">
-            <div class="flex w-full items-center justify-between">
-              <div class="flex h-[22px] w-[54px] items-center justify-center rounded-sm" style="background-color: ${theme.bgColor}; color: ${theme.color};">
-                <p class="ui-text-sub-head-3">${theme?.label || ''}</p>
-              </div>
-              ${festival?.is_marked ? MARKER_ICONS.marked : MARKER_ICONS.unMarked}
-            </div>
-            <div class="flex items-center">
-              <p class="line-clamp-1 ui-text-sub-head max-w-[135px]">${festival?.title || ''}</p>
-              ${MARKER_ICONS.rightChevron}
-            </div>
-          </div>
-        </div>
-      </a>
-    `;
+    markerElement.innerHTML = createDetailedMarkerHTML(festival, theme);
   } else {
-    markerElement.innerHTML = `
-      <div style="
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        overflow: hidden;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      ">
-        <img src="${theme.image}" alt="${theme.label}" style="
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        " />
-      </div>
-    `;
+    markerElement.innerHTML = createSimpleMarkerHTML(theme);
   }
 
+  // 마커 앵커 포인트 설정
+  const anchorX = isDetailed
+    ? MARKER_SIZES.detailed.anchorX
+    : MARKER_SIZES.simple.anchorX;
+  const anchorY = isDetailed
+    ? MARKER_SIZES.detailed.anchorY
+    : MARKER_SIZES.simple.anchorY;
+
+  // 네이버 지도 마커 생성
   const marker = new window.naver.maps.Marker({
     position,
     icon: {
       content: markerElement,
-      anchor: new window.naver.maps.Point(
-        isDetailed
-          ? MARKER_SIZES.detailed.anchorX
-          : MARKER_SIZES.simple.anchorX,
-        isDetailed
-          ? MARKER_SIZES.detailed.anchorY
-          : MARKER_SIZES.simple.anchorY,
-      ),
+      anchor: new window.naver.maps.Point(anchorX, anchorY),
     },
   });
 
+  // 클릭 이벤트 리스너 추가
   window.naver.maps.Event.addListener(marker, 'click', () => {
     onClick(festival, isDetailed || false);
   });

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { getFestivalsForMap } from '@/apis/SWYP10BackendAPI';
 import type {
@@ -6,6 +6,7 @@ import type {
   FestivalMapRequestStatus,
   FestivalMapRequestTheme,
   FestivalMapRequestWithWhom,
+  FestivalSummaryResponse,
 } from '@/apis/SWYP10BackendAPI.schemas';
 import type {
   Festival,
@@ -14,6 +15,23 @@ import type {
   MapQueryParams,
 } from '@/types/map';
 
+// 축제 데이터 변환 함수
+const transformFestivalData = (
+  festival: FestivalSummaryResponse,
+): Festival => ({
+  id: festival.id || 0,
+  title: festival.title || '',
+  theme: festival.theme || '',
+  image: festival.thumbnail || '',
+  loc: festival.address || '',
+  start_date: festival.startDate || '',
+  end_date: festival.endDate || '',
+  is_marked: festival.bookmarked || false,
+  map_x: Number(festival.map_x || 0),
+  map_y: Number(festival.map_y || 0),
+});
+
+// 경계 내 축제 데이터 가져오기
 const fetchFestivalsInBounds = async (
   bounds: MapBounds,
   queryParams?: MapQueryParams,
@@ -34,19 +52,7 @@ const fetchFestivalsInBounds = async (
     });
 
     const content = response?.data.content || [];
-    // @ts-expect-error 잘못된 타입 사용
-    const festivals: Festival[] = [...(content || [])].map(festival => ({
-      id: festival.id,
-      title: festival.title,
-      theme: festival.theme,
-      image: festival.thumbnail,
-      loc: festival.address,
-      start_date: festival.startDate,
-      end_date: festival.endDate,
-      is_marked: festival.bookmarked,
-      map_x: festival.map_x,
-      map_y: festival.map_y,
-    }));
+    const festivals: Festival[] = content.map(transformFestivalData);
 
     return {
       festivals,
@@ -64,8 +70,15 @@ const fetchFestivalsInBounds = async (
 export const useFestivalData = (focusFestivalId?: number) => {
   const [festivals, setFestivals] = useState<Festival[]>([]);
   const [isLoadingFestivals, setIsLoadingFestivals] = useState(false);
-  const isLoadingRef = useRef(false);
 
+  const isLoadingRef = useRef(false);
+  const lastBoundsRef = useRef<MapBounds | null>(null);
+  const lastQueryParamsRef = useRef<MapQueryParams | undefined>(null);
+
+  // 메모이제이션된 축제 데이터
+  const memoFestivals = useMemo(() => festivals, [festivals]);
+
+  // 경계 내 축제 데이터 로드
   const loadFestivalsInBounds = useCallback(
     async (bounds: MapBounds, queryParams?: MapQueryParams) => {
       if (isLoadingRef.current) return;
@@ -86,6 +99,10 @@ export const useFestivalData = (focusFestivalId?: number) => {
 
         setFestivals(festivalsWithFocus);
         console.log('축제 데이터 로드:', response.festivals.length);
+
+        // 마지막으로 로드한 bounds와 queryParams 저장
+        lastBoundsRef.current = bounds;
+        lastQueryParamsRef.current = queryParams;
       } catch (error) {
         console.error('축제 데이터 로드 실패:', error);
       } finally {
@@ -96,6 +113,14 @@ export const useFestivalData = (focusFestivalId?: number) => {
     [focusFestivalId],
   );
 
+  // 현재 쿼리 파라미터로 데이터 다시 로드
+  const reloadWithCurrentQueryParams = useCallback(() => {
+    if (lastBoundsRef.current && lastQueryParamsRef.current) {
+      loadFestivalsInBounds(lastBoundsRef.current, lastQueryParamsRef.current);
+    }
+  }, [loadFestivalsInBounds]);
+
+  // 축제 포커스 업데이트
   const updateFestivalFocus = useCallback((festivalId: number) => {
     setFestivals(prevFestivals =>
       prevFestivals.map(f => ({
@@ -106,9 +131,10 @@ export const useFestivalData = (focusFestivalId?: number) => {
   }, []);
 
   return {
-    festivals,
+    festivals: memoFestivals,
     isLoadingFestivals,
     loadFestivalsInBounds,
+    reloadWithCurrentQueryParams,
     updateFestivalFocus,
   };
 };
