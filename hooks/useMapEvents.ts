@@ -3,7 +3,7 @@ import { useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { MAP_CONFIG } from '@/constants/mapConfig';
-import type { MapBounds } from '@/types/map';
+import type { MapBounds, MapQueryParams } from '@/types/map';
 
 export const useMapEvents = () => {
   const router = useRouter();
@@ -83,7 +83,10 @@ export const useMapEvents = () => {
   const handleBoundsChange = useCallback(
     (
       mapInstance: naver.maps.Map,
-      onLoadFestivals?: (bounds: MapBounds) => void,
+      onLoadFestivals?: (
+        bounds: MapBounds,
+        queryParams: MapQueryParams,
+      ) => void,
     ) => {
       if (!mapInstance) return;
 
@@ -97,14 +100,21 @@ export const useMapEvents = () => {
         se: { lat: bounds.getMin().y, lng: bounds.getMax().x },
       };
 
-      console.log('지도 경계 변화:', boundsData);
+      const queryParams = {
+        status: searchParams.get('status') || undefined,
+        period: searchParams.get('period') || undefined,
+        withWhom: searchParams.get('withWhom') || undefined,
+        theme: searchParams.get('theme') || undefined,
+        isNearBy: searchParams.get('isNearBy') || undefined,
+      };
 
       if (boundsChangeTimeoutRef.current) {
         clearTimeout(boundsChangeTimeoutRef.current);
       }
 
       boundsChangeTimeoutRef.current = setTimeout(() => {
-        onLoadFestivals?.(boundsData);
+        console.log('지도 경계 변화:', boundsData);
+        onLoadFestivals?.(boundsData, queryParams);
       }, MAP_CONFIG.boundsChangeDelay);
     },
     [],
