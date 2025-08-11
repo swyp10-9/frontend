@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -15,40 +15,46 @@ import type { Festival } from '@/types/map';
 import MapBottomFilter from './map-bottom-filter';
 import NaverMap from './naver-map';
 
+// 상수 정의
+const ZOOM_DEBOUNCE_DELAY = 700;
+const CURRENT_LOCATION_ZOOM = 15;
+
 // value를 label로 매핑하는 유틸리티 함수
 const getLabelFromValue = (key: string, value: string): string => {
-  switch (key) {
-    case 'theme': {
-      const themeItem = themeList.find(
-        (item: { type: string; label: string }) => item.type === value,
-      );
+  const labelMaps = {
+    theme: themeList,
+    withWhom: withWhomList,
+    period: periodList,
+    status: statusList,
+  };
 
-      return themeItem?.label || value;
-    }
-    case 'withWhom': {
-      const withWhomItem = withWhomList.find(
-        (item: { type: string; label: string }) => item.type === value,
-      );
+  const list = labelMaps[key as keyof typeof labelMaps];
+  if (!list) return value;
 
-      return withWhomItem?.label || value;
-    }
-    case 'period': {
-      const periodItem = periodList.find(
-        (item: { type: string; label: string }) => item.type === value,
-      );
+  const item = list.find(
+    (item: { type: string; label: string }) => item.type === value,
+  );
 
-      return periodItem?.label || value;
-    }
-    case 'status': {
-      const statusItem = statusList.find(
-        (item: { type: string; label: string }) => item.type === value,
-      );
+  return item?.label || value;
+};
 
-      return statusItem?.label || value;
+// URL 파라미터 업데이트 유틸리티
+const updateURLParams = (
+  searchParams: URLSearchParams,
+  updates: Record<string, string | undefined>,
+  router: ReturnType<typeof useRouter>,
+) => {
+  const params = new URLSearchParams(searchParams.toString());
+
+  Object.entries(updates).forEach(([key, value]) => {
+    if (value !== undefined) {
+      params.set(key, value);
+    } else {
+      params.delete(key);
     }
-    default:
-      return value;
-  }
+  });
+
+  router.replace(`?${params.toString()}`);
 };
 
 export default function MapPageClient({
@@ -70,8 +76,6 @@ export default function MapPageClient({
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
 
-  console.log('params:::', initialParams, params.toString());
-
   // debounce를 위한 ref
   const zoomDebounceRef = useRef<NodeJS.Timeout | null>(null);
   // 지도 인스턴스를 저장할 ref
@@ -88,35 +92,8 @@ export default function MapPageClient({
     [searchParams, initialParams],
   );
 
-  console.log('currentQueryParams:::', currentQueryParams);
-
-  // 함수들을 useRef로 안정화하여 무한루프 방지
-  const handleMapInstanceReadyRef = useRef<
-    (mapInstance: naver.maps.Map) => void
-  >(() => {
-    //
-  });
-  const moveToCurrentLocationRef = useRef<() => Promise<void>>(async () => {
-    //
-  });
-  const updateURLWithZoomRef = useRef<(zoom?: number) => void>(() => {
-    //
-  });
-  const handleZoomChangeRef = useRef<(zoom: number) => void>(() => {
-    //
-  });
-  const handleMarkerClickRef = useRef<
-    (festival: Festival, isDetailed: boolean) => void
-  >(() => {
-    //
-  });
-
-  // 함수들을 ref에 할당
-  handleMapInstanceReadyRef.current = (mapInstance: naver.maps.Map) => {
-    mapInstanceRef.current = mapInstance;
-  };
-
-  moveToCurrentLocationRef.current = async () => {
+  // 현재 위치로 이동하는 함수
+  const moveToCurrentLocation = useCallback(async () => {
     if (!mapInstanceRef.current) return;
 
     try {
@@ -134,7 +111,7 @@ export default function MapPageClient({
       const newCenter = new window.naver.maps.LatLng(latitude, longitude);
 
       mapInstanceRef.current.setCenter(newCenter);
-      mapInstanceRef.current.setZoom(15); // 적절한 줌 레벨로 설정
+      mapInstanceRef.current.setZoom(CURRENT_LOCATION_ZOOM);
 
       console.log('지도 중심을 현재 위치로 이동:', {
         lat: latitude,
@@ -143,60 +120,87 @@ export default function MapPageClient({
     } catch (error) {
       console.error('현재 위치를 가져올 수 없습니다:', error);
     }
-  };
+  }, []);
 
-  updateURLWithZoomRef.current = (zoom?: number) => {
-    const params = new URLSearchParams(searchParams);
+  // 줌 변경 핸들러
+  const handleZoomChange = useCallback(
+    (zoom: number) => {
+      console.log('zoom changed:::', zoom);
 
-    if (zoom !== undefined) {
-      params.set('zoom', zoom.toString());
-    }
+      // 이전 타이머가 있다면 취소
+      if (zoomDebounceRef.current) {
+        clearTimeout(zoomDebounceRef.current);
+      }
 
-    // 기존 파라미터들 유지
-    if (currentQueryParams.status)
-      params.set('status', currentQueryParams.status);
-    if (currentQueryParams.period)
-      params.set('period', currentQueryParams.period);
-    if (currentQueryParams.withWhom)
-      params.set('withWhom', currentQueryParams.withWhom);
-    if (currentQueryParams.theme) params.set('theme', currentQueryParams.theme);
-    if (initialParams.isNearBy) params.set('isNearBy', initialParams.isNearBy);
+      // ZOOM_DEBOUNCE_DELAY 후에 URL 업데이트
+      zoomDebounceRef.current = setTimeout(() => {
+        updateURLParams(searchParams, { zoom: zoom.toString() }, router);
+      }, ZOOM_DEBOUNCE_DELAY);
+    },
+    [searchParams, router],
+  );
 
-    router.replace(`?${params.toString()}`);
-  };
+  // 마커 클릭 핸들러
+  const handleMarkerClick = useCallback(
+    (festival: Festival, isDetailed: boolean) => {
+      if (isDetailed) {
+        // 상세 마커 클릭 시 축제 상세 페이지로 이동
+        router.push(`/festival/${festival.id}`);
+      } else {
+        // 작은 마커 클릭 시 상세 마커로 전환
+        console.log('마커 클릭:', festival);
+      }
+    },
+    [router],
+  );
 
-  handleZoomChangeRef.current = (zoom: number) => {
-    console.log('zoom changed:::', zoom);
+  // 지도 인스턴스 준비 핸들러
+  const handleMapInstanceReady = useCallback((mapInstance: naver.maps.Map) => {
+    mapInstanceRef.current = mapInstance;
+  }, []);
 
-    // 이전 타이머가 있다면 취소
-    if (zoomDebounceRef.current) {
-      clearTimeout(zoomDebounceRef.current);
-    }
+  // 내 주변 필터 토글 핸들러
+  const handleNearByToggle = useCallback(async () => {
+    const isCurrentlyNearBy = initialParams?.isNearBy === 'true';
 
-    // 0.7초 후에 URL 업데이트
-    zoomDebounceRef.current = setTimeout(() => {
-      updateURLWithZoomRef.current?.(zoom);
-    }, 700);
-  };
-
-  handleMarkerClickRef.current = (festival: Festival, isDetailed: boolean) => {
-    if (isDetailed) {
-      // 상세 마커 클릭 시 축제 상세 페이지로 이동
-      router.push(`/festival/${festival.id}`);
+    if (isCurrentlyNearBy) {
+      updateURLParams(searchParams, { isNearBy: undefined }, router);
     } else {
-      // 작은 마커 클릭 시 상세 마커로 전환
-      console.log('마커 클릭:', festival);
+      updateURLParams(searchParams, { isNearBy: 'true' }, router);
+      // 내 주변 필터 활성화 시 현재 위치로 이동
+      await moveToCurrentLocation();
     }
-  };
+  }, [initialParams?.isNearBy, searchParams, router, moveToCurrentLocation]);
 
-  const initLat = initialParams?.mapY
-    ? parseFloat(initialParams.mapY)
-    : undefined;
-  const initLng = initialParams.mapX
-    ? parseFloat(initialParams.mapX)
-    : undefined;
-  const initCenter =
-    initLat && initLng ? { lat: initLat, lng: initLng } : undefined;
+  // 필터 제거 핸들러
+  const handleFilterRemove = useCallback(
+    (key: string) => {
+      updateURLParams(searchParams, { [key]: undefined }, router);
+    },
+    [searchParams, router],
+  );
+
+  // 초기 좌표 계산
+  const initCenter = useMemo(() => {
+    const initLat = initialParams?.mapY
+      ? parseFloat(initialParams.mapY)
+      : undefined;
+    const initLng = initialParams?.mapX
+      ? parseFloat(initialParams.mapX)
+      : undefined;
+
+    return initLat && initLng ? { lat: initLat, lng: initLng } : undefined;
+  }, [initialParams?.mapX, initialParams?.mapY]);
+
+  // 선택된 필터들 렌더링
+  const selectedFilters = useMemo(() => {
+    return [
+      { key: 'theme', value: currentQueryParams.theme },
+      { key: 'withWhom', value: currentQueryParams.withWhom },
+      { key: 'period', value: currentQueryParams.period },
+      { key: 'status', value: currentQueryParams.status },
+    ].filter(param => param.value && param.value !== 'ALL');
+  }, [currentQueryParams]);
 
   return (
     <div className='relative h-full w-full'>
@@ -205,39 +209,19 @@ export default function MapPageClient({
           <FilterChip
             label='내 주변'
             is_selected={initialParams?.isNearBy === 'true'}
-            onClick={async () => {
-              const params = new URLSearchParams(searchParams);
-              if (initialParams?.isNearBy === 'true') {
-                params.delete('isNearBy');
-              } else {
-                params.set('isNearBy', 'true');
-                // 내 주변 필터 활성화 시 현재 위치로 이동
-                await moveToCurrentLocationRef.current?.();
-              }
-              router.replace(`?${params.toString()}`);
-            }}
+            onClick={handleNearByToggle}
           />
           <DrawerTrigger asChild>
             <FilterChip label='필터' is_selected={false} downChevron />
           </DrawerTrigger>
-          {[
-            { key: 'theme', value: currentQueryParams.theme },
-            { key: 'withWhom', value: currentQueryParams.withWhom },
-            { key: 'period', value: currentQueryParams.period },
-            { key: 'status', value: currentQueryParams.status },
-          ]
-            .filter(param => param.value && param.value !== 'ALL')
-            .map(param => (
-              <SelectedChip
-                key={param.key}
-                label={getLabelFromValue(param.key, param.value)}
-                onClick={() => {
-                  const params = new URLSearchParams(searchParams);
-                  params.delete(param.key);
-                  router.replace(`?${params.toString()}`);
-                }}
-              />
-            ))}
+
+          {selectedFilters.map(param => (
+            <SelectedChip
+              key={param.key}
+              label={getLabelFromValue(param.key, param.value)}
+              onClick={() => handleFilterRemove(param.key)}
+            />
+          ))}
         </div>
 
         <NaverMap
@@ -249,10 +233,10 @@ export default function MapPageClient({
           focusFestivalId={
             initialParams.focusId ? parseInt(initialParams.focusId) : undefined
           }
-          onZoomChange={handleZoomChangeRef.current}
-          onMarkerClick={handleMarkerClickRef.current}
+          onZoomChange={handleZoomChange}
+          onMarkerClick={handleMarkerClick}
           queryParams={currentQueryParams}
-          onMapInstanceReady={handleMapInstanceReadyRef.current}
+          onMapInstanceReady={handleMapInstanceReady}
         />
         <MapBottomFilter initialParams={currentQueryParams} />
       </Drawer>

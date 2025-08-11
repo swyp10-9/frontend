@@ -1,13 +1,18 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { MAP_CONFIG } from '@/constants/mapConfig';
 import { useFestivalData } from '@/hooks/useFestivalData';
 import { useMapEvents } from '@/hooks/useMapEvents';
 import { useMapMarkers } from '@/hooks/useMapMarkers';
 import { useNaverMapScript } from '@/hooks/useNaverMapScript';
-import type { Festival, NaverMapProps } from '@/types/map';
+import type {
+  Festival,
+  MapBounds,
+  MapQueryParams,
+  NaverMapProps,
+} from '@/types/map';
 import { getCurrentLocation } from '@/utils/mapUtils';
 
 declare global {
@@ -49,50 +54,50 @@ export default function NaverMap({
     handleResize,
     handleIntersection,
     handleBoundsChange,
-    handleZoomChange,
+    handleZoomChange: handleZoomChangeEvent,
     handleCenterChange,
     cleanup,
   } = useMapEvents();
+
   const { createMarkers, clearMarkers } = useMapMarkers();
   const { loadScript } = useNaverMapScript();
 
-  // 함수들을 useRef로 안정화하여 무한루프 방지
-  const handleMarkerClickRef = useRef<
-    (festival: Festival, isDetailed: boolean) => void
-  >(() => {
-    //
-  });
-  const updateMarkersRef = useRef<() => void>(() => {
-    //
-  });
-  const loadFestivalsInBoundsRef = useRef<typeof loadFestivalsInBounds>(() =>
-    Promise.resolve(),
+  // 마커 클릭 핸들러
+  const handleMarkerClick = useCallback(
+    (festival: Festival, isDetailed: boolean) => {
+      if (isDetailed) {
+        console.log('상세 마커 클릭 - 축제 상세페이지로 이동:', festival);
+      } else {
+        console.log('작은 마커 클릭 - 상세 마커로 전환:', festival);
+        updateFestivalFocus(festival.id);
+      }
+
+      onMarkerClick?.(festival, isDetailed);
+    },
+    [onMarkerClick, updateFestivalFocus],
   );
 
-  // 함수들을 ref에 할당
-  handleMarkerClickRef.current = (festival: Festival, isDetailed: boolean) => {
-    if (isDetailed) {
-      console.log('상세 마커 클릭 - 축제 상세페이지로 이동:', festival);
-    } else {
-      console.log('작은 마커 클릭 - 상세 마커로 전환:', festival);
-      updateFestivalFocus(festival.id);
-    }
-
-    onMarkerClick?.(festival, isDetailed);
-  };
-
-  updateMarkersRef.current = () => {
+  // 마커 업데이트 함수
+  const updateMarkers = useCallback(() => {
     if (mapInstanceRef.current) {
       createMarkers(
         memoFestivals,
         currentZoom,
         mapInstanceRef.current,
-        handleMarkerClickRef.current!,
+        handleMarkerClick,
       );
     }
-  };
+  }, [memoFestivals, currentZoom, createMarkers, handleMarkerClick]);
 
-  loadFestivalsInBoundsRef.current = loadFestivalsInBounds;
+  // 축제 데이터 로드 함수
+  const loadFestivalsInBoundsCallback = useCallback(
+    async (bounds: MapBounds, params: MapQueryParams) => {
+      if (mapInstanceRef.current) {
+        await loadFestivalsInBounds(bounds, params);
+      }
+    },
+    [loadFestivalsInBounds],
+  );
 
   // queryParams 변경 시 현재 bounds로 데이터 다시 로드
   useEffect(() => {
@@ -105,13 +110,13 @@ export default function NaverMap({
           nw: { lat: bounds.getMax().y, lng: bounds.getMin().x },
           se: { lat: bounds.getMin().y, lng: bounds.getMax().x },
         };
-        loadFestivalsInBoundsRef.current?.(boundsData, queryParams);
+        loadFestivalsInBoundsCallback(boundsData, queryParams);
       }
     }
-  }, [queryParams]); // loadFestivalsInBounds 제거
+  }, [queryParams, loadFestivalsInBoundsCallback]);
 
   // 지도 초기화
-  const initializeMap = async () => {
+  const initializeMap = useCallback(async () => {
     if (!mapRef.current || isInitializedRef.current) return;
 
     isInitializedRef.current = true;
@@ -153,7 +158,7 @@ export default function NaverMap({
     onMapInstanceReady?.(map);
 
     // 이벤트 리스너 등록
-    window.naver.maps.Event.addListener(map, 'bounds_changed', () => {
+    const boundsChangedListener = () => {
       const searchParams = new URLSearchParams(window.location.search);
       const params = new URLSearchParams(searchParams.toString());
       const queryParams = {
@@ -163,16 +168,16 @@ export default function NaverMap({
         theme: params.get('theme') || undefined,
         isNearBy: params.get('isNearBy') || undefined,
       };
-      handleBoundsChange(map, queryParams, loadFestivalsInBoundsRef.current);
-    });
+      handleBoundsChange(map, queryParams, loadFestivalsInBoundsCallback);
+    };
 
-    window.naver.maps.Event.addListener(map, 'zoom_changed', () => {
+    const zoomChangedListener = () => {
       const zoom = map.getZoom();
       setCurrentZoom(zoom);
-      handleZoomChange(map, onZoomChange, updateMarkersRef.current);
-    });
+      handleZoomChangeEvent(map, onZoomChange, updateMarkers);
+    };
 
-    window.naver.maps.Event.addListener(map, 'center_changed', () => {
+    const centerChangedListener = () => {
       const searchParams = new URLSearchParams(window.location.search);
       const params = new URLSearchParams(searchParams.toString());
       const queryParams = {
@@ -183,7 +188,23 @@ export default function NaverMap({
         isNearBy: params.get('isNearBy') || undefined,
       };
       handleCenterChange(map, queryParams);
-    });
+    };
+
+    window.naver.maps.Event.addListener(
+      map,
+      'bounds_changed',
+      boundsChangedListener,
+    );
+    window.naver.maps.Event.addListener(
+      map,
+      'zoom_changed',
+      zoomChangedListener,
+    );
+    window.naver.maps.Event.addListener(
+      map,
+      'center_changed',
+      centerChangedListener,
+    );
 
     // 초기 축제 데이터 로드
     setTimeout(() => {
@@ -195,26 +216,45 @@ export default function NaverMap({
           nw: { lat: bounds.getMax().y, lng: bounds.getMin().x },
           se: { lat: bounds.getMin().y, lng: bounds.getMax().x },
         };
-        loadFestivalsInBoundsRef.current?.(boundsData, queryParams);
+        loadFestivalsInBoundsCallback(boundsData, queryParams || {});
       }
     }, MAP_CONFIG.refreshDelay);
 
     onMapReady?.(map);
-  };
+  }, [
+    getCenterFromURL,
+    initialCenter,
+    initialZoom,
+    onMapInstanceReady,
+    onMapReady,
+    queryParams,
+    handleBoundsChange,
+    handleZoomChangeEvent,
+    handleCenterChange,
+    loadFestivalsInBounds,
+    onZoomChange,
+    updateMarkers,
+  ]);
 
   // 리사이즈 및 인터섹션 옵저버 설정
   useEffect(() => {
     if (!mapRef.current) return;
 
-    resizeObserverRef.current = new ResizeObserver(entries => {
+    const handleResizeCallback = (entries: ResizeObserverEntry[]) => {
       handleResize(entries, onSizeChange, mapInstanceRef.current);
-    });
+    };
+
+    const handleIntersectionCallback = (
+      entries: IntersectionObserverEntry[],
+    ) => {
+      handleIntersection(entries, onVisibilityChange, mapInstanceRef.current);
+    };
+
+    resizeObserverRef.current = new ResizeObserver(handleResizeCallback);
     resizeObserverRef.current.observe(mapRef.current);
 
     intersectionObserverRef.current = new IntersectionObserver(
-      entries => {
-        handleIntersection(entries, onVisibilityChange, mapInstanceRef.current);
-      },
+      handleIntersectionCallback,
       { threshold: 0.1 },
     );
     intersectionObserverRef.current.observe(mapRef.current);
@@ -227,14 +267,14 @@ export default function NaverMap({
         intersectionObserverRef.current.disconnect();
       }
     };
-  }, [onSizeChange, onVisibilityChange]); // handleResize, handleIntersection 제거
+  }, [onSizeChange, onVisibilityChange, handleResize, handleIntersection]);
 
   // 스크립트 로딩 및 지도 초기화 (한 번만 실행)
   useEffect(() => {
     if (!isInitializedRef.current) {
       loadScript(initializeMap);
     }
-  }, []); // 빈 의존성 배열로 한 번만 실행
+  }, [loadScript, initializeMap]);
 
   // festivals 배열의 실제 내용 변경 감지
   const festivalsRef = useRef<Festival[]>([]);
@@ -251,11 +291,11 @@ export default function NaverMap({
       );
 
     if (hasChanged && mapInstanceRef.current) {
-      updateMarkersRef.current?.();
+      updateMarkers();
       festivalsRef.current = [...festivals];
       prevFestivalsLengthRef.current = festivals.length;
     }
-  }, [festivals, currentZoom]);
+  }, [festivals, updateMarkers]);
 
   // 정리
   useEffect(() => {
@@ -264,7 +304,7 @@ export default function NaverMap({
       clearMarkers();
       isInitializedRef.current = false;
     };
-  }, []); // cleanup, clearMarkers 제거
+  }, [cleanup, clearMarkers]);
 
   return (
     <div

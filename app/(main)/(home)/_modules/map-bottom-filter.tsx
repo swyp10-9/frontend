@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -20,6 +20,18 @@ interface MapBottomFilterProps {
     theme: string;
   };
 }
+
+// 필터 타입 정의
+type FilterType = 'period' | 'status' | 'withWhom' | 'theme';
+
+// 필터 설정 정의
+const FILTER_CONFIG = {
+  period: { label: '기간', list: periodList },
+  status: { label: '축제 진행 여부', list: statusList },
+  withWhom: { label: '누구랑', list: withWhomList },
+  theme: { label: '테마', list: themeList },
+} as const;
+
 export default function MapBottomFilter({
   initialParams,
 }: MapBottomFilterProps) {
@@ -27,85 +39,99 @@ export default function MapBottomFilter({
   const searchParams = useSearchParams();
   const bottomSheetRef = useRef<BottomSheetRef>(null);
 
-  const [period, setPeriod] = useState<string | null>(
-    initialParams?.period || null,
-  );
-  const [status, setStatus] = useState<string | null>(
-    initialParams?.status || null,
-  );
-  const [withWhom, setWithWhom] = useState<string | null>(
-    initialParams?.withWhom || null,
-  );
-  const [theme, setTheme] = useState<string | null>(
-    initialParams?.theme || null,
-  );
+  // 필터 상태 관리
+  const [filters, setFilters] = useState<Record<FilterType, string | null>>({
+    period: initialParams?.period || null,
+    status: initialParams?.status || null,
+    withWhom: initialParams?.withWhom || null,
+    theme: initialParams?.theme || null,
+  });
 
+  // URL 파라미터 변경 시 필터 상태 동기화
   useEffect(() => {
-    const currentPeriod = searchParams.get('period');
-    const currentStatus = searchParams.get('status');
-    const currentWithWhom = searchParams.get('withWhom');
-    const currentTheme = searchParams.get('theme');
+    const newFilters: Record<FilterType, string | null> = {
+      period: searchParams.get('period'),
+      status: searchParams.get('status'),
+      withWhom: searchParams.get('withWhom'),
+      theme: searchParams.get('theme'),
+    };
 
-    setPeriod(currentPeriod);
-    setStatus(currentStatus);
-    setWithWhom(currentWithWhom);
-    setTheme(currentTheme);
+    setFilters(newFilters);
   }, [searchParams]);
 
-  const handleReset = () => {
+  // 필터 값 변경 핸들러
+  const handleFilterChange = useCallback(
+    (filterType: FilterType, value: string | null) => {
+      setFilters(prev => ({
+        ...prev,
+        [filterType]: value,
+      }));
+    },
+    [],
+  );
+
+  // 필터 초기화 핸들러
+  const handleReset = useCallback(() => {
     // 상태 초기화
-    setPeriod(null);
-    setStatus(null);
-    setWithWhom(null);
-    setTheme(null);
+    setFilters({
+      period: null,
+      status: null,
+      withWhom: null,
+      theme: null,
+    });
 
     // 쿼리 파라미터에서 필터 관련 파라미터 제거
     const params = new URLSearchParams(searchParams);
-    params.delete('period');
-    params.delete('status');
-    params.delete('withWhom');
-    params.delete('theme');
+    Object.keys(filters).forEach(key => {
+      params.delete(key);
+    });
 
-    // URL 업데이트 (페이지 새로고침 없이)
+    // URL 업데이트
     router.replace(`?${params.toString()}`);
 
-    // drawer 닫기
+    // 바텀시트 닫기
     bottomSheetRef.current?.close();
-  };
+  }, [searchParams, router, filters]);
 
-  const handleApply = () => {
+  // 필터 적용 핸들러
+  const handleApply = useCallback(() => {
     const params = new URLSearchParams(searchParams);
 
     // 필터 값들을 쿼리 파라미터로 업데이트
-    if (period) {
-      params.set('period', period);
-    } else {
-      params.delete('period');
-    }
-    if (status) {
-      params.set('status', status);
-    } else {
-      params.delete('status');
-    }
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
+    });
 
-    if (withWhom) {
-      params.set('withWhom', withWhom);
-    } else {
-      params.delete('withWhom');
-    }
-
-    if (theme) {
-      params.set('theme', theme);
-    } else {
-      params.delete('theme');
-    }
-
-    // URL 업데이트 (페이지 새로고침 없이)
+    // URL 업데이트
     router.replace(`?${params.toString()}`);
 
-    // drawer 닫기
+    // 바텀시트 닫기
     bottomSheetRef.current?.close();
-  };
+  }, [searchParams, router, filters]);
+
+  // 필터 섹션 렌더링
+  const filterSections = useMemo(() => {
+    return Object.entries(FILTER_CONFIG).map(([key, config]) => (
+      <FilterSection
+        key={key}
+        label={config.label}
+        list={config.list}
+        value={filters[key as FilterType]}
+        setValue={(value: React.SetStateAction<string | null>) => {
+          if (typeof value === 'function') {
+            const newValue = value(filters[key as FilterType]);
+            handleFilterChange(key as FilterType, newValue);
+          } else {
+            handleFilterChange(key as FilterType, value);
+          }
+        }}
+      />
+    ));
+  }, [filters, handleFilterChange]);
 
   return (
     <BottomSheet
@@ -124,30 +150,7 @@ export default function MapBottomFilter({
     >
       <div className='flex flex-col items-center justify-center px-4'>
         <div className='my-4 flex w-full max-w-[600px] flex-col justify-center gap-5'>
-          <FilterSection
-            label={'축제 진행 여부'}
-            list={statusList}
-            value={status}
-            setValue={setStatus}
-          />
-          <FilterSection
-            label={'기간'}
-            list={periodList}
-            value={period}
-            setValue={setPeriod}
-          />
-          <FilterSection
-            label={'누구랑'}
-            list={withWhomList}
-            value={withWhom}
-            setValue={setWithWhom}
-          />
-          <FilterSection
-            label={'테마'}
-            list={themeList}
-            value={theme}
-            setValue={setTheme}
-          />
+          {filterSections}
         </div>
       </div>
     </BottomSheet>
