@@ -83,7 +83,6 @@ export const useMapEvents = () => {
   const handleBoundsChange = useCallback(
     (
       mapInstance: naver.maps.Map,
-      onBoundsChange?: (bounds: MapBounds) => void,
       onLoadFestivals?: (bounds: MapBounds) => void,
     ) => {
       if (!mapInstance) return;
@@ -99,7 +98,6 @@ export const useMapEvents = () => {
       };
 
       console.log('지도 경계 변화:', boundsData);
-      onBoundsChange?.(boundsData);
 
       if (boundsChangeTimeoutRef.current) {
         clearTimeout(boundsChangeTimeoutRef.current);

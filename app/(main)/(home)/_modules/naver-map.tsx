@@ -22,7 +22,6 @@ export default function NaverMap({
   onSizeChange,
   onVisibilityChange,
   onMapReady,
-  onBoundsChange,
   onZoomChange,
   onMarkerClick,
   className = '',
@@ -141,7 +140,7 @@ export default function NaverMap({
 
     // 이벤트 리스너 등록
     window.naver.maps.Event.addListener(map, 'bounds_changed', () => {
-      handleBoundsChange(map, onBoundsChange, loadFestivalsInBounds);
+      handleBoundsChange(map, loadFestivalsInBounds);
     });
 
     window.naver.maps.Event.addListener(map, 'zoom_changed', () => {
@@ -174,7 +173,6 @@ export default function NaverMap({
     initialCenter,
     initialZoom,
     onMapReady,
-    onBoundsChange,
     onZoomChange,
     loadFestivalsInBounds,
     handleBoundsChange,
