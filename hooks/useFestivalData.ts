@@ -65,6 +65,8 @@ export const useFestivalData = (focusFestivalId?: number) => {
   const [festivals, setFestivals] = useState<Festival[]>([]);
   const [isLoadingFestivals, setIsLoadingFestivals] = useState(false);
   const isLoadingRef = useRef(false);
+  const lastBoundsRef = useRef<MapBounds | null>(null);
+  const lastQueryParamsRef = useRef<MapQueryParams | undefined>(null);
 
   const loadFestivalsInBounds = useCallback(
     async (bounds: MapBounds, queryParams?: MapQueryParams) => {
@@ -79,13 +81,17 @@ export const useFestivalData = (focusFestivalId?: number) => {
         const festivalsWithFocus =
           typeof focusFestivalId === 'number'
             ? response.festivals.map(f => ({
-                ...f,
-                isDetailed: f.id === focusFestivalId,
-              }))
+              ...f,
+              isDetailed: f.id === focusFestivalId,
+            }))
             : response.festivals;
 
         setFestivals(festivalsWithFocus);
         console.log('축제 데이터 로드:', response.festivals.length);
+
+        // 마지막으로 로드한 bounds와 queryParams 저장
+        lastBoundsRef.current = bounds;
+        lastQueryParamsRef.current = queryParams;
       } catch (error) {
         console.error('축제 데이터 로드 실패:', error);
       } finally {
@@ -95,6 +101,13 @@ export const useFestivalData = (focusFestivalId?: number) => {
     },
     [focusFestivalId],
   );
+
+  // queryParams가 변경되면 마지막 bounds로 데이터를 다시 로드
+  const reloadWithCurrentQueryParams = useCallback(() => {
+    if (lastBoundsRef.current && lastQueryParamsRef.current) {
+      loadFestivalsInBounds(lastBoundsRef.current, lastQueryParamsRef.current);
+    }
+  }, [loadFestivalsInBounds]);
 
   const updateFestivalFocus = useCallback((festivalId: number) => {
     setFestivals(prevFestivals =>
@@ -110,5 +123,6 @@ export const useFestivalData = (focusFestivalId?: number) => {
     isLoadingFestivals,
     loadFestivalsInBounds,
     updateFestivalFocus,
+    reloadWithCurrentQueryParams,
   };
 };

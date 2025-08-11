@@ -53,6 +53,22 @@ export default function NaverMap({
   const { createMarkers, clearMarkers } = useMapMarkers();
   const { loadScript } = useNaverMapScript();
 
+  // queryParams 변경 시 현재 bounds로 데이터 다시 로드
+  useEffect(() => {
+    if (mapInstanceRef.current && queryParams) {
+      const bounds = mapInstanceRef.current.getBounds();
+      if (bounds) {
+        const boundsData = {
+          sw: { lat: bounds.getMin().y, lng: bounds.getMin().x },
+          ne: { lat: bounds.getMax().y, lng: bounds.getMax().x },
+          nw: { lat: bounds.getMax().y, lng: bounds.getMin().x },
+          se: { lat: bounds.getMin().y, lng: bounds.getMax().x },
+        };
+        loadFestivalsInBounds(boundsData, queryParams);
+      }
+    }
+  }, [queryParams, loadFestivalsInBounds]);
+
   // 마커 클릭 핸들러
   const handleMarkerClick = useCallback(
     (festival: Festival, isDetailed: boolean) => {

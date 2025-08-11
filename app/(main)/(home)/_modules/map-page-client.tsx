@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -72,6 +72,17 @@ export default function MapPageClient({
   // debounce를 위한 ref
   const zoomDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
+  // searchParams에서 현재 필터 값들을 동적으로 가져오기
+  const currentQueryParams = useMemo(
+    () => ({
+      status: searchParams.get('status') || initialParams.status,
+      period: searchParams.get('period') || initialParams.period,
+      withWhom: searchParams.get('withWhom') || initialParams.withWhom,
+      theme: searchParams.get('theme') || initialParams.theme,
+    }),
+    [searchParams, initialParams],
+  );
+
   // URL 쿼리에 zoom 상태 업데이트 (debounce 적용)
   const updateURLWithZoom = useCallback(
     (zoom?: number) => {
@@ -82,17 +93,20 @@ export default function MapPageClient({
       }
 
       // 기존 파라미터들 유지
-      if (initialParams.status) params.set('status', initialParams.status);
-      if (initialParams.period) params.set('period', initialParams.period);
-      if (initialParams.withWhom)
-        params.set('withWhom', initialParams.withWhom);
-      if (initialParams.theme) params.set('theme', initialParams.theme);
+      if (currentQueryParams.status)
+        params.set('status', currentQueryParams.status);
+      if (currentQueryParams.period)
+        params.set('period', currentQueryParams.period);
+      if (currentQueryParams.withWhom)
+        params.set('withWhom', currentQueryParams.withWhom);
+      if (currentQueryParams.theme)
+        params.set('theme', currentQueryParams.theme);
       if (initialParams.isNearBy)
         params.set('isNearBy', initialParams.isNearBy);
 
       router.replace(`?${params.toString()}`);
     },
-    [searchParams, router, initialParams],
+    [searchParams, router, currentQueryParams, initialParams.isNearBy],
   );
 
   // zoom 변경 시 debounce 적용
@@ -157,10 +171,10 @@ export default function MapPageClient({
             <FilterChip label='필터' is_selected={false} downChevron />
           </DrawerTrigger>
           {[
-            { key: 'theme', value: initialParams.theme },
-            { key: 'withWhom', value: initialParams.withWhom },
-            { key: 'period', value: initialParams.period },
-            { key: 'status', value: initialParams.status },
+            { key: 'theme', value: currentQueryParams.theme },
+            { key: 'withWhom', value: currentQueryParams.withWhom },
+            { key: 'period', value: currentQueryParams.period },
+            { key: 'status', value: currentQueryParams.status },
           ]
             .filter(param => param.value && param.value !== 'ALL')
             .map(param => (
@@ -187,14 +201,9 @@ export default function MapPageClient({
           }
           onZoomChange={handleZoomChange}
           onMarkerClick={handleMarkerClick}
-          queryParams={{
-            status: initialParams.status,
-            period: initialParams.period,
-            withWhom: initialParams.withWhom,
-            theme: initialParams.theme,
-          }}
+          queryParams={currentQueryParams}
         />
-        <MapBottomFilter initialParams={initialParams} />
+        <MapBottomFilter initialParams={currentQueryParams} />
       </Drawer>
     </div>
   );

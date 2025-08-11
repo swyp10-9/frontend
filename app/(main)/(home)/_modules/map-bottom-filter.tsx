@@ -66,7 +66,7 @@ export default function MapBottomFilter({
     params.delete('withWhom');
     params.delete('theme');
 
-    // 페이지를 새로고침하여 쿼리 파라미터 적용
+    // URL 업데이트 (페이지 새로고침 없이)
     router.replace(`?${params.toString()}`);
 
     // drawer 닫기
@@ -100,7 +100,7 @@ export default function MapBottomFilter({
       params.delete('theme');
     }
 
-    // 페이지를 새로고침하여 쿼리 파라미터 적용
+    // URL 업데이트 (페이지 새로고침 없이)
     router.replace(`?${params.toString()}`);
 
     // drawer 닫기
