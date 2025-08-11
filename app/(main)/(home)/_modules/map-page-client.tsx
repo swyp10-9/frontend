@@ -72,13 +72,6 @@ export default function MapPageClient({
   // debounce를 위한 ref
   const zoomDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  // URL 쿼리에서 zoom 상태 가져오기
-  const getZoomFromURL = useCallback(() => {
-    const zoom = searchParams.get('zoom');
-
-    return zoom ? parseInt(zoom) : null;
-  }, [searchParams]);
-
   // URL 쿼리에 zoom 상태 업데이트 (debounce 적용)
   const updateURLWithZoom = useCallback(
     (zoom?: number) => {
