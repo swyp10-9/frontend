@@ -23,6 +23,7 @@ export default function FestivalInfo({
   discountInfo,
   spendTime,
 }: FestivalInfoProps) {
+  console.log('discountInfo:::', discountInfo);
   return (
     <div className='space-y-6'>
       <div className='flex flex-col gap-3'>
@@ -38,17 +39,17 @@ export default function FestivalInfo({
         <div className='space-y-4 ui-text-body-2-long ui-text-color-sub'>
           <p>
             1. 행사 장소
-            <br />- {eventPlace ?? '행사 장소 정보 없음'}
+            <br />- {eventPlace ? eventPlace : '행사 장소 정보 없음'}
           </p>
 
           <p>
             2. 할인 정보
-            <br />- {discountInfo ?? '할인 정보 없음'}
+            <br />- {discountInfo ? discountInfo : '할인 정보 없음'}
           </p>
 
           <p>
             3. 소요 시간
-            <br />- {spendTime ?? '소요 시간 정보 없음'}
+            <br />- {spendTime ? spendTime : '소요 시간 정보 없음'}
           </p>
         </div>
       </div>
