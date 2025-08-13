@@ -131,7 +131,8 @@ export const useMapEvents = () => {
   const handleZoomChange = useCallback(
     (
       mapInstance: naver.maps.Map,
-      onZoomChange?: (zoom: number) => void,
+      queryParams: MapQueryParams,
+      onZoomChange?: (zoom: number, queryParams: MapQueryParams) => void,
       onUpdateMarkers?: () => void,
     ) => {
       if (!mapInstance) return;
@@ -139,7 +140,7 @@ export const useMapEvents = () => {
       const zoom = mapInstance.getZoom();
       console.log('줌 레벨 변화:', zoom);
 
-      onZoomChange?.(zoom);
+      onZoomChange?.(zoom, queryParams);
       onUpdateMarkers?.();
     },
     [],

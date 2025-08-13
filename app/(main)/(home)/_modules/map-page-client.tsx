@@ -10,7 +10,7 @@ import { periodList } from '@/constants/periodList';
 import { statusList } from '@/constants/statusList';
 import themeList from '@/constants/themeList';
 import { withWhomList } from '@/constants/withWhomList';
-import type { Festival } from '@/types/map';
+import type { Festival, MapQueryParams } from '@/types/map';
 
 import MapBottomFilter from './map-bottom-filter';
 import NaverMap from './naver-map';
@@ -124,7 +124,7 @@ export default function MapPageClient({
 
   // 줌 변경 핸들러
   const handleZoomChange = useCallback(
-    (zoom: number) => {
+    (zoom: number, queryParams: MapQueryParams) => {
       console.log('zoom changed:::', zoom);
 
       // 이전 타이머가 있다면 취소
@@ -134,7 +134,11 @@ export default function MapPageClient({
 
       // ZOOM_DEBOUNCE_DELAY 후에 URL 업데이트
       zoomDebounceRef.current = setTimeout(() => {
-        updateURLParams(searchParams, { zoom: zoom.toString() }, router);
+        updateURLParams(
+          searchParams,
+          { zoom: zoom.toString(), ...queryParams },
+          router,
+        );
       }, ZOOM_DEBOUNCE_DELAY);
     },
     [searchParams, router],

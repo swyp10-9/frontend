@@ -173,8 +173,19 @@ export default function NaverMap({
 
     const zoomChangedListener = () => {
       const zoom = map.getZoom();
+
+      const searchParams = new URLSearchParams(window.location.search);
+      const params = new URLSearchParams(searchParams.toString());
+      const queryParams = {
+        status: params.get('status') || undefined,
+        period: params.get('period') || undefined,
+        withWhom: params.get('withWhom') || undefined,
+        theme: params.get('theme') || undefined,
+        isNearBy: params.get('isNearBy') || undefined,
+      };
+
       setCurrentZoom(zoom);
-      handleZoomChangeEvent(map, onZoomChange, updateMarkers);
+      handleZoomChangeEvent(map, queryParams, onZoomChange, updateMarkers);
     };
 
     const centerChangedListener = () => {
