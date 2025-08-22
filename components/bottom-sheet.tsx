@@ -20,6 +20,7 @@ interface BottomSheetProps {
   footerChildren?: React.ReactNode;
   titleChildren?: React.ReactNode;
   removeIndicator?: boolean;
+  zIndex?: number;
 }
 
 export interface BottomSheetRef {
@@ -28,7 +29,14 @@ export interface BottomSheetRef {
 
 const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
   (
-    { title, children, footerChildren, titleChildren, removeIndicator = false },
+    {
+      title,
+      children,
+      footerChildren,
+      titleChildren,
+      removeIndicator = false,
+      zIndex = 0,
+    },
     ref,
   ) => {
     const closeRef = useRef<HTMLButtonElement>(null);
@@ -46,7 +54,7 @@ const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
       //   <DrawerTrigger>Open</DrawerTrigger>
       // </Drawer>
       <DrawerContent
-        className={`flex w-full flex-col items-center justify-center ${removeIndicator ? '[&>div:first-child]:hidden' : ''}`}
+        className={`${zIndex ? `z-[${zIndex}]` : ''} flex w-full flex-col items-center justify-center ${removeIndicator ? '[&>div:first-child]:hidden' : ''}`}
       >
         <div className='w-full max-w-[600px]'>
           <DrawerHeader>

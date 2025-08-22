@@ -13,6 +13,7 @@ import { withWhomList } from '@/constants/withWhomList';
 import type { Festival, MapQueryParams } from '@/types/map';
 
 import MapBottomFilter from './map-bottom-filter';
+import MapFestivalList from './map-festival-list';
 import NaverMap from './naver-map';
 
 // 상수 정의
@@ -244,6 +245,9 @@ export default function MapPageClient({
         />
         <MapBottomFilter initialParams={currentQueryParams} />
       </Drawer>
+      <MapFestivalList />
+      {/* <Drawer snapPoints={[0.5, 0.9, 1]} modal={false}>
+      </Drawer> */}
     </div>
   );
 }
