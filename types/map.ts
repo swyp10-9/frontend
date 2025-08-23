@@ -49,6 +49,7 @@ export interface NaverMapProps {
   focusFestivalId?: number;
   queryParams?: MapQueryParams;
   onMapInstanceReady?: (mapInstance: naver.maps.Map) => void;
+  loadFestivalsInBounds?: (bounds: MapBounds, queryParams?: MapQueryParams) => Promise<void>;
 }
 
 export interface MapConfig {

@@ -34,6 +34,7 @@ export default function NaverMap({
   focusFestivalId,
   queryParams,
   onMapInstanceReady,
+  loadFestivalsInBounds: externalLoadFestivalsInBounds,
 }: NaverMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<naver.maps.Map | null>(null);
@@ -44,8 +45,11 @@ export default function NaverMap({
   const [currentZoom, setCurrentZoom] = useState(MAP_CONFIG.defaultZoom);
 
   // 커스텀 훅들
-  const { festivals, loadFestivalsInBounds, updateFestivalFocus } =
-    useFestivalData(focusFestivalId);
+  const {
+    festivals,
+    loadFestivalsInBounds: internalLoadFestivalsInBounds,
+    updateFestivalFocus,
+  } = useFestivalData(focusFestivalId);
 
   const memoFestivals = useMemo(() => festivals, [festivals]);
 
@@ -93,10 +97,14 @@ export default function NaverMap({
   const loadFestivalsInBoundsCallback = useCallback(
     async (bounds: MapBounds, params: MapQueryParams) => {
       if (mapInstanceRef.current) {
-        await loadFestivalsInBounds(bounds, params);
+        if (externalLoadFestivalsInBounds) {
+          await externalLoadFestivalsInBounds(bounds, params);
+        } else {
+          await internalLoadFestivalsInBounds(bounds, params);
+        }
       }
     },
-    [loadFestivalsInBounds],
+    [externalLoadFestivalsInBounds, internalLoadFestivalsInBounds],
   );
 
   // queryParams 변경 시 현재 bounds로 데이터 다시 로드
@@ -242,7 +250,7 @@ export default function NaverMap({
     handleBoundsChange,
     handleZoomChangeEvent,
     handleCenterChange,
-    loadFestivalsInBounds,
+    loadFestivalsInBoundsCallback,
     onZoomChange,
     updateMarkers,
   ]);

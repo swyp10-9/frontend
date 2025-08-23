@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 
 import { Button } from '@/components/Button';
 import FestivalListView from '@/components/festival-list-view';
@@ -14,6 +15,7 @@ import {
   DrawerTrigger,
 } from '@/components/shadcn/drawer';
 import { useFestivalData } from '@/hooks/useFestivalData';
+import type { MapQueryParams } from '@/types/map';
 
 export default function MapFestivalList() {
   const openRef = useRef<HTMLDivElement>(null);
@@ -21,17 +23,34 @@ export default function MapFestivalList() {
     number | string | null
   >(0.5);
 
-  const { festivals, isLoadingFestivals, loadFestivalsInBounds } =
+  const searchParams = useSearchParams();
+
+  // URL 쿼리 파라미터를 MapQueryParams 형태로 변환
+  const currentQueryParams = useMemo((): MapQueryParams => {
+    return {
+      status: searchParams.get('status') || 'ALL',
+      period: searchParams.get('period') || 'ALL',
+      withWhom: searchParams.get('withWhom') || 'ALL',
+      theme: searchParams.get('theme') || 'ALL',
+    };
+  }, [searchParams]);
+
+  const { festivals, reloadWithCurrentQueryParams, reloadWithNewQueryParams } =
     useFestivalData();
   const memoFestivals = useMemo(() => festivals, [festivals]);
+
+  // URL 쿼리 파라미터가 변경될 때마다 축제 데이터 다시 로드
+  useEffect(() => {
+    if (Object.values(currentQueryParams).some(param => param !== 'ALL')) {
+      reloadWithNewQueryParams(currentQueryParams);
+    }
+  }, [currentQueryParams, reloadWithNewQueryParams]);
 
   useEffect(() => {
     if (openRef?.current) {
       openRef.current.click();
     }
   }, [openRef]);
-
-  console.log('isLoadingFestivals::::::', isLoadingFestivals);
 
   return (
     <Drawer
@@ -51,12 +70,7 @@ export default function MapFestivalList() {
         <DrawerTitle></DrawerTitle>
       </DrawerHeader>
       <DrawerContent className='z-[1] h-full'>
-        {isLoadingFestivals && (
-          <div className='flex h-full flex-col items-center justify-center'>
-            <p className='ui-text-body-1'>축제 데이터를 불러오는 중입니다.</p>
-          </div>
-        )}
-        {!isLoadingFestivals && [...(memoFestivals || [])].length > 0 && (
+        {[...(memoFestivals || [])].length > 0 && (
           <div className='flex h-full flex-col px-5 pb-[100px]'>
             <div className='flex-shrink-0 py-4'>
               <p className='ui-text-head-2'>{memoFestivals?.length}개의 축제</p>
@@ -82,7 +96,7 @@ export default function MapFestivalList() {
             </div>
           </div>
         )}
-        {!isLoadingFestivals && [...(memoFestivals || [])].length === 0 && (
+        {[...(memoFestivals || [])].length === 0 && (
           <div
             className={`flex flex-col items-center justify-center ${Number(activeSnapPoint) > 0.5 ? 'pt-20' : ''}`}
           >
@@ -93,12 +107,8 @@ export default function MapFestivalList() {
               height={68}
             />
             <p className='mt-5 ui-text-sub-head text-gray-700'>
-              {/* 조건에 맞는 축제가 없습니다. */}
               해당 지역에 축제가 없습니다.
             </p>
-            {/* <p className='mt-1 ui-text-body-2 text-gray-400'>
-              적용한 필터를 변경해보세요.
-            </p> */}
           </div>
         )}
       </DrawerContent>
