@@ -30,7 +30,7 @@ export const MARKER_SIZES = {
 } as const;
 
 // 상세 마커 표시를 위한 줌 레벨 임계값
-export const ZOOM_THRESHOLD = 12;
+export const ZOOM_THRESHOLD = 14;
 
 // 지도 성능 최적화 설정
 export const MAP_PERFORMANCE = {

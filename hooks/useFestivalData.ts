@@ -130,11 +130,22 @@ export const useFestivalData = (focusFestivalId?: number) => {
     );
   }, []);
 
+  // 쿼리 파라미터만 변경하여 데이터 다시 로드 (지도 경계는 유지)
+  const reloadWithNewQueryParams = useCallback(
+    async (newQueryParams: MapQueryParams) => {
+      if (lastBoundsRef.current) {
+        await loadFestivalsInBounds(lastBoundsRef.current, newQueryParams);
+      }
+    },
+    [loadFestivalsInBounds],
+  );
+
   return {
     festivals: memoFestivals,
     isLoadingFestivals,
     loadFestivalsInBounds,
     reloadWithCurrentQueryParams,
+    reloadWithNewQueryParams,
     updateFestivalFocus,
   };
 };

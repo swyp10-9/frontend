@@ -10,9 +10,11 @@ import { periodList } from '@/constants/periodList';
 import { statusList } from '@/constants/statusList';
 import themeList from '@/constants/themeList';
 import { withWhomList } from '@/constants/withWhomList';
+import { useFestivalData } from '@/hooks/useFestivalData';
 import type { Festival, MapQueryParams } from '@/types/map';
 
 import MapBottomFilter from './map-bottom-filter';
+import MapFestivalList from './map-festival-list';
 import NaverMap from './naver-map';
 
 // 상수 정의
@@ -80,6 +82,11 @@ export default function MapPageClient({
   const zoomDebounceRef = useRef<NodeJS.Timeout | null>(null);
   // 지도 인스턴스를 저장할 ref
   const mapInstanceRef = useRef<naver.maps.Map | null>(null);
+
+  // 축제 데이터 훅을 공유하여 지도와 리스트가 동일한 데이터 사용
+  const { loadFestivalsInBounds, reloadWithNewQueryParams } = useFestivalData(
+    initialParams.focusId ? parseInt(initialParams.focusId) : undefined,
+  );
 
   // searchParams에서 현재 필터 값들을 동적으로 가져오기
   const currentQueryParams = useMemo(
@@ -241,9 +248,13 @@ export default function MapPageClient({
           onMarkerClick={handleMarkerClick}
           queryParams={currentQueryParams}
           onMapInstanceReady={handleMapInstanceReady}
+          loadFestivalsInBounds={loadFestivalsInBounds}
         />
         <MapBottomFilter initialParams={currentQueryParams} />
       </Drawer>
+      <MapFestivalList />
+      {/* <Drawer snapPoints={[0.5, 0.9, 1]} modal={false}>
+      </Drawer> */}
     </div>
   );
 }
