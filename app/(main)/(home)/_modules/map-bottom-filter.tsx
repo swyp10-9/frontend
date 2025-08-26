@@ -14,10 +14,10 @@ import { withWhomList } from '@/constants/withWhomList';
 
 interface MapBottomFilterProps {
   initialParams: {
-    period: string;
-    status: string;
-    withWhom: string;
-    theme: string;
+    period?: string;
+    status?: string;
+    withWhom?: string;
+    theme?: string;
   };
 }
 

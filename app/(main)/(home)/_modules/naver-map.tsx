@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { MAP_CONFIG } from '@/constants/mapConfig';
+import { DEFAULT_LOCATION, MAP_CONFIG } from '@/constants/mapConfig';
 import { useFestivalData } from '@/hooks/useFestivalData';
 import { useMapEvents } from '@/hooks/useMapEvents';
 import { useMapMarkers } from '@/hooks/useMapMarkers';
@@ -13,7 +13,6 @@ import type {
   MapQueryParams,
   NaverMapProps,
 } from '@/types/map';
-import { getCurrentLocation } from '@/utils/mapUtils';
 
 declare global {
   interface Window {
@@ -35,6 +34,7 @@ export default function NaverMap({
   queryParams,
   onMapInstanceReady,
   loadFestivalsInBounds: externalLoadFestivalsInBounds,
+  festivals,
 }: NaverMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<naver.maps.Map | null>(null);
@@ -46,10 +46,12 @@ export default function NaverMap({
 
   // 커스텀 훅들
   const {
-    festivals,
+    festivals: festivalsFromHook,
     loadFestivalsInBounds: internalLoadFestivalsInBounds,
     updateFestivalFocus,
   } = useFestivalData(focusFestivalId);
+
+  console.log('festivalsFromHook::::::', festivalsFromHook);
 
   const memoFestivals = useMemo(() => festivals, [festivals]);
 
@@ -58,7 +60,7 @@ export default function NaverMap({
     handleResize,
     handleIntersection,
     handleBoundsChange,
-    handleZoomChange: handleZoomChangeEvent,
+    handleZoomChange,
     handleCenterChange,
     cleanup,
   } = useMapEvents();
@@ -83,6 +85,7 @@ export default function NaverMap({
 
   // 마커 업데이트 함수
   const updateMarkers = useCallback(() => {
+    console.log('updateMarkers::::::', memoFestivals);
     if (mapInstanceRef.current) {
       createMarkers(
         memoFestivals,
@@ -125,122 +128,115 @@ export default function NaverMap({
 
   // 지도 초기화
   const initializeMap = useCallback(async () => {
-    if (!mapRef.current || isInitializedRef.current) return;
+    if (!mapRef.current || !window.naver?.maps) return;
 
-    isInitializedRef.current = true;
+    const center = getCenterFromURL() ||
+      initialCenter || { lat: DEFAULT_LOCATION[0], lng: DEFAULT_LOCATION[1] };
+    const zoom = initialZoom || MAP_CONFIG.defaultZoom;
 
-    // 초기 중심 좌표 결정
-    let lat: number;
-    let lng: number;
-
-    const urlCenter = getCenterFromURL();
-    if (urlCenter) {
-      lat = urlCenter.lat;
-      lng = urlCenter.lng;
-    } else if (initialCenter) {
-      lat = initialCenter.lat;
-      lng = initialCenter.lng;
-    } else {
-      const current = await getCurrentLocation();
-      lat = current[0];
-      lng = current[1];
-    }
-
-    const mapOptions: naver.maps.MapOptions = {
-      center: new window.naver.maps.LatLng(lat, lng),
-      zoom: initialZoom || MAP_CONFIG.defaultZoom,
+    // 지도 인스턴스 생성
+    const map = new window.naver.maps.Map(mapRef.current, {
+      center: new window.naver.maps.LatLng(center.lat, center.lng),
+      zoom,
       minZoom: MAP_CONFIG.minZoom,
       maxZoom: MAP_CONFIG.maxZoom,
-      disableKineticPan: false,
+      zoomControl: false,
+      mapDataControl: false,
       scaleControl: false,
       logoControl: false,
-      mapDataControl: false,
-      zoomControl: false,
       mapTypeControl: false,
-    };
+      draggable: true,
+      pinchZoom: true,
+      scrollWheel: true,
+      disableDoubleTapZoom: false,
+      disableDoubleClickZoom: false,
+    });
 
-    const map = new window.naver.maps.Map(mapRef.current, mapOptions);
     mapInstanceRef.current = map;
+    isInitializedRef.current = true;
 
-    // 지도 인스턴스가 준비되면 부모 컴포넌트에 전달
+    // 지도 인스턴스 준비 완료 콜백 호출
     onMapInstanceReady?.(map);
 
-    // 이벤트 리스너 등록
-    const boundsChangedListener = () => {
-      const searchParams = new URLSearchParams(window.location.search);
-      const params = new URLSearchParams(searchParams.toString());
-      const queryParams = {
-        status: params.get('status') || undefined,
-        period: params.get('period') || undefined,
-        withWhom: params.get('withWhom') || undefined,
-        theme: params.get('theme') || undefined,
-        isNearBy: params.get('isNearBy') || undefined,
-      };
-      handleBoundsChange(map, queryParams, loadFestivalsInBoundsCallback);
-    };
-
-    const zoomChangedListener = () => {
-      const zoom = map.getZoom();
-
-      const searchParams = new URLSearchParams(window.location.search);
-      const params = new URLSearchParams(searchParams.toString());
-      const queryParams = {
-        status: params.get('status') || undefined,
-        period: params.get('period') || undefined,
-        withWhom: params.get('withWhom') || undefined,
-        theme: params.get('theme') || undefined,
-        isNearBy: params.get('isNearBy') || undefined,
-        zoom: zoom.toString(),
-        lat: params.get('lat') || undefined,
-        lng: params.get('lng') || undefined,
-      };
-
-      setCurrentZoom(zoom);
-      handleZoomChangeEvent(map, queryParams, onZoomChange, updateMarkers);
-    };
-
-    const centerChangedListener = () => {
-      const searchParams = new URLSearchParams(window.location.search);
-      const params = new URLSearchParams(searchParams.toString());
-      const queryParams = {
-        status: params.get('status') || undefined,
-        period: params.get('period') || undefined,
-        withWhom: params.get('withWhom') || undefined,
-        theme: params.get('theme') || undefined,
-        isNearBy: params.get('isNearBy') || undefined,
-      };
-      handleCenterChange(map, queryParams);
-    };
-
-    window.naver.maps.Event.addListener(
-      map,
-      'bounds_changed',
-      boundsChangedListener,
-    );
-    window.naver.maps.Event.addListener(
-      map,
-      'zoom_changed',
-      zoomChangedListener,
-    );
-    window.naver.maps.Event.addListener(
-      map,
-      'center_changed',
-      centerChangedListener,
-    );
-
-    // 초기 축제 데이터 로드
-    setTimeout(() => {
+    // 이벤트 리스너 설정
+    window.naver.maps.Event.addListener(map, 'bounds_changed', () => {
       const bounds = map.getBounds();
       if (bounds) {
-        const boundsData = {
-          sw: { lat: bounds.getMin().y, lng: bounds.getMin().x },
-          ne: { lat: bounds.getMax().y, lng: bounds.getMax().x },
-          nw: { lat: bounds.getMax().y, lng: bounds.getMin().x },
-          se: { lat: bounds.getMin().y, lng: bounds.getMax().x },
+        // const boundsData = {
+        //   sw: { lat: bounds.getMin().y, lng: bounds.getMin().x },
+        //   ne: { lat: bounds.getMax().y, lng: bounds.getMax().x },
+        //   nw: { lat: bounds.getMax().y, lng: bounds.getMin().x },
+        //   se: { lat: bounds.getMin().y, lng: bounds.getMax().x },
+        // };
+        const currentParams = queryParams || {
+          status: 'ALL',
+          period: 'ALL',
+          withWhom: 'ALL',
+          theme: 'ALL',
         };
-        loadFestivalsInBoundsCallback(boundsData, queryParams || {});
+        handleBoundsChange(map, currentParams, loadFestivalsInBoundsCallback);
       }
-    }, MAP_CONFIG.refreshDelay);
+    });
+
+    window.naver.maps.Event.addListener(map, 'zoom_changed', () => {
+      const newZoom = map.getZoom();
+      setCurrentZoom(newZoom);
+      const currentParams = queryParams || {
+        status: 'ALL',
+        period: 'ALL',
+        withWhom: 'ALL',
+        theme: 'ALL',
+      };
+      handleZoomChange(map, currentParams, onZoomChange, updateMarkers);
+    });
+
+    window.naver.maps.Event.addListener(map, 'center_changed', () => {
+      const currentParams = queryParams || {
+        status: 'ALL',
+        period: 'ALL',
+        withWhom: 'ALL',
+        theme: 'ALL',
+      };
+      handleCenterChange(map, currentParams);
+    });
+
+    // 초기 bounds로 축제 데이터 로드
+    const initialBounds = map.getBounds();
+    if (initialBounds) {
+      const boundsData = {
+        sw: { lat: initialBounds.getMin().y, lng: initialBounds.getMin().x },
+        ne: { lat: initialBounds.getMax().y, lng: initialBounds.getMax().x },
+        nw: { lat: initialBounds.getMax().y, lng: initialBounds.getMin().x },
+        se: { lat: initialBounds.getMin().y, lng: initialBounds.getMax().x },
+      };
+
+      // 초기 로드 시에는 기본 쿼리 파라미터 사용
+      const defaultParams = queryParams || {
+        status: 'ALL',
+        period: 'ALL',
+        withWhom: 'ALL',
+        theme: 'ALL',
+      };
+
+      loadFestivalsInBoundsCallback(boundsData, defaultParams);
+    }
+
+    // 줌 변경 디바운스 처리
+    let zoomTimeout: NodeJS.Timeout;
+    window.naver.maps.Event.addListener(map, 'zoom_changed', () => {
+      // 초기 로드 시에는 기본 쿼리 파라미터 사용
+      const defaultParams = queryParams || {
+        status: 'ALL',
+        period: 'ALL',
+        withWhom: 'ALL',
+        theme: 'ALL',
+      };
+      clearTimeout(zoomTimeout);
+      zoomTimeout = setTimeout(() => {
+        const newZoom = map.getZoom();
+        onZoomChange?.(newZoom, defaultParams);
+      }, MAP_CONFIG.refreshDelay);
+    });
 
     onMapReady?.(map);
   }, [
@@ -251,7 +247,7 @@ export default function NaverMap({
     onMapReady,
     queryParams,
     handleBoundsChange,
-    handleZoomChangeEvent,
+    handleZoomChange,
     handleCenterChange,
     loadFestivalsInBoundsCallback,
     onZoomChange,
@@ -304,20 +300,22 @@ export default function NaverMap({
 
   useEffect(() => {
     // festivals 배열의 길이나 내용이 실제로 변경되었는지 확인
-    const hasChanged =
-      festivals.length !== prevFestivalsLengthRef.current ||
-      festivals.some(
-        (festival, index) =>
-          festivalsRef.current[index]?.id !== festival.id ||
-          festivalsRef.current[index]?.isDetailed !== festival.isDetailed,
-      );
+    console.log('festivals::::::', festivals);
+    // const hasChanged =
+    //   festivals.length !== prevFestivalsLengthRef.current ||
+    //   festivals.some(
+    //     (festival, index) =>
+    //       festivalsRef.current[index]?.id !== festival.id ||
+    //       festivalsRef.current[index]?.isDetailed !== festival.isDetailed,
+    //   );
 
-    if (hasChanged && mapInstanceRef.current) {
+    if (mapInstanceRef.current) {
+      console.log('축제 데이터 변경됨, 마커 업데이트:', festivals.length);
       updateMarkers();
       festivalsRef.current = [...festivals];
       prevFestivalsLengthRef.current = festivals.length;
     }
-  }, [festivals, updateMarkers]);
+  }, [festivals, updateMarkers, queryParams]);
 
   // 정리
   useEffect(() => {

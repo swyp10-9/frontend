@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -11,15 +11,14 @@ import { statusList } from '@/constants/statusList';
 import themeList from '@/constants/themeList';
 import { withWhomList } from '@/constants/withWhomList';
 import { useFestivalData } from '@/hooks/useFestivalData';
-import type { Festival, MapQueryParams } from '@/types/map';
+import type { Festival, MapBounds, MapQueryParams } from '@/types/map';
 
 import MapBottomFilter from './map-bottom-filter';
 import MapFestivalList from './map-festival-list';
 import NaverMap from './naver-map';
 
 // 상수 정의
-const ZOOM_DEBOUNCE_DELAY = 700;
-const CURRENT_LOCATION_ZOOM = 15;
+// const CURRENT_LOCATION_ZOOM = 15;
 
 // value를 label로 매핑하는 유틸리티 함수
 const getLabelFromValue = (key: string, value: string): string => {
@@ -40,25 +39,6 @@ const getLabelFromValue = (key: string, value: string): string => {
   return item?.label || value;
 };
 
-// URL 파라미터 업데이트 유틸리티
-const updateURLParams = (
-  searchParams: URLSearchParams,
-  updates: Record<string, string | undefined>,
-  router: ReturnType<typeof useRouter>,
-) => {
-  const params = new URLSearchParams(searchParams.toString());
-
-  Object.entries(updates).forEach(([key, value]) => {
-    if (value !== undefined) {
-      params.set(key, value);
-    } else {
-      params.delete(key);
-    }
-  });
-
-  router.replace(`?${params.toString()}`);
-};
-
 export default function MapPageClient({
   initialParams,
 }: {
@@ -74,79 +54,56 @@ export default function MapPageClient({
     zoom?: string;
   };
 }) {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const params = new URLSearchParams(searchParams.toString());
+  const router = useRouter();
 
-  // debounce를 위한 ref
-  const zoomDebounceRef = useRef<NodeJS.Timeout | null>(null);
-  // 지도 인스턴스를 저장할 ref
-  const mapInstanceRef = useRef<naver.maps.Map | null>(null);
-
-  // 축제 데이터 훅을 공유하여 지도와 리스트가 동일한 데이터 사용
-  const { loadFestivalsInBounds, reloadWithNewQueryParams } = useFestivalData(
+  // 축제 데이터 훅을 상위에서 공유
+  const {
+    festivals = [],
+    isLoadingFestivals,
+    loadFestivalsInBounds: loadFestivals,
+    // reloadWithCurrentQueryParams,
+    reloadWithNewQueryParams,
+  } = useFestivalData(
     initialParams.focusId ? parseInt(initialParams.focusId) : undefined,
   );
 
-  // searchParams에서 현재 필터 값들을 동적으로 가져오기
-  const currentQueryParams = useMemo(
-    () => ({
-      status: params.get('status') || initialParams.status,
-      period: params.get('period') || initialParams.period,
-      withWhom: params.get('withWhom') || initialParams.withWhom,
-      theme: params.get('theme') || initialParams.theme,
-    }),
-    [searchParams, initialParams],
+  // 현재 쿼리 파라미터
+  const currentQueryParams = useMemo((): MapQueryParams => {
+    return {
+      status: (searchParams.get('status') || 'ALL') as string,
+      period: (searchParams.get('period') || 'ALL') as string,
+      withWhom: (searchParams.get('withWhom') || 'ALL') as string,
+      theme: (searchParams.get('theme') || 'ALL') as string,
+    };
+  }, [searchParams]);
+
+  // console.log('currentQueryParams::::::', currentQueryParams);
+
+  // 내 주변 토글 핸들러
+  const handleNearByToggle = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    const currentIsNearBy = params.get('isNearBy') === 'true';
+    params.set('isNearBy', (!currentIsNearBy).toString());
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [searchParams, router]);
+
+  // 필터 제거 핸들러
+  const handleFilterRemove = useCallback(
+    (key: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(key, 'ALL');
+      router.replace(`?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, router],
   );
-
-  // 현재 위치로 이동하는 함수
-  const moveToCurrentLocation = useCallback(async () => {
-    if (!mapInstanceRef.current) return;
-
-    try {
-      const position = await new Promise<GeolocationPosition>(
-        (resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 60000,
-          });
-        },
-      );
-
-      const { latitude, longitude } = position.coords;
-      const newCenter = new window.naver.maps.LatLng(latitude, longitude);
-
-      mapInstanceRef.current.setCenter(newCenter);
-      mapInstanceRef.current.setZoom(CURRENT_LOCATION_ZOOM);
-
-      console.log('지도 중심을 현재 위치로 이동:', {
-        lat: latitude,
-        lng: longitude,
-      });
-    } catch (error) {
-      console.error('현재 위치를 가져올 수 없습니다:', error);
-    }
-  }, []);
 
   // 줌 변경 핸들러
   const handleZoomChange = useCallback(
-    (zoom: number, queryParams: MapQueryParams) => {
-      console.log('zoom changed:::', zoom);
-
-      // 이전 타이머가 있다면 취소
-      if (zoomDebounceRef.current) {
-        clearTimeout(zoomDebounceRef.current);
-      }
-
-      // ZOOM_DEBOUNCE_DELAY 후에 URL 업데이트
-      zoomDebounceRef.current = setTimeout(() => {
-        updateURLParams(
-          searchParams,
-          { zoom: zoom.toString(), ...queryParams },
-          router,
-        );
-      }, ZOOM_DEBOUNCE_DELAY);
+    (zoom: number) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('zoom', zoom.toString());
+      router.replace(`?${params.toString()}`, { scroll: false });
     },
     [searchParams, router],
   );
@@ -155,62 +112,43 @@ export default function MapPageClient({
   const handleMarkerClick = useCallback(
     (festival: Festival, isDetailed: boolean) => {
       if (isDetailed) {
-        // 상세 마커 클릭 시 축제 상세 페이지로 이동
         router.push(`/festival/${festival.id}`);
-      } else {
-        // 작은 마커 클릭 시 상세 마커로 전환
-        console.log('마커 클릭:', festival);
       }
     },
     [router],
   );
 
-  // 지도 인스턴스 준비 핸들러
-  const handleMapInstanceReady = useCallback((mapInstance: naver.maps.Map) => {
-    mapInstanceRef.current = mapInstance;
+  // 지도 인스턴스 준비 완료 핸들러
+  const handleMapInstanceReady = useCallback(() => {
+    console.log('지도 인스턴스 준비 완료');
   }, []);
 
-  // 내 주변 필터 토글 핸들러
-  const handleNearByToggle = useCallback(async () => {
-    const isCurrentlyNearBy = initialParams?.isNearBy === 'true';
-
-    if (isCurrentlyNearBy) {
-      updateURLParams(searchParams, { isNearBy: undefined }, router);
-    } else {
-      updateURLParams(searchParams, { isNearBy: 'true' }, router);
-      // 내 주변 필터 활성화 시 현재 위치로 이동
-      await moveToCurrentLocation();
-    }
-  }, [initialParams?.isNearBy, searchParams, router, moveToCurrentLocation]);
-
-  // 필터 제거 핸들러
-  const handleFilterRemove = useCallback(
-    (key: string) => {
-      updateURLParams(searchParams, { [key]: undefined }, router);
+  // 경계 내 축제 로드 핸들러
+  const handleLoadFestivalsInBounds = useCallback(
+    async (bounds: MapBounds, queryParams?: MapQueryParams) => {
+      if (queryParams) {
+        await loadFestivals(bounds, queryParams);
+      }
     },
-    [searchParams, router],
+    [loadFestivals],
   );
 
-  // 초기 좌표 계산
+  // 초기 중심 좌표 계산
   const initCenter = useMemo(() => {
-    const initLat = initialParams?.mapY
-      ? parseFloat(initialParams.mapY)
-      : undefined;
-    const initLng = initialParams?.mapX
-      ? parseFloat(initialParams.mapX)
-      : undefined;
+    if (initialParams.mapX && initialParams.mapY) {
+      return {
+        lat: parseFloat(initialParams.mapY),
+        lng: parseFloat(initialParams.mapX),
+      };
+    }
+    return undefined;
+  }, [initialParams.mapX, initialParams.mapY]);
 
-    return initLat && initLng ? { lat: initLat, lng: initLng } : undefined;
-  }, [initialParams?.mapX, initialParams?.mapY]);
-
-  // 선택된 필터들 렌더링
+  // 선택된 필터들
   const selectedFilters = useMemo(() => {
-    return [
-      { key: 'theme', value: currentQueryParams.theme },
-      { key: 'withWhom', value: currentQueryParams.withWhom },
-      { key: 'period', value: currentQueryParams.period },
-      { key: 'status', value: currentQueryParams.status },
-    ].filter(param => param.value && param.value !== 'ALL');
+    return Object.entries(currentQueryParams)
+      .map(([key, value]) => ({ key, value }))
+      .filter(param => param.value && param.value !== 'ALL');
   }, [currentQueryParams]);
 
   return (
@@ -248,13 +186,16 @@ export default function MapPageClient({
           onMarkerClick={handleMarkerClick}
           queryParams={currentQueryParams}
           onMapInstanceReady={handleMapInstanceReady}
-          loadFestivalsInBounds={loadFestivalsInBounds}
+          loadFestivalsInBounds={handleLoadFestivalsInBounds}
+          festivals={festivals}
         />
         <MapBottomFilter initialParams={currentQueryParams} />
       </Drawer>
-      <MapFestivalList />
-      {/* <Drawer snapPoints={[0.5, 0.9, 1]} modal={false}>
-      </Drawer> */}
+      <MapFestivalList
+        festivals={festivals}
+        isLoadingFestivals={isLoadingFestivals}
+        onReloadWithNewQueryParams={reloadWithNewQueryParams}
+      />
     </div>
   );
 }

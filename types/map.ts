@@ -53,6 +53,7 @@ export interface NaverMapProps {
     bounds: MapBounds,
     queryParams?: MapQueryParams,
   ) => Promise<void>;
+  festivals: Festival[];
 }
 
 export interface MapConfig {
