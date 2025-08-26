@@ -11,7 +11,7 @@ export function Nav() {
   return (
     <div className='flex w-full items-center justify-between border-b-1 border-gray-100 py-2'>
       <Link href='/'>
-        <Image src='/image/logo.png' alt='logo' width={50} height={50} />
+        <Image src='/image/logo_new.png' alt='logo' width={50} height={50} />
       </Link>
       <div className='flex w-full items-center justify-end gap-3'>
         <Icon
