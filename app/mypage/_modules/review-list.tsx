@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 
 import { getMyReviews } from '@/apis/SWYP10BackendAPI';
@@ -46,6 +46,8 @@ interface ReviewListProps {
 
 export default function ReviewList({ initialReviewList }: ReviewListProps) {
   const [isBottomView, setIsBottomView] = useState(false);
+  const queryClient = useQueryClient();
+
   const [observeBottom] = useInView((isShow: boolean) => {
     console.log('%c bottom-view', 'color:blue;font-weight:bold;', isShow);
     setIsBottomView(() => {
@@ -78,7 +80,49 @@ export default function ReviewList({ initialReviewList }: ReviewListProps) {
   });
 
   const allReviews = data?.pages.flatMap(page => page.reviews) || [];
-  const totalCount = data?.pages[0]?.total || 0;
+
+  type ReviewData = {
+    pageParams: number[];
+    pages: {
+      reviews: MyReviewResponse[];
+      nextCursor: number | null;
+      total: number;
+    }[];
+  };
+
+  // 리뷰 삭제 핸들러
+  const handleReviewDelete = (removedReviewId: number) => {
+    queryClient.setQueryData(['reviews'], (oldData: ReviewData) => {
+      if (!oldData) return oldData;
+
+      console.log('oldData::::::', oldData);
+
+      // 모든 페이지에서 해당 리뷰 제거
+      const updatedPages = oldData.pages.map((page: ReviewResponse) => ({
+        ...page,
+        reviews: page.reviews.filter(
+          (review: MyReviewResponse) => review.id !== removedReviewId,
+        ),
+        total: page.total - 1, // 총 개수 감소
+      }));
+
+      // 빈 페이지가 있다면 제거
+      const filteredPages = updatedPages.filter(
+        (page: ReviewResponse) => page.reviews.length > 0,
+      );
+
+      // nextCursor 업데이트
+      const updatedPageParams = filteredPages.map(
+        (_: ReviewResponse, index: number) => index,
+      );
+
+      return {
+        ...oldData,
+        pages: filteredPages,
+        pageParams: updatedPageParams,
+      };
+    });
+  };
 
   if (isBottomView && hasNextPage && !isFetchingNextPage) {
     fetchNextPage();
@@ -130,6 +174,7 @@ export default function ReviewList({ initialReviewList }: ReviewListProps) {
           {allReviews.map(review => (
             <ReviewItem
               key={review.id}
+              reviewId={review.id || 0}
               image={review.festivalThumbnail || '/image/logo.png'}
               // @ts-expect-error 기존 타입 오류
               title={review.festivalTitle}
@@ -137,6 +182,7 @@ export default function ReviewList({ initialReviewList }: ReviewListProps) {
               date={review.createdAt}
               // @ts-expect-error 기존 타입 오류
               content={review.content}
+              onReviewDelete={handleReviewDelete}
             />
           ))}
           <div

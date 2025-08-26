@@ -17,7 +17,6 @@ import BookmarkList from './_modules/bookmark-list';
 import MyPageClient from './_modules/my-page-client';
 import MyPageFooter from './_modules/mypage-footer';
 import Profile from './_modules/profile';
-import ReviewDrawerMenu from './_modules/review-drawer-menu';
 import ReviewList from './_modules/review-list';
 
 interface SearchParamsType {
@@ -101,8 +100,6 @@ export default async function MyPage({
         </div>
 
         <MyPageFooter />
-
-        <ReviewDrawerMenu />
       </Drawer>
     </div>
   );
