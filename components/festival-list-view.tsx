@@ -172,15 +172,17 @@ export default function FestivalListView(props: FestivalListViewProps) {
           </div>
           {/* NOTE: 디자인 상 줄바꿈이 고려되지 않아 시간 상 1줄로 지정 */}
           <p className='mt-1 mb-3 line-clamp-1 ui-text-sub-head'>{title}</p>
-          <div className='mb-1 flex items-center'>
-            <Icon
-              icon='carbon:location-filled'
-              className='cursor-pointer text-gray-300'
-              fontSize={20}
-            />
-            <p className='mr-1 ml-0.5 ui-text-body-2'>{loc}</p>
+          <div className='mb-1 flex items-center justify-between'>
+            <div className='flex w-3/4 items-center'>
+              <Icon
+                icon='carbon:location-filled'
+                className='cursor-pointer text-gray-300'
+                fontSize={20}
+              />
+              <p className={`mr-1 ml-0.5 line-clamp-1 ui-text-body-2`}>{loc}</p>
+            </div>
             <p
-              className='ui-text-body-2 underline'
+              className='line-clamp-1 w-[50px] ui-text-body-2 underline'
               onClick={e => {
                 e.preventDefault();
                 e.stopPropagation();

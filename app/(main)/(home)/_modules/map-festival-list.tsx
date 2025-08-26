@@ -85,27 +85,31 @@ export default function MapFestivalList({
             </p>
           </div>
         ) : memoFestivals && memoFestivals.length > 0 ? (
-          <div className='flex h-full flex-col px-5 pb-[100px]'>
-            <div className='flex-shrink-0 py-4'>
-              <p className='ui-text-head-2'>{memoFestivals.length}개의 축제</p>
-            </div>
-            <div className='flex-1 overflow-y-auto'>
-              <div className='box-border flex w-full flex-col items-center justify-center py-1'>
-                {memoFestivals.map(festival => (
-                  <FestivalListView
-                    key={festival?.id || ''}
-                    image={festival?.image || ''}
-                    theme={festival.theme}
-                    title={festival?.title || ''}
-                    loc={festival?.loc || ''}
-                    start_date={festival?.start_date || ''}
-                    end_date={festival?.end_date || ''}
-                    is_marked={festival?.is_marked || false}
-                    id={festival?.id || 0}
-                    map_x={festival?.map_x.toString() || ''}
-                    map_y={festival?.map_y.toString() || ''}
-                  />
-                ))}
+          <div className='flex h-full w-full items-center justify-center'>
+            <div className='flex h-full w-full max-w-[600px] flex-col px-5 pb-[100px]'>
+              <div className='flex-shrink-0 py-4'>
+                <p className='ui-text-head-2'>
+                  {memoFestivals.length}개의 축제
+                </p>
+              </div>
+              <div className='flex-1 overflow-y-auto'>
+                <div className='box-border flex w-full flex-col items-center justify-center gap-5 py-1'>
+                  {memoFestivals.map(festival => (
+                    <FestivalListView
+                      key={festival?.id || ''}
+                      image={festival?.image || ''}
+                      theme={festival.theme}
+                      title={festival?.title || ''}
+                      loc={festival?.loc || ''}
+                      start_date={festival?.start_date || ''}
+                      end_date={festival?.end_date || ''}
+                      is_marked={festival?.is_marked || false}
+                      id={festival?.id || 0}
+                      map_x={festival?.map_x.toString() || ''}
+                      map_y={festival?.map_y.toString() || ''}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </div>

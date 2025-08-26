@@ -252,7 +252,7 @@ export default function List({
         <p className='ui-text-head-2'>{totalCount}개의 축제</p>
         <p className='ui-text-body'>{formatDate(displayDate)}</p>
       </div>
-      <div className='flex w-full flex-col gap-10'>
+      <div className='flex w-full flex-col gap-5'>
         {allFestivals.length === 0 ? (
           <div className='flex min-h-[400px] flex-col items-center justify-center'>
             <Image

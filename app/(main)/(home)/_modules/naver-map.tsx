@@ -46,12 +46,9 @@ export default function NaverMap({
 
   // 커스텀 훅들
   const {
-    festivals: festivalsFromHook,
     loadFestivalsInBounds: internalLoadFestivalsInBounds,
     updateFestivalFocus,
   } = useFestivalData(focusFestivalId);
-
-  console.log('festivalsFromHook::::::', festivalsFromHook);
 
   const memoFestivals = useMemo(() => festivals, [festivals]);
 
