@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 
 import { createFestivalReview } from '@/apis/SWYP10BackendAPI';
+import { festivalDetail } from '@/apis/queries';
 import { Button } from '@/components/Button';
 import { showCustomToast } from '@/components/CustomToast';
 import BackArrowNav from '@/components/nav/nav';
@@ -15,6 +17,9 @@ export default function WriteClient() {
   const params = useParams();
   const festivalId = Number(params?.id) || 0;
   const [content, setContent] = useState('');
+
+  const { data } = useQuery(festivalDetail(festivalId));
+  const festival = data?.data;
 
   const handleSave = async () => {
     try {
@@ -49,11 +54,11 @@ export default function WriteClient() {
           <Image
             width={48}
             height={48}
-            src='https://picsum.photos/200/300'
+            src={festival?.thumbnail || '/image/logo.png'}
             className='aspect-square rounded-xl object-cover'
             alt='festival'
           />
-          <p className='ui-text-sub-head-2'>대구 치맥 페스티벌</p>
+          <p className='ui-text-sub-head-2'>{festival?.title}</p>
         </div>
         <div className='flex flex-col items-end gap-2'>
           <textarea
