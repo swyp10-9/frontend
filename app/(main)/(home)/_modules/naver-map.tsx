@@ -190,6 +190,9 @@ export default function NaverMap({
         withWhom: params.get('withWhom') || undefined,
         theme: params.get('theme') || undefined,
         isNearBy: params.get('isNearBy') || undefined,
+        zoom: zoom.toString(),
+        lat: params.get('lat') || undefined,
+        lng: params.get('lng') || undefined,
       };
 
       setCurrentZoom(zoom);
