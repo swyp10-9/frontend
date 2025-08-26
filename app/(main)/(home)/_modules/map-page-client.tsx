@@ -64,6 +64,7 @@ export default function MapPageClient({
     loadFestivalsInBounds: loadFestivals,
     // reloadWithCurrentQueryParams,
     reloadWithNewQueryParams,
+    updateBookmarkStatus,
   } = useFestivalData(
     initialParams.focusId ? parseInt(initialParams.focusId) : undefined,
   );
@@ -133,6 +134,16 @@ export default function MapPageClient({
     [loadFestivals],
   );
 
+  // 북마크 제거 핸들러
+  const handleBookmarkRemove = useCallback(
+    (removedBookmarkId: number) => {
+      // 지도에서 해당 축제 마커의 북마크 상태 업데이트
+      updateBookmarkStatus(removedBookmarkId, false);
+      console.log('북마크 제거됨:', removedBookmarkId);
+    },
+    [updateBookmarkStatus],
+  );
+
   // 초기 중심 좌표 계산
   const initCenter = useMemo(() => {
     if (initialParams.mapX && initialParams.mapY) {
@@ -195,6 +206,7 @@ export default function MapPageClient({
         festivals={festivals}
         isLoadingFestivals={isLoadingFestivals}
         onReloadWithNewQueryParams={reloadWithNewQueryParams}
+        onBookmarkRemove={handleBookmarkRemove}
       />
     </div>
   );

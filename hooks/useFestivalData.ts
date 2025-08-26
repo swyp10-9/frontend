@@ -130,6 +130,19 @@ export const useFestivalData = (focusFestivalId?: number) => {
     );
   }, []);
 
+  // 북마크 상태 업데이트
+  const updateBookmarkStatus = useCallback(
+    (festivalId: number, isBookmarked: boolean) => {
+      setFestivals(prevFestivals =>
+        prevFestivals.map(f => ({
+          ...f,
+          is_marked: f.id === festivalId ? isBookmarked : f.is_marked,
+        })),
+      );
+    },
+    [],
+  );
+
   // 쿼리 파라미터만 변경하여 데이터 다시 로드 (지도 경계는 유지)
   const reloadWithNewQueryParams = useCallback(
     async (newQueryParams: MapQueryParams) => {
@@ -147,5 +160,6 @@ export const useFestivalData = (focusFestivalId?: number) => {
     reloadWithCurrentQueryParams,
     reloadWithNewQueryParams,
     updateFestivalFocus,
+    updateBookmarkStatus,
   };
 };

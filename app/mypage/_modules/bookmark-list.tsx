@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 
 import { getMyPageFestivals } from '@/apis/SWYP10BackendAPI';
@@ -49,6 +49,8 @@ export default function BookmarkList({
   initialBookmarkList,
 }: BookmarkListProps) {
   const [isBottomView, setIsBottomView] = useState(false);
+  const queryClient = useQueryClient();
+
   const [observeBottom] = useInView((isShow: boolean) => {
     console.log('%c bottom-view', 'color:blue;font-weight:bold;', isShow);
     setIsBottomView(() => {
@@ -81,7 +83,51 @@ export default function BookmarkList({
   });
 
   const allBookmarks = data?.pages.flatMap(page => page.bookmarks) || [];
-  const totalCount = data?.pages[0]?.total || 0;
+  // const totalCount = data?.pages[0]?.total || 0;
+
+  type BookmarkData = {
+    pageParams: number[];
+    pages: {
+      bookmarks: FestivalSummaryResponse[];
+      nextCursor: number | null;
+      total: number;
+    }[];
+  };
+
+  // 북마크 제거 핸들러
+  const handleBookmarkRemove = (removedBookmarkId: number) => {
+    queryClient.setQueryData(['bookmarks'], (oldData: BookmarkData) => {
+      if (!oldData) return oldData;
+
+      console.log('oldData::::::', oldData);
+
+      // 모든 페이지에서 해당 북마크 제거
+      const updatedPages = oldData.pages.map((page: BookmarkResponse) => ({
+        ...page,
+        bookmarks: page.bookmarks.filter(
+          (bookmark: FestivalSummaryResponse) =>
+            bookmark.id !== removedBookmarkId,
+        ),
+        total: page.total - 1, // 총 개수 감소
+      }));
+
+      // 빈 페이지가 있다면 제거
+      const filteredPages = updatedPages.filter(
+        (page: BookmarkResponse) => page.bookmarks.length > 0,
+      );
+
+      // nextCursor 업데이트
+      const updatedPageParams = filteredPages.map(
+        (_: BookmarkResponse, index: number) => index,
+      );
+
+      return {
+        ...oldData,
+        pages: filteredPages,
+        pageParams: updatedPageParams,
+      };
+    });
+  };
 
   if (isBottomView && hasNextPage && !isFetchingNextPage) {
     fetchNextPage();
@@ -132,6 +178,7 @@ export default function BookmarkList({
         <>
           {allBookmarks.map(bookmark => (
             <BookmarkItem
+              id={bookmark.id || 0}
               key={bookmark.id}
               image={bookmark.thumbnail || '/image/logo.png'}
               theme={bookmark.theme || ''}
@@ -142,6 +189,7 @@ export default function BookmarkList({
               start_date={bookmark.startDate || ''}
               // @ts-expect-error 기존 타입 오류
               is_marked={bookmark.bookmarked}
+              onBookmarkRemove={handleBookmarkRemove}
             />
           ))}
           <div

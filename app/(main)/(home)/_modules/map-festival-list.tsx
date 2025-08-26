@@ -20,12 +20,14 @@ interface MapFestivalListProps {
   festivals: Festival[];
   isLoadingFestivals: boolean;
   onReloadWithNewQueryParams: (params: MapQueryParams) => void;
+  onBookmarkRemove?: (id: number) => void;
 }
 
 export default function MapFestivalList({
   festivals,
   isLoadingFestivals,
   onReloadWithNewQueryParams,
+  onBookmarkRemove,
 }: MapFestivalListProps) {
   const openRef = useRef<HTMLDivElement>(null);
   const [activeSnapPoint, setActiveSnapPoint] = useState<
@@ -107,6 +109,7 @@ export default function MapFestivalList({
                       id={festival?.id || 0}
                       map_x={festival?.map_x.toString() || ''}
                       map_y={festival?.map_y.toString() || ''}
+                      onBookmarkRemove={onBookmarkRemove}
                     />
                   ))}
                 </div>

@@ -25,6 +25,7 @@ interface FestivalListViewProps {
   id: number;
   map_x: string;
   map_y: string;
+  onBookmarkRemove?: (id: number) => void;
 }
 
 interface ApiError {
@@ -47,6 +48,7 @@ export default function FestivalListView(props: FestivalListViewProps) {
     id,
     map_x,
     map_y,
+    onBookmarkRemove,
   } = props;
   const router = useRouter();
   const { isLoggedIn, isLoading } = useAuth();
@@ -54,6 +56,7 @@ export default function FestivalListView(props: FestivalListViewProps) {
   const [isMarked, setIsMarked] = useState(is_marked);
 
   async function handleBookmark(type: 'add' | 'cancel') {
+    console.log(id);
     if (type === 'add') {
       try {
         await addBookmark(id).then(() => {
@@ -83,6 +86,11 @@ export default function FestivalListView(props: FestivalListViewProps) {
           });
         });
         setIsMarked(false);
+
+        // 북마크 제거 콜백 호출
+        if (onBookmarkRemove) {
+          onBookmarkRemove(id);
+        }
       } catch (error) {
         console.error(error);
         const apiError = error as ApiError;
