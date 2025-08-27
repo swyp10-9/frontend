@@ -215,7 +215,7 @@ export default function List({
   }
 
   return (
-    <div className='flex flex-col gap-5'>
+    <div className='flex flex-col gap-5 px-5'>
       <div className='flex items-center gap-1'>
         <FilterChip
           label='내 주변'

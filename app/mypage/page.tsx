@@ -90,7 +90,7 @@ export default async function MyPage({
       </div>
 
       <Drawer>
-        <div className='flex-1 overflow-y-auto'>
+        <div className='flex-1 overflow-y-auto px-5'>
           {initialTab === 'bookmark' && (
             <BookmarkList initialBookmarkList={bookmarkList} />
           )}

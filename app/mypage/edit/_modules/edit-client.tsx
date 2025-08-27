@@ -44,7 +44,7 @@ export default function EditClient() {
   return (
     <div>
       <BackArrowNav rightExpand={<SaveButton onClick={handleSave} />} />
-      <div className='mt-5 flex flex-col gap-5'>
+      <div className='mt-5 flex flex-col gap-5 px-5'>
         <p className='ui-text-head-2'>사용자 이름 변경</p>
         <div className='flex flex-col items-end gap-2'>
           <div className='relative w-full'>

@@ -14,7 +14,7 @@ export default function Profile({ userInfo }: ProfileProps) {
   const router = useRouter();
 
   return (
-    <div className='flex w-full items-center gap-4'>
+    <div className='flex w-full items-center gap-4 px-5'>
       <Image
         src='/image/basic-profile.png'
         alt='profile'

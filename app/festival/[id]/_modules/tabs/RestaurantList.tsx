@@ -17,7 +17,7 @@ function RestaurantItem({
   restaurant: { name: string; address: string; imageUrl: string };
 }) {
   return (
-    <div className='flex flex-row items-center justify-start gap-3 bg-white'>
+    <div className='flex w-full flex-row items-center justify-start gap-3 bg-white'>
       <div className='flex flex-1 flex-col items-start justify-start gap-2 px-2 py-0'>
         <div className='flex flex-row items-center justify-start gap-1'>
           <h4 className='text-[16px] leading-[22px] font-bold tracking-[-0.16px] text-black'>
@@ -79,7 +79,7 @@ export default function RestaurantList({ params }: Props) {
   return (
     <div className='flex flex-col items-start justify-start gap-5'>
       {items.map((restaurant, index) => (
-        <div key={`${restaurant.name}-${index}`}>
+        <div key={`${restaurant.name}-${index}`} className='w-full'>
           <RestaurantItem restaurant={restaurant} />
           {index < items.length - 1 && (
             <div className='relative mt-5 h-0 w-full'>

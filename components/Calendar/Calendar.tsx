@@ -393,7 +393,7 @@ const Calendar = ({
 
   return (
     <div className='mx-auto w-full max-w-4xl bg-white p-5 font-sans'>
-      <div className='mb-4 flex items-center justify-center gap-5'>
+      <div className='mb-2 flex items-center justify-center gap-5'>
         {showNavigation && (
           <Icon
             icon='jam:chevron-left'
@@ -430,7 +430,7 @@ const Calendar = ({
         {DAYS.map(day => (
           <div
             key={day}
-            className='border-b border-gray-200 bg-transparent py-3 text-center text-sm font-bold text-gray-800'
+            className='border-gray-200 bg-transparent py-3 text-center text-sm font-bold text-gray-800'
           >
             {day}
           </div>
@@ -455,12 +455,12 @@ const Calendar = ({
               {dayData ? (
                 <div className='flex h-full flex-col items-center justify-center gap-1'>
                   <div
-                    className={`mb-0.5 text-sm font-semibold ${dayData.isToday ? 'flex h-6 w-6 items-center justify-center rounded-full bg-black font-bold text-white' : isPrevMonth || isNextMonth ? 'text-gray-400' : 'text-gray-800'} `}
+                    className={`mb-0.5 text-sm font-semibold ${dayData.isToday ? 'flex h-6 w-6 items-center justify-center rounded-full bg-black font-bold text-white' : isPrevMonth || isNextMonth ? 'text-gray-200' : 'text-gray-800'} `}
                   >
                     {dayData.day}
                   </div>
                   <div
-                    className={`text-xs font-medium ${isPrevMonth || isNextMonth ? 'text-gray-400' : 'text-gray-600'}`}
+                    className={`text-xs font-medium ${isPrevMonth || isNextMonth ? 'text-gray-200' : 'text-gray-800'}`}
                   >
                     {isLoading ? '...' : `${dayData.totalCount}개`}
                   </div>

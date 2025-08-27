@@ -7,7 +7,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className='relative box-border flex h-screen w-full max-w-[600px] flex-col px-5'>
+    <div className='relative box-border flex h-screen w-full max-w-[600px] flex-col'>
       <div className='sticky top-0 z-10 flex w-full flex-col bg-white'>
         <Nav />
       </div>

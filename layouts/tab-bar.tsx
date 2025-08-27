@@ -9,7 +9,7 @@ export default function TabBar() {
   const LinkClassName = 'flex flex-col items-center gap-px flex-1';
 
   return (
-    <div className='w-full border-t border-gray-400 bg-white px-5 py-3'>
+    <div className='w-full border-t border-gray-400 bg-white py-3'>
       <div className='flex w-full items-center justify-between'>
         <Link
           href='/'

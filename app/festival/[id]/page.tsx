@@ -100,7 +100,7 @@ export default function FestivalDetail({ params }: FestivalDetailProps) {
 
   return (
     // FIXME: 화면 크기 설정은 layout 수준에서 설정 필요, 모바일 뷰 재현을 위해 360px 사용
-    <div className='relative min-h-screen w-screen max-w-[360px] bg-white'>
+    <div className='relative min-h-screen w-screen max-w-[600px] bg-white'>
       {/* Main Content */}
       <div>
         <MainImage src={mainImageSrc} alt={mainImageAlt} />
