@@ -1,3 +1,11 @@
+/**
+ * @deprecated 이 파일의 북마크 관련 hooks는 더 이상 사용되지 않습니다.
+ * 대신 @/hooks/useBookmark를 사용하세요.
+ *
+ * 새로운 사용법:
+ * import { useBookmark } from '@/hooks/useBookmark';
+ * const { toggleBookmark } = useBookmark();
+ */
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError, HttpStatusCode } from 'axios';
 

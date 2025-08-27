@@ -45,7 +45,7 @@ export default function TabBar() {
             축제달력
           </span>
         </Link>
-        {/* <Link
+        <Link
           href='/month-festival'
           className={`${LinkClassName} ${pathname === '/month-festival' ? '' : ''}`}
         >
@@ -64,7 +64,7 @@ export default function TabBar() {
           >
             이달의 축제
           </span>
-        </Link> */}
+        </Link>
         {/* <Link
           href='/search'
           className={`${LinkClassName} ${pathname === '/search' ? '' : ''}`}

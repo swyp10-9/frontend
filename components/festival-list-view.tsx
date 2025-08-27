@@ -7,10 +7,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { addBookmark, cancelBookmark } from '@/apis/SWYP10BackendAPI';
 import { useAuth } from '@/hooks/useAuth';
+import { useBookmark } from '@/hooks/useBookmark';
+import { displayDate } from '@/utils/displayDate';
 
-import { showCustomToast } from './CustomToast';
 import { dialogClose, dialogOpen } from './Dialog';
 import ThemeTag from './theme-tag';
 
@@ -26,14 +26,6 @@ interface FestivalListViewProps {
   map_x: string;
   map_y: string;
   onBookmarkRemove?: (id: number) => void;
-}
-
-interface ApiError {
-  response?: {
-    data?: {
-      message?: string;
-    };
-  };
 }
 
 export default function FestivalListView(props: FestivalListViewProps) {
@@ -55,55 +47,22 @@ export default function FestivalListView(props: FestivalListViewProps) {
 
   const [isMarked, setIsMarked] = useState(is_marked);
 
-  async function handleBookmark(type: 'add' | 'cancel') {
-    console.log(id);
-    if (type === 'add') {
-      try {
-        await addBookmark(id).then(() => {
-          showCustomToast({
-            message: '북마크에 추가되었습니다.',
-            type: 'success',
-          });
-        });
-        setIsMarked(true);
-      } catch (error) {
-        console.error(error);
-        const apiError = error as ApiError;
-        const message: string =
-          apiError?.response?.data?.message ||
-          '알 수 없는 오류가 발생했습니다.';
-        showCustomToast({
-          message,
-          type: 'error',
-        });
+  const { toggleBookmark } = useBookmark({
+    onSuccess: (festivalId, isBookmarked) => {
+      setIsMarked(isBookmarked);
+      if (!isBookmarked && onBookmarkRemove) {
+        onBookmarkRemove(festivalId);
       }
-    } else {
-      try {
-        await cancelBookmark(id).then(() => {
-          showCustomToast({
-            message: '북마크에서 제거되었습니다.',
-            type: 'success',
-          });
-        });
-        setIsMarked(false);
+    },
+  });
 
-        // 북마크 제거 콜백 호출
-        if (onBookmarkRemove) {
-          onBookmarkRemove(id);
-        }
-      } catch (error) {
-        console.error(error);
-        const apiError = error as ApiError;
-        const message: string =
-          apiError?.response?.data?.message ||
-          '알 수 없는 오류가 발생했습니다.';
-        showCustomToast({
-          message,
-          type: 'error',
-        });
-      }
+  const handleBookmark = async (type: 'add' | 'cancel') => {
+    if (type === 'add') {
+      await toggleBookmark(id, false);
+    } else {
+      await toggleBookmark(id, true);
     }
-  }
+  };
 
   return (
     <Link href={`/festival/${id}`} className='block w-full'>
@@ -170,6 +129,9 @@ export default function FestivalListView(props: FestivalListViewProps) {
                     dialogOpen({
                       title: '링크가 복사되었습니다.',
                       type: 'alert',
+                      onApply: () => {
+                        dialogClose();
+                      },
                     });
                   } catch (error) {
                     console.error(error);
@@ -225,12 +187,4 @@ export default function FestivalListView(props: FestivalListViewProps) {
       </div>
     </Link>
   );
-}
-
-function displayDate(time: string) {
-  const year = new Date(time).getFullYear();
-  const month = new Date(time).getMonth() + 1;
-  const day = new Date(time).getDate();
-
-  return `${year}.${month}.${day}`;
 }
