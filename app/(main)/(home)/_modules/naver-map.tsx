@@ -165,11 +165,17 @@ export default function NaverMap({
         //   nw: { lat: bounds.getMax().y, lng: bounds.getMin().x },
         //   se: { lat: bounds.getMin().y, lng: bounds.getMax().x },
         // };
-        const currentParams = queryParams || {
-          status: 'ALL',
-          period: 'ALL',
-          withWhom: 'ALL',
-          theme: 'ALL',
+        const searchParams = new URL(window.location.href).searchParams;
+        const currentParams = {
+          status: searchParams.get('status') || 'ALL',
+          period: searchParams.get('period') || 'ALL',
+          withWhom: searchParams.get('withWhom') || 'ALL',
+          theme: searchParams.get('theme') || 'ALL',
+          mapX: searchParams.get('mapX') || undefined,
+          mapY: searchParams.get('mapY') || undefined,
+          zoom: searchParams.get('zoom') || undefined,
+          focusId: searchParams.get('focusId') || undefined,
+          isNearBy: searchParams.get('isNearBy') || undefined,
         };
         handleBoundsChange(map, currentParams, loadFestivalsInBoundsCallback);
       }
@@ -178,21 +184,33 @@ export default function NaverMap({
     window.naver.maps.Event.addListener(map, 'zoom_changed', () => {
       const newZoom = map.getZoom();
       setCurrentZoom(newZoom);
-      const currentParams = queryParams || {
-        status: 'ALL',
-        period: 'ALL',
-        withWhom: 'ALL',
-        theme: 'ALL',
+      const searchParams = new URL(window.location.href).searchParams;
+      const currentParams = {
+        status: searchParams.get('status') || 'ALL',
+        period: searchParams.get('period') || 'ALL',
+        withWhom: searchParams.get('withWhom') || 'ALL',
+        theme: searchParams.get('theme') || 'ALL',
+        mapX: searchParams.get('mapX') || undefined,
+        mapY: searchParams.get('mapY') || undefined,
+        zoom: searchParams.get('zoom') || undefined,
+        focusId: searchParams.get('focusId') || undefined,
+        isNearBy: searchParams.get('isNearBy') || undefined,
       };
       handleZoomChange(map, currentParams, onZoomChange, updateMarkers);
     });
 
     window.naver.maps.Event.addListener(map, 'center_changed', () => {
-      const currentParams = queryParams || {
-        status: 'ALL',
-        period: 'ALL',
-        withWhom: 'ALL',
-        theme: 'ALL',
+      const searchParams = new URL(window.location.href).searchParams;
+      const currentParams = {
+        status: searchParams.get('status') || 'ALL',
+        period: searchParams.get('period') || 'ALL',
+        withWhom: searchParams.get('withWhom') || 'ALL',
+        theme: searchParams.get('theme') || 'ALL',
+        mapX: searchParams.get('mapX') || undefined,
+        mapY: searchParams.get('mapY') || undefined,
+        zoom: searchParams.get('zoom') || undefined,
+        focusId: searchParams.get('focusId') || undefined,
+        isNearBy: searchParams.get('isNearBy') || undefined,
       };
       handleCenterChange(map, currentParams);
     });
