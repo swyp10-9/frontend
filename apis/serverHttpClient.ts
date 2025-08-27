@@ -1,6 +1,8 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
 
 import config from '@/config';
+import { API_TIMEOUT } from '@/constants';
+import { HttpClientOptions } from '@/types';
 
 import { CommonResponse } from './CommonResponse';
 
@@ -24,6 +26,7 @@ export const attachAccessToken = async (config: InternalAxiosRequestConfig) => {
 const baseURL = config.api.baseURL;
 const instance = axios.create({
   baseURL: config.api.baseURL,
+  timeout: API_TIMEOUT, // API 타임아웃 상수 사용
   headers: {
     'Content-Type': 'application/json',
     origin: config.base_url,
@@ -83,25 +86,56 @@ export const httpClient = async <T = unknown>({
   params,
   data,
   headers,
-}: {
-  url: string;
-  method: string;
-  params?: Record<string, unknown>;
-  data?: unknown;
-  headers?: Record<string, string>;
-  // FIXME: 백엔드에서 문서화 오류가 있어 수동으로 처리
-}) => {
-  const response = await instance({
-    url,
-    method,
-    params,
-    data,
-    headers: {
-      ...headers,
-      'Content-Type': 'application/json',
-    },
-    withCredentials: true,
-  });
+  timeout,
+}: HttpClientOptions) => {
+  // 커스텀 타임아웃이 설정되지 않은 경우 기본값 사용
+  const requestTimeout = timeout || API_TIMEOUT;
 
-  return response.data as CommonResponse<T>;
+  // AbortController를 사용하여 요청 취소 가능하도록 설정
+  const abortController = new AbortController();
+
+  // requestTimeout 후 자동으로 요청 취소
+  const timeoutId = setTimeout(() => {
+    abortController.abort();
+    console.warn(
+      `⚠️ API 요청이 ${requestTimeout / 1000}초를 초과하여 자동으로 취소되었습니다:`,
+      url,
+    );
+  }, requestTimeout);
+
+  try {
+    const response = await instance({
+      url,
+      method,
+      params,
+      data,
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true,
+      signal: abortController.signal,
+    });
+
+    // 요청이 성공적으로 완료되면 타임아웃 타이머 정리
+    clearTimeout(timeoutId);
+
+    return response.data as CommonResponse<T>;
+  } catch (error) {
+    // 타임아웃 타이머 정리
+    clearTimeout(timeoutId);
+
+    if (axios.isAxiosError(error)) {
+      if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+        console.error('❌ API 요청 타임아웃:', url);
+        throw new Error(`API 요청이 타임아웃되었습니다: ${url}`);
+      }
+      if (error.name === 'AbortError') {
+        console.error('❌ API 요청이 취소되었습니다:', url);
+        throw new Error(`API 요청이 취소되었습니다: ${url}`);
+      }
+    }
+
+    throw error;
+  }
 };
