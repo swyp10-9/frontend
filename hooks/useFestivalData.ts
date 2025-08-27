@@ -1,4 +1,8 @@
+'use client';
+
 import { useCallback, useMemo, useRef, useState } from 'react';
+
+import { useRouter } from 'next/navigation';
 
 import { getFestivalsForMap } from '@/apis/SWYP10BackendAPI';
 import type {
@@ -68,6 +72,7 @@ const fetchFestivalsInBounds = async (
 };
 
 export const useFestivalData = (focusFestivalId?: number) => {
+  const router = useRouter();
   const [festivals, setFestivals] = useState<Festival[]>([]);
   const [isLoadingFestivals, setIsLoadingFestivals] = useState(false);
 
@@ -122,12 +127,10 @@ export const useFestivalData = (focusFestivalId?: number) => {
 
   // 축제 포커스 업데이트
   const updateFestivalFocus = useCallback((festivalId: number) => {
-    setFestivals(prevFestivals =>
-      prevFestivals.map(f => ({
-        ...f,
-        isDetailed: f.id === festivalId,
-      })),
-    );
+    const searchParams = new URL(window.location.href).searchParams;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('focusId', festivalId.toString());
+    router.replace(`?${params.toString()}`);
   }, []);
 
   // 북마크 상태 업데이트
