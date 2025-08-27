@@ -68,7 +68,7 @@ export default function MapFestivalList({
       activeSnapPoint={activeSnapPoint}
       setActiveSnapPoint={setActiveSnapPoint}
     >
-      <div className='absolute right-4 bottom-4 flex items-center gap-2'>
+      <div className='absolute right-4 bottom-20 flex items-center gap-2'>
         <DrawerTrigger asChild>
           <Button size={'sm'} variant='primary' rounded='full'>
             리스트로 보기
