@@ -1242,3 +1242,28 @@ export const GetFestivalsForCalendarTheme = {
   TRADITION: 'TRADITION',
   ALL: 'ALL',
 } as const;
+
+export interface GetMonthlyFestivalParams {
+  content: GetMonthlyFestivalResponse[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
+export interface GetMonthlyFestivalResponse {
+  id: number;
+  thumbnail: string;
+  theme: string;
+  title: string;
+  overview: string;
+  bookmarked: boolean;
+  address: string;
+  startDate: string;
+  endDate: string;
+  map_x: number;
+  map_y: number;
+}

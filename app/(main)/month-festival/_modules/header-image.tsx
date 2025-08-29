@@ -10,7 +10,7 @@ export default function HeaderImage({
   return (
     <div className='relative w-full'>
       <Image
-        src={'https://picsum.photos/1000/1000'}
+        src={'/image/monthly.png'}
         alt='header-image'
         className='h-full w-full object-cover'
         style={{
@@ -19,7 +19,7 @@ export default function HeaderImage({
         width={1000}
         height={200}
       />
-      <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/50'>
+      {/* <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/0'>
         <p
           className='text-center ui-text-head-2 whitespace-pre text-white'
           style={{
@@ -36,7 +36,14 @@ export default function HeaderImage({
         >
           {description}
         </p>
-      </div>
+      </div> */}
+      {/* <div
+        className='absolute inset-0'
+        style={{
+          background:
+            'linear-gradient(to bottom, #460F00 0%, rgba(70, 15, 0, 0.8) 30%, rgba(70, 15, 0, 0.4) 60%, rgba(70, 15, 0, 0) 100%)',
+        }}
+      /> */}
     </div>
   );
 }

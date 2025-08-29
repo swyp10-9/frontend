@@ -62,6 +62,7 @@ import type {
   GetFestivalsForCalendarParams,
   GetFestivalsForMapParams,
   GetFestivalsForPersonalTestParams,
+  GetMonthlyFestivalParams,
   GetMyPageFestivalsParams,
   GetMyReviewsParams,
   GetTopKeywordsParams,
@@ -330,6 +331,13 @@ export const cancelBookmark = (festivalId: number) => {
   });
 };
 
+export const monthlyTopFestival = () => {
+  return httpClient<GetMonthlyFestivalParams>({
+    url: '/api/v1/festivals/monthly-top',
+    method: 'GET',
+  });
+};
+
 export type RunFestivalSyncJobResult = NonNullable<
   Awaited<ReturnType<typeof runFestivalSyncJob>>
 >;
@@ -389,4 +397,7 @@ export type DeleteMyReviewResult = NonNullable<
 >;
 export type CancelBookmarkResult = NonNullable<
   Awaited<ReturnType<typeof cancelBookmark>>
+>;
+export type MonthlyTopFestivalResult = NonNullable<
+  Awaited<ReturnType<typeof monthlyTopFestival>>
 >;

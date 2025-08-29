@@ -6,6 +6,7 @@ import { Icon } from '@iconify/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+import { GetMonthlyFestivalResponse } from '@/apis/SWYP10BackendAPI.schemas';
 import { Button } from '@/components/Button';
 import { dialogClose, dialogOpen } from '@/components/Dialog';
 import ThemeTag from '@/components/theme-tag';
@@ -18,21 +19,19 @@ export default function FestivalCard({
   festival,
 }: {
   index: number;
-  festival: {
-    id: number;
-    is_marked: boolean;
-    theme: string;
-    title: string;
-    loc: string;
-    map_x: string;
-    map_y: string;
-    start_date: string;
-    end_date: string;
-    overview: string;
-  };
+  festival: GetMonthlyFestivalResponse;
 }) {
-  const { id, title, loc, map_x, map_y, start_date, end_date, overview } =
-    festival;
+  const {
+    id,
+    title,
+    address,
+    map_x,
+    map_y,
+    startDate,
+    endDate,
+    overview,
+    thumbnail,
+  } = festival;
   const [isOpen, setIsOpen] = useState(false);
   const [isMarked, setIsMarked] = useState(false);
   const router = useRouter();
@@ -64,14 +63,14 @@ export default function FestivalCard({
         <p className='mt-2 ui-text-sub-head text-[#ff8757]'>BEST {index}</p>
       </div>
       <Image
-        src={'https://picsum.photos/1000/1000'}
+        src={thumbnail}
         className='h-full w-full rounded-md object-cover'
         alt='festival-image'
         style={{
           aspectRatio: '16/9',
         }}
-        width={1000}
-        height={1000}
+        width={600}
+        height={600}
       />
       <div className='my-2 flex w-full items-center justify-between'>
         <ThemeTag type={'MUSIC'} />
@@ -146,7 +145,7 @@ export default function FestivalCard({
             className='cursor-pointer text-gray-300'
             fontSize={20}
           />
-          <p className={`mr-1 ml-0.5 line-clamp-1 ui-text-body-2`}>{loc}</p>
+          <p className={`mr-1 ml-0.5 line-clamp-1 ui-text-body-2`}>{address}</p>
         </div>
         <p
           className='line-clamp-1 ui-text-body-2 underline'
@@ -175,14 +174,11 @@ export default function FestivalCard({
           fontSize={20}
         />
         <p className='mr-1 ml-0.5 ui-text-body-2'>
-          {displayDate(start_date)} ~ {displayDate(end_date)}
+          {displayDate(startDate)} ~ {displayDate(endDate)}
         </p>
       </div>
       <p
         className={`${isOpen ? '' : 'line-clamp-3'} mb-1 ui-text-body-2-long text-gray-700`}
-        style={{
-          overflow: 'hidden',
-        }}
       >
         {overview}
       </p>
