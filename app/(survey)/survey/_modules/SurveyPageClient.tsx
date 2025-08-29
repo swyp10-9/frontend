@@ -529,7 +529,7 @@ export function SurveyPageClient() {
               size='md'
               className='flex-1'
             >
-              다음 질문
+              {isLastStep ? '결과 보기' : '다음 질문'}
             </Button>
           </div>
         </div>
