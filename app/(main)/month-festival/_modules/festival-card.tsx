@@ -31,9 +31,10 @@ export default function FestivalCard({
     endDate,
     overview,
     thumbnail,
+    bookmarked,
   } = festival;
   const [isOpen, setIsOpen] = useState(false);
-  const [isMarked, setIsMarked] = useState(false);
+  const [isMarked, setIsMarked] = useState(!!bookmarked);
   const router = useRouter();
   const { isLoggedIn, isLoading } = useAuth();
 
