@@ -162,7 +162,7 @@ export default function List({
     return (
       <div className='flex flex-col gap-5'>
         <div className='flex items-center gap-1'>
-          <FilterChip label='내 주변' is_selected={false} />
+          {/* <FilterChip label='내 주변' is_selected={false} /> */}
           <DrawerTrigger>
             <FilterChip label='필터' is_selected={false} downChevron />
           </DrawerTrigger>
@@ -188,7 +188,7 @@ export default function List({
     return (
       <div className='flex flex-col gap-5'>
         <div className='flex items-center gap-1'>
-          <FilterChip label='내 주변' is_selected={false} />
+          {/* <FilterChip label='내 주변' is_selected={false} /> */}
           <DrawerTrigger>
             <FilterChip label='필터' is_selected={false} downChevron />
           </DrawerTrigger>
@@ -217,7 +217,7 @@ export default function List({
   return (
     <div className='flex flex-col gap-5 px-5'>
       <div className='flex items-center gap-1'>
-        <FilterChip
+        {/* <FilterChip
           label='내 주변'
           is_selected={isNearBy}
           onClick={() => {
@@ -230,7 +230,7 @@ export default function List({
               router.replace(`?${params.toString()}`);
             }
           }}
-        />
+        /> */}
         <DrawerTrigger>
           <FilterChip label='필터' is_selected={false} downChevron />
         </DrawerTrigger>
