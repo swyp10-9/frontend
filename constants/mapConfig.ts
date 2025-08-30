@@ -4,7 +4,7 @@ import type { MapConfig } from '@/types/map';
 export const MAP_CONFIG: MapConfig = {
   minZoom: 6,
   maxZoom: 17,
-  defaultZoom: 10,
+  defaultZoom: 12,
   boundsChangeDelay: 700,
   centerChangeDelay: 500,
   refreshDelay: 100,
@@ -12,6 +12,20 @@ export const MAP_CONFIG: MapConfig = {
 
 // 기본 위치 (서울 시청)
 export const DEFAULT_LOCATION: [number, number] = [37.3595704, 127.105399];
+
+// 현재 위치 관련 설정
+export const GEOLOCATION_CONFIG = {
+  // 위치 정보 요청 타임아웃 (ms)
+  timeout: 10000,
+  // 고정밀 위치 정보 사용
+  enableHighAccuracy: true,
+  // 위치 정보 캐시 시간 (ms) - 0은 캐시하지 않음
+  maximumAge: 0,
+  // 현재 위치 가져오기 실패 시 기본 위치 사용
+  fallbackToDefault: true,
+  // 현재 위치 가져오기 성공 시 줌 레벨
+  currentLocationZoom: 15,
+} as const;
 
 // 마커 크기 설정
 export const MARKER_SIZES = {

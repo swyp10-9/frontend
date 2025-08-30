@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -12,6 +12,7 @@ import themeList from '@/constants/themeList';
 import { withWhomList } from '@/constants/withWhomList';
 import { useFestivalData } from '@/hooks/useFestivalData';
 import type { Festival, MapBounds, MapQueryParams } from '@/types/map';
+import { getCurrentLocationWithPermission } from '@/utils/mapUtils';
 
 import MapBottomFilter from './map-bottom-filter';
 import MapFestivalList from './map-festival-list';
@@ -56,6 +57,9 @@ export default function MapPageClient({
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const mapInstanceRef = useRef<naver.maps.Map | null>(null);
+  const [toastMessage, setToastMessage] = useState<string>('');
+  const [showToast, setShowToast] = useState(false);
 
   // 축제 데이터 훅을 상위에서 공유
   const {
@@ -82,11 +86,66 @@ export default function MapPageClient({
   // console.log('currentQueryParams::::::', currentQueryParams);
 
   // 내 주변 토글 핸들러
-  const handleNearByToggle = useCallback(() => {
+  const handleNearByToggle = useCallback(async () => {
     const params = new URLSearchParams(searchParams.toString());
     const currentIsNearBy = params.get('isNearBy') === 'true';
-    params.set('isNearBy', (!currentIsNearBy).toString());
-    router.replace(`?${params.toString()}`, { scroll: false });
+
+    if (!currentIsNearBy) {
+      // 내 주변 활성화 시 현재 위치로 이동
+      try {
+        setToastMessage('현재 위치를 가져오는 중...');
+        setShowToast(true);
+
+        const currentLocation = await getCurrentLocationWithPermission();
+        if (currentLocation) {
+          // URL 파라미터 업데이트
+          params.set('isNearBy', 'true');
+          params.set('mapX', currentLocation[1].toString()); // 경도
+          params.set('mapY', currentLocation[0].toString()); // 위도
+          params.set('zoom', '15'); // 현재 위치 시 적절한 줌 레벨
+
+          router.replace(`?${params.toString()}`, { scroll: false });
+
+          // 지도 인스턴스가 있다면 즉시 이동
+          if (mapInstanceRef.current) {
+            const newCenter = new window.naver.maps.LatLng(
+              currentLocation[0],
+              currentLocation[1],
+            );
+            mapInstanceRef.current.setCenter(newCenter);
+            mapInstanceRef.current.setZoom(15);
+            console.log('현재 위치로 지도 이동:', currentLocation);
+          }
+
+          setToastMessage('현재 위치로 이동했습니다!');
+          setTimeout(() => setShowToast(false), 2000);
+        } else {
+          // 현재 위치 가져오기 실패 시 기본값으로 설정
+          params.set('isNearBy', 'true');
+          router.replace(`?${params.toString()}`, { scroll: false });
+
+          setToastMessage('위치 정보를 가져올 수 없어 기본 위치를 사용합니다.');
+          setTimeout(() => setShowToast(false), 3000);
+        }
+      } catch (error) {
+        console.error('현재 위치 가져오기 실패:', error);
+        params.set('isNearBy', 'true');
+        router.replace(`?${params.toString()}`, { scroll: false });
+
+        setToastMessage('위치 정보 접근에 실패했습니다.');
+        setTimeout(() => setShowToast(false), 3000);
+      }
+    } else {
+      // 내 주변 비활성화 시 기본 위치로 이동
+      params.delete('isNearBy');
+      params.delete('mapX');
+      params.delete('mapY');
+      params.delete('zoom');
+      router.replace(`?${params.toString()}`, { scroll: false });
+
+      setToastMessage('기본 위치로 이동했습니다.');
+      setTimeout(() => setShowToast(false), 2000);
+    }
   }, [searchParams, router]);
 
   // 필터 제거 핸들러
@@ -120,8 +179,9 @@ export default function MapPageClient({
   );
 
   // 지도 인스턴스 준비 완료 핸들러
-  const handleMapInstanceReady = useCallback(() => {
+  const handleMapInstanceReady = useCallback((mapInstance: naver.maps.Map) => {
     console.log('지도 인스턴스 준비 완료');
+    mapInstanceRef.current = mapInstance;
   }, []);
 
   // 경계 내 축제 로드 핸들러
@@ -208,6 +268,13 @@ export default function MapPageClient({
         onReloadWithNewQueryParams={reloadWithNewQueryParams}
         onBookmarkRemove={handleBookmarkRemove}
       />
+
+      {/* 간단한 토스트 메시지 */}
+      {showToast && (
+        <div className='fixed top-20 left-1/2 z-50 -translate-x-1/2 transform rounded-lg bg-blue-600 px-4 py-2 text-white shadow-lg'>
+          {toastMessage}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,33 +1,89 @@
-import { DEFAULT_LOCATION } from '@/constants/mapConfig';
+import { DEFAULT_LOCATION, GEOLOCATION_CONFIG } from '@/constants/mapConfig';
 import type { LatLng, MapBounds } from '@/types/map';
 
 // Geolocation 옵션 상수
 const GEOLOCATION_OPTIONS: PositionOptions = {
-  enableHighAccuracy: true,
-  timeout: 5000,
-  maximumAge: 0,
+  enableHighAccuracy: GEOLOCATION_CONFIG.enableHighAccuracy,
+  timeout: GEOLOCATION_CONFIG.timeout,
+  maximumAge: GEOLOCATION_CONFIG.maximumAge,
 };
 
 // 현재 위치 가져오기
 export const getCurrentLocation = (): Promise<[number, number]> => {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     if (!navigator?.geolocation) {
       console.log('Geolocation 지원하지 않음, 기본 위치 사용');
-      resolve(DEFAULT_LOCATION);
+      if (GEOLOCATION_CONFIG.fallbackToDefault) {
+        resolve(DEFAULT_LOCATION);
+      } else {
+        reject(new Error('Geolocation is not supported'));
+      }
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        resolve([position.coords.latitude, position.coords.longitude]);
-      },
-      () => {
-        console.log('위치 정보 가져오기 실패, 기본 위치 사용');
+    const successCallback = (position: GeolocationPosition) => {
+      const { latitude, longitude } = position.coords;
+      console.log('현재 위치 가져오기 성공:', { latitude, longitude });
+      resolve([latitude, longitude]);
+    };
+
+    const errorCallback = (error: GeolocationPositionError) => {
+      let errorMessage = '위치 정보 가져오기 실패';
+
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          errorMessage = '위치 정보 접근 권한이 거부되었습니다';
+          break;
+        case error.POSITION_UNAVAILABLE:
+          errorMessage = '위치 정보를 사용할 수 없습니다';
+          break;
+        case error.TIMEOUT:
+          errorMessage = '위치 정보 요청 시간이 초과되었습니다';
+          break;
+        default:
+          errorMessage = '알 수 없는 오류가 발생했습니다';
+      }
+
+      console.error(errorMessage, error);
+
+      if (GEOLOCATION_CONFIG.fallbackToDefault) {
+        console.log('기본 위치로 대체합니다');
         resolve(DEFAULT_LOCATION);
-      },
+      } else {
+        reject(new Error(errorMessage));
+      }
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      successCallback,
+      errorCallback,
       GEOLOCATION_OPTIONS,
     );
   });
+};
+
+// 현재 위치 가져오기 (권한 확인 포함)
+export const getCurrentLocationWithPermission = async (): Promise<
+  [number, number]
+> => {
+  try {
+    // 권한 상태 확인
+    if ('permissions' in navigator) {
+      const permission = await navigator.permissions.query({
+        name: 'geolocation',
+      });
+
+      if (permission.state === 'denied') {
+        console.log('위치 정보 권한이 거부됨');
+        return DEFAULT_LOCATION;
+      }
+    }
+
+    return await getCurrentLocation();
+  } catch (error) {
+    console.error('위치 정보 가져오기 실패:', error);
+    return DEFAULT_LOCATION;
+  }
 };
 
 // 지도 경계 데이터 생성

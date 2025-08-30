@@ -2,7 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { DEFAULT_LOCATION, MAP_CONFIG } from '@/constants/mapConfig';
+import {
+  DEFAULT_LOCATION,
+  GEOLOCATION_CONFIG,
+  MAP_CONFIG,
+} from '@/constants/mapConfig';
 import { useFestivalData } from '@/hooks/useFestivalData';
 import { useMapEvents } from '@/hooks/useMapEvents';
 import { useMapMarkers } from '@/hooks/useMapMarkers';
@@ -13,6 +17,7 @@ import type {
   MapQueryParams,
   NaverMapProps,
 } from '@/types/map';
+import { getCurrentLocationWithPermission } from '@/utils/mapUtils';
 
 declare global {
   interface Window {
@@ -43,6 +48,9 @@ export default function NaverMap({
   const isInitializedRef = useRef(false);
 
   const [currentZoom, setCurrentZoom] = useState(MAP_CONFIG.defaultZoom);
+  const [currentLocation, setCurrentLocation] = useState<
+    [number, number] | null
+  >(null);
 
   // 커스텀 훅들
   const {
@@ -123,13 +131,44 @@ export default function NaverMap({
     }
   }, [queryParams, loadFestivalsInBoundsCallback]);
 
+  // 현재 위치 가져오기
+  const getCurrentLocationForMap = useCallback(async () => {
+    try {
+      const location = await getCurrentLocationWithPermission();
+      setCurrentLocation(location);
+      console.log('현재 위치 설정됨:', location);
+      return location;
+    } catch (error) {
+      console.error('현재 위치 가져오기 실패:', error);
+      return null;
+    }
+  }, []);
+
   // 지도 초기화
   const initializeMap = useCallback(async () => {
     if (!mapRef.current || !window.naver?.maps) return;
 
-    const center = getCenterFromURL() ||
-      initialCenter || { lat: DEFAULT_LOCATION[0], lng: DEFAULT_LOCATION[1] };
-    const zoom = initialZoom || MAP_CONFIG.defaultZoom;
+    // 현재 위치 가져오기 시도
+    let center = getCenterFromURL() || initialCenter;
+
+    if (!center) {
+      // URL이나 props에 중심 좌표가 없으면 현재 위치 시도
+      const currentLoc = await getCurrentLocationForMap();
+      if (currentLoc) {
+        center = { lat: currentLoc[0], lng: currentLoc[1] };
+        console.log('현재 위치로 지도 중심 설정:', center);
+      } else {
+        // 현재 위치도 실패하면 기본 위치 사용
+        center = { lat: DEFAULT_LOCATION[0], lng: DEFAULT_LOCATION[1] };
+        console.log('기본 위치로 지도 중심 설정:', center);
+      }
+    }
+
+    const zoom =
+      initialZoom ||
+      (currentLocation
+        ? GEOLOCATION_CONFIG.currentLocationZoom
+        : MAP_CONFIG.defaultZoom);
 
     // 지도 인스턴스 생성
     const map = new window.naver.maps.Map(mapRef.current, {
@@ -267,6 +306,8 @@ export default function NaverMap({
     loadFestivalsInBoundsCallback,
     onZoomChange,
     updateMarkers,
+    currentLocation,
+    getCurrentLocationForMap,
   ]);
 
   // 리사이즈 및 인터섹션 옵저버 설정
