@@ -55,7 +55,7 @@ export default function WriteClient() {
             <Image
               width={48}
               height={48}
-              src={festival?.thumbnail || '/image/logo.png'}
+              src={festival?.thumbnail || '/image/text-logo.png'}
               className='aspect-square rounded-xl object-cover'
               alt='festival'
             />

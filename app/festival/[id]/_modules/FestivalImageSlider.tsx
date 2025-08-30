@@ -20,7 +20,7 @@ export default function FestivalImageSlider({
         {images.map((image, index) => (
           <SwiperSlide key={index} className='!w-[156px] flex-shrink-0'>
             <Image
-              src={image}
+              src={image || '/image/text-logo.png'}
               alt={`축제 이미지 ${index + 1}`}
               className='h-[156px] w-[156px] rounded object-cover'
               width={156}

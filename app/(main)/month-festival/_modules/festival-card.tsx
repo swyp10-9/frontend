@@ -64,7 +64,7 @@ export default function FestivalCard({
         <p className='mt-2 ui-text-sub-head text-[#ff8757]'>BEST {index}</p>
       </div>
       <Image
-        src={thumbnail}
+        src={thumbnail || '/image/text-logo.png'}
         className='h-full w-full rounded-md object-cover'
         alt='festival-image'
         style={{

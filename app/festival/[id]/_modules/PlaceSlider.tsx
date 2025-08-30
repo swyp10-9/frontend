@@ -21,7 +21,7 @@ export default function PlaceSlider({ places }: PlaceSliderProps) {
         <SwiperSlide key={index} className='!w-[148px] flex-shrink-0'>
           <div className='w-[148px]'>
             <Image
-              src={place.image}
+              src={place?.image || '/image/text-logo.png'}
               alt={place.name}
               width={148}
               height={148}

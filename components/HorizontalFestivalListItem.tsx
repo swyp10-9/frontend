@@ -24,7 +24,7 @@ export default function HorizontalFestivalListItem(
     >
       <div className='relative h-[140px] w-[140px]'>
         <Image
-          src={image || '/image/logo.png'}
+          src={image || '/image/text-logo.png'}
           alt={title}
           className='h-[140px] w-[140px] rounded-lg object-cover'
           fill

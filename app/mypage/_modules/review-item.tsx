@@ -29,7 +29,7 @@ export default function ReviewItem({
       <div className='flex justify-between'>
         <div className='flex items-center gap-2'>
           <Image
-            src={image}
+            src={image || '/image/text-logo.png'}
             alt='review-item'
             width={40}
             height={40}

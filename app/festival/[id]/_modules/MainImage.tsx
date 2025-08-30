@@ -17,7 +17,12 @@ export default function MainImage({ src, alt }: MainImageProps) {
 
   return (
     <div className='relative aspect-[2/1] w-full overflow-hidden'>
-      <Image src={src} alt={alt} className='h-full w-full object-cover' fill />
+      <Image
+        src={src || '/image/text-logo.png'}
+        alt={alt}
+        className='h-full w-full object-cover'
+        fill
+      />
       {/* Shadow overlay */}
       <div className='absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent'></div>
       {/* 뒤로가기 버튼 */}
