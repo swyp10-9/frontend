@@ -16,7 +16,13 @@ import energizerImage from '@/assets/images/festival-recommendation/energizer.pn
 import healerImage from '@/assets/images/festival-recommendation/healer.png';
 import socializerImage from '@/assets/images/festival-recommendation/socializer.png';
 import HorizontalFestivalList from '@/components/HorizontalFestivalList';
+import { useAuth } from '@/hooks/useAuth';
 import { useShareThisPage } from '@/hooks/useShareThisPage';
+import {
+  clearSurveyResult,
+  getSurveyResult,
+  saveSurveyResult,
+} from '@/utils/localStorage';
 
 // 결과별 이미지 매핑
 const resultImages = {
@@ -85,12 +91,17 @@ export function SurveyResultClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const isShared = searchParams.get('shared');
+
   const [festivals, setFestivals] = useState<FestivalSummaryResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { share } = useShareThisPage();
+  const { isLoggedIn } = useAuth();
 
   const handleRetakeTest = () => {
+    // 다시 테스트할 때는 기존 결과 삭제
+    clearSurveyResult();
     router.push('/survey');
   };
 
@@ -125,6 +136,16 @@ export function SurveyResultClient() {
 
       if (response.success && response.data?.content) {
         setFestivals(response.data.content);
+
+        // 로그인된 사용자만 결과를 localStorage에 저장
+        if (isLoggedIn) {
+          const resultData = {
+            type: personalityType || 'HEALER', // fallback to HEALER if null
+            timestamp: Date.now(),
+            festivals: response.data.content,
+          };
+          saveSurveyResult(resultData, true);
+        }
       } else {
         setError('축제 데이터를 불러올 수 없습니다.');
       }
@@ -137,13 +158,26 @@ export function SurveyResultClient() {
   };
 
   useEffect(() => {
+    // 로그인된 사용자만 localStorage에서 저장된 결과 확인
+    if (isLoggedIn) {
+      const savedResult = getSurveyResult(true);
+
+      if (savedResult && savedResult.festivals) {
+        // 저장된 데이터가 있으면 API 호출 없이 바로 사용
+        setFestivals(savedResult.festivals);
+        setLoading(false);
+        return;
+      }
+    }
+
+    // 저장된 데이터가 없거나 로그인되지 않은 경우 API 호출
     const result = getResultFromType();
     if (result.type) {
       fetchPersonalizedFestivals(
         result.type as GetFestivalsForPersonalTestPersonalityType,
       );
     }
-  }, [searchParams]);
+  }, [searchParams, isLoggedIn]);
 
   // API 응답을 HorizontalFestivalList용 형태로 변환
   const transformFestivalsData = (apiData: FestivalSummaryResponse[]) => {
@@ -259,22 +293,24 @@ export function SurveyResultClient() {
       </div>
 
       {/* Fixed Bottom Actions */}
-      <div className='fixed bottom-0 left-1/2 w-full max-w-[600px] -translate-x-1/2 bg-transparent px-5 py-4'>
-        <div className='flex gap-3'>
-          <button
-            onClick={handleRetakeTest}
-            className='h-12 flex-1 rounded-lg border border-[#d5d7db] bg-white text-sm font-medium text-[#090a0c]'
-          >
-            다시 테스트하기
-          </button>
-          <button
-            onClick={share}
-            className='h-12 flex-1 rounded-lg bg-[#090a0c] text-sm font-medium text-white'
-          >
-            결과 공유
-          </button>
+      {!isShared && (
+        <div className='fixed bottom-0 left-1/2 w-full max-w-[600px] -translate-x-1/2 bg-transparent px-5 py-4'>
+          <div className='flex gap-3'>
+            <button
+              onClick={handleRetakeTest}
+              className='h-12 flex-1 rounded-lg border border-[#d5d7db] bg-white text-sm font-medium text-[#090a0c]'
+            >
+              다시 테스트하기
+            </button>
+            <button
+              onClick={share}
+              className='h-12 flex-1 rounded-lg bg-[#090a0c] text-sm font-medium text-white'
+            >
+              결과 공유
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

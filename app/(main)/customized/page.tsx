@@ -9,6 +9,7 @@ import introImage from '@/assets/images/festival-recommendation/intro.png';
 import { Button } from '@/components/Button';
 import { CustomDialog } from '@/components/Dialog';
 import { useAuth } from '@/hooks/useAuth';
+import { getSurveyResult } from '@/utils/localStorage';
 
 export default function CustomizedPage() {
   const router = useRouter();
@@ -16,10 +17,20 @@ export default function CustomizedPage() {
   const { isLoggedIn, isLoading } = useAuth();
 
   useEffect(() => {
-    if (!isLoading && !isLoggedIn) {
-      setShowLoginModal(true);
+    if (!isLoading) {
+      if (isLoggedIn) {
+        // 로그인된 사용자만 저장된 설문 결과 확인
+        const savedResult = getSurveyResult(true);
+        if (savedResult) {
+          router.push(`/survey-result?type=${savedResult.type}`);
+          return;
+        }
+      } else {
+        // 로그인되지 않은 사용자는 로그인 모달 표시
+        setShowLoginModal(true);
+      }
     }
-  }, [isLoggedIn, isLoading]);
+  }, [isLoggedIn, isLoading, router]);
 
   const handleStartTest = () => {
     router.push('/survey');
